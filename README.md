@@ -1,73 +1,57 @@
-# React + TypeScript + Vite
+# Taskflow
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Taskflow is a Trello-like task manager built with React and TypeScript.
 
-Currently, two official plugins are available:
+The project is based on an educational API from IT-Incubator:
+https://trelly.it-incubator.app
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## Goal
 
-## React Compiler
+The goal of this project is to build a real-world React application while gradually improving the architecture and adding technologies from the React ecosystem.
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+The development will happen in stages.
 
-## Expanding the ESLint configuration
+## Current stage
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+The current codebase is a **recreated version of the original project from the course**.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+Next step:
+Refactor the project structure and improve code quality before adding new technologies.
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+## Tech stack (current)
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- React
+- TypeScript
+- Fetch API
+- CSS modules
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Planned technologies
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+These will be added gradually:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+- React Router
+- Redux Toolkit
+- React Hook Form
+- Zod
+- Axios
+- WebSocket
+- Next.js (later)
+
+## Architecture (current)
+
+The project currently follows a layered structure:
+
+dal/ → API layer
+bll/ → business logic (hooks)
+ui/ → React components
+
+This structure will be refactored later.
+
+## Project purpose
+
+This repository is a learning project focused on:
+
+- improving React architecture
+- practicing TypeScript
+- integrating modern React ecosystem tools
+- simulating real development workflow
