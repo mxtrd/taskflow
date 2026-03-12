@@ -1,0 +1,10 @@
+# Cursor rules
+
+Follow these rules when suggesting code:
+
+1. Do not introduce new technologies unless explicitly requested.
+2. Focus on improving the current architecture first.
+3. Prefer simple and readable code.
+4. Follow the existing TypeScript style used in the project.
+5. Do not rewrite large parts of the project without explanation.
+6. Explain architectural suggestions before implementing them.
