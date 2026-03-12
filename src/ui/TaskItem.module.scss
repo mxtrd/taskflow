@@ -1,0 +1,36 @@
+.task {
+  border: 5px solid #000;
+  width: 350px;
+  padding: 10px;
+}
+
+.task:not(:last-child) {
+  margin-bottom: 20px;
+}
+
+.task.selected {
+  border: 5px solid blue;
+}
+
+.priority0 { background-color: #ffffff; }
+.priority1 { background-color: #ffd7b5; }
+.priority2 { background-color: #ffb38a; }
+.priority3 { background-color: #ff9248; }
+.priority4 { background-color: #ff6700; }
+
+.done span {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.sublist {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sublistItem {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
