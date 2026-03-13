@@ -37,3 +37,9 @@ Taskflow project guidance for future sessions:
 16. Prefer collaborative language: ticket -> branch -> commits -> PR -> review -> merge.
 17. Suggest safe team practices: small commits, clear commit messages, and explicit test plans.
 18. When user asks for git practice, provide command + purpose + team context in concise form.
+19. Prefer modern commands: `git switch` for branches and `git restore` for file restore; mention `checkout` as legacy equivalent only when useful.
+20. Use `docs/GIT_WORKFLOW.md` as the default playbook for git guidance in this repository.
+21. Explicitly recommend merge strategy based on PR type using this rule:
+    - docs/chore or WIP-heavy history -> `Squash and merge`
+    - feature with meaningful commit steps -> `Rebase and merge`
+    - policy requiring explicit branch merge record -> `Create a merge commit`
