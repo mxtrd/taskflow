@@ -1,28 +1,87 @@
 # Architecture
 
-This project is structured in layers.
+## Current state
 
-## Current structure
+The codebase started from a course-oriented layered approach:
 
-dal/
-API requests and DTO types.
+- `dal` - API calls and DTOs
+- `bll` - business logic in hooks
+- `ui` - presentational components
 
-bll/
-Business logic implemented through React hooks.
+This baseline is valid for early learning, but not ideal for scaling product features.
 
-ui/
-React components responsible for rendering UI.
+## Target state: page-centric FSD-light
 
-## Data flow
+Taskflow uses a practical hybrid:
 
-API → DAL → BLL → UI
+- page-centric routing and screen composition
+- FSD-like layering for boundaries and reuse
+- lightweight rules to avoid overengineering
 
-1. DAL performs API requests.
-2. BLL processes data and manages state.
-3. UI renders components.
+### Top-level structure
 
-## Notes
+- `app` - providers, router, global app config/styles
+- `pages` - route-level pages (`login`, `boards`, `board`, `task`, `profile`)
+- `widgets` - reusable page sections (`app-header`, `sidebar`, `task-list`, `task-details-panel`)
+- `features` - user use-cases (auth actions, board/task operations)
+- `entities` - domain models and resource-oriented API modules
+- `shared` - cross-cutting foundation (`api`, `lib`, `ui`, `config`)
 
-The current architecture comes from the IT-Incubator course.
+## Responsibility boundaries
 
-It will be refactored later into a more scalable structure.
+### Pages
+
+- Compose widgets/features for a route
+- Handle route params and page-level loading states
+- Avoid deep business logic
+
+### Features
+
+- Implement user intentions: create/update/delete/login/logout
+- Own form logic, validation, submit flow, local interaction state
+- Use entities and shared modules
+
+### Entities
+
+- Define domain types/models (`User`, `Board`, `Task`)
+- Keep resource-centric API modules close to domain (`entities/*/api`)
+- Provide low-level data operations, not UI behavior
+
+### Shared
+
+- Reusable presentational UI primitives
+- Utilities, date helpers, mappers
+- Base API client and interceptors
+- Global config/constants
+
+## Data flow (target)
+
+UI/Page -> Feature -> Entity API -> Backend API  
+Backend response -> Entity model mapping -> Feature state -> UI
+
+## API placement decision
+
+For this project, API modules are colocated with entities because API endpoints mostly describe resources (users, boards, tasks), not only user actions.
+
+Use this rule:
+
+- Put low-level resource requests in `entities/*/api`
+- Put scenario orchestration in `features/*`
+
+## Migration notes
+
+- Migrate incrementally from `dal/bll/ui`
+- Keep old modules working while introducing new slices
+- Avoid big-bang rewrites
+- Prioritize route structure and feature boundaries first
+
+## Visual references
+
+- Full endpoint screenshots (reference only):
+  - `docs/assets/api-endpoints-full-1.png`
+  - `docs/assets/api-endpoints-full-2.png`
+  - `docs/assets/api-endpoints-full-3.png`
+  - `docs/assets/api-endpoints-full-4.png`
+- UI draft screenshot: `docs/assets/ui-draft-pages.png`
+
+Important: even if the endpoint screenshot includes all API routes, implementation priorities are defined by the MVP endpoint list in `README.md`.

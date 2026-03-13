@@ -1,57 +1,104 @@
 # Taskflow
 
-Taskflow is a Trello-like task manager built with React and TypeScript.
+Taskflow is a portfolio project: a practical task manager inspired by Trello, but intentionally smaller and focused on real-world frontend architecture.
 
-The project is based on an educational API from IT-Incubator:
+The project uses the educational API from IT-Incubator:  
 https://trelly.it-incubator.app
 
 ## Goal
 
-The goal of this project is to build a real-world React application while gradually improving the architecture and adding technologies from the React ecosystem.
+Build a production-like React application that demonstrates:
 
-The development will happen in stages.
+- architecture thinking
+- clean TypeScript code
+- modern React ecosystem usage
+- realistic product workflows (auth, boards, tasks)
 
-## Current stage
+## Product scope
 
-The current codebase is a **recreated version of the original project from the course**.
+Taskflow is not a full Trello clone. It is a focused task manager with:
 
-Next step:
-Refactor the project structure and improve code quality before adding new technologies.
+- authentication
+- personal boards
+- task CRUD inside a selected board
+- task details view/edit flow
 
-## Tech stack (current)
+## API scope
+
+### Core endpoints (MVP)
+
+- Auth: `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`
+- Boards (owner): `GET /boards/my`, `POST /boards`, `PUT /boards/{boardId}`, `DELETE /boards/{boardId}`
+- Tasks (owner): `GET /boards/{boardId}/tasks`, `GET /boards/{boardId}/tasks/{taskId}`, `POST /boards/{boardId}/tasks`, `PUT /boards/{boardId}/tasks/{taskId}`, `DELETE /boards/{boardId}/tasks/{taskId}`
+
+### Optional later
+
+- Reorder/move: `PUT /boards/{boardId}/reorder`, `PUT /boards/{boardId}/tasks/{taskId}/reorder`, `PUT /boards/{boardId}/tasks/{taskId}/move`
+- Attachments and board image upload
+- Public endpoints (only if needed for showcase scenarios)
+
+### Endpoint visuals (full API reference)
+
+Endpoint screenshots are split into 4 files for readability and quality:
+
+- `docs/assets/api-endpoints-full-1.png`
+- `docs/assets/api-endpoints-full-2.png`
+- `docs/assets/api-endpoints-full-3.png`
+- `docs/assets/api-endpoints-full-4.png`
+
+These images can include all educational API endpoints and are used only as visual reference.
+
+Source of truth for implementation priorities is still the MVP list in this section.
+
+## Target pages
+
+- `/login` - authentication
+- `/boards` - user boards list and board CRUD
+- `/boards/:boardId` - board task list and task CRUD
+- `/boards/:boardId/tasks/:taskId` (or side panel) - task details
+- `/profile` - user settings and logout
+
+### UI draft visuals
+
+The image `docs/assets/ui-draft-pages.png` stores the rough page design references used in planning.
+
+## Architecture direction
+
+Current state follows course-style layers (`dal / bll / ui`).
+
+Target state is **page-centric FSD-light**:
+
+- `app` - app-level providers, routing, global styles
+- `pages` - route-level composition
+- `widgets` - reusable page blocks
+- `features` - user actions/use-cases (login, create task, etc.)
+- `entities` - domain models and resource-oriented API modules
+- `shared` - reusable UI, utils, config, base API client
+
+See details in `docs/ARCHITECTURE.md`.
+
+## Tech stack
+
+### Current
 
 - React
 - TypeScript
 - Fetch API
-- CSS modules
+- CSS Modules
 
-## Planned technologies
-
-These will be added gradually:
+### Planned
 
 - React Router
 - Redux Toolkit
 - React Hook Form
 - Zod
 - Axios
-- WebSocket
-- Next.js (later)
+- WebSocket (optional advanced stage)
 
-## Architecture (current)
+## Roadmap
 
-The project currently follows a layered structure:
+The implementation plan is documented in `docs/ROADMAP.md`.
 
-dal/ → API layer
-bll/ → business logic (hooks)
-ui/ → React components
+## Team-like workflow
 
-This structure will be refactored later.
-
-## Project purpose
-
-This repository is a learning project focused on:
-
-- improving React architecture
-- practicing TypeScript
-- integrating modern React ecosystem tools
-- simulating real development workflow
+Git process and collaboration-style practices are documented in `docs/GIT_WORKFLOW.md`.

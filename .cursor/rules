@@ -1,10 +1,39 @@
 # Cursor rules
 
-Follow these rules when suggesting code:
+Taskflow project guidance for future sessions:
 
-1. Do not introduce new technologies unless explicitly requested.
-2. Focus on improving the current architecture first.
-3. Prefer simple and readable code.
-4. Follow the existing TypeScript style used in the project.
-5. Do not rewrite large parts of the project without explanation.
-6. Explain architectural suggestions before implementing them.
+## Product positioning
+
+1. Build a focused portfolio task manager, not a full Trello clone.
+2. Prioritize MVP value (auth + boards + tasks CRUD) before advanced features.
+
+## Architecture direction
+
+3. Use page-centric FSD-light structure: `app`, `pages`, `widgets`, `features`, `entities`, `shared`.
+4. Keep resource-level API close to entities (`entities/*/api`), and use-case flows in features.
+5. Keep pages thin: route composition and page states only, no heavy business logic.
+6. Migrate from `dal/bll/ui` incrementally; avoid big-bang rewrites.
+
+## API scope priorities
+
+7. Core endpoints:
+   - Auth: `login`, `refresh`, `logout`, `me`
+   - Boards owner: `my`, `create`, `update`, `delete`
+   - Tasks owner: `list`, `details`, `create`, `update`, `delete`
+8. Treat reorder/move/attachments/websocket as optional post-MVP enhancements.
+9. If endpoint screenshots include all API routes, treat them as reference only; prioritize the MVP endpoint list from `README.md`.
+
+## Engineering principles
+
+10. Do not introduce major new technologies unless explicitly requested.
+11. Prefer simple, readable TypeScript and consistent naming.
+12. Do not rewrite large parts without clear rationale and step-by-step migration plan.
+13. Explain architectural suggestions before implementing them.
+
+## Git mentorship mode
+
+14. When proposing or executing git actions, always explain why each step is needed.
+15. Explain how the same action maps to team workflow (branching, PR, review, merge, rollback).
+16. Prefer collaborative language: ticket -> branch -> commits -> PR -> review -> merge.
+17. Suggest safe team practices: small commits, clear commit messages, and explicit test plans.
+18. When user asks for git practice, provide command + purpose + team context in concise form.
