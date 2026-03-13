@@ -28,18 +28,18 @@ Example:
 ## Daily flow (team-style)
 
 1. Sync baseline
-   - `git checkout main`
-   - `git pull`
+   - `git switch main`
+   - `git pull origin main`
    - Why: start from latest shared state.
 2. Create task branch
-   - `git checkout -b feature/<name>`
+   - `git switch -c feature/<name>`
    - Why: isolate changes and reduce risk for teammates.
 3. Implement in small slices
    - commit frequently with meaningful messages
    - Why: easier review and rollback.
 4. Re-sync with main before PR
-   - `git checkout main && git pull`
-   - `git checkout <your-branch>`
+   - `git switch main && git pull origin main`
+   - `git switch <your-branch>`
    - `git rebase main` (or merge main if preferred team strategy)
    - Why: reduce merge conflicts and keep history clean.
 5. Open Pull Request
@@ -49,6 +49,70 @@ Example:
    - use standard merge strategy agreed by team
    - delete branch
    - Why: keep repository tidy.
+
+## Canonical example (already practiced)
+
+This repository already used this exact lifecycle with branch:
+
+- `chore/context-docs-and-ai-rules`
+
+Use it as a reference scenario from task setup to final cleanup.
+
+### A. Task setup
+
+- Define scope: docs + AI context persistence only.
+- Confirm acceptance criteria before coding.
+
+### B. Branch and implementation
+
+```bash
+git switch main
+git pull origin main
+git switch -c chore/context-docs-and-ai-rules
+```
+
+Then implement and commit only relevant files.
+
+### C. Push and PR
+
+```bash
+git push -u origin chore/context-docs-and-ai-rules
+```
+
+Create PR with:
+
+- `base: main`
+- `compare: chore/context-docs-and-ai-rules`
+- clear summary, risk, rollback, test plan
+
+### D. Merge strategy choice
+
+Practical rule:
+
+- docs/chore or many WIP commits -> `Squash and merge`
+- important feature with meaningful step commits -> `Rebase and merge`
+- explicit branch trace required by team policy -> `Create a merge commit`
+
+For `chore/context-docs-and-ai-rules`, `Squash and merge` was the right choice.
+
+### E. Post-merge cleanup (local + remote)
+
+```bash
+git switch main
+git pull origin main
+git branch -d chore/context-docs-and-ai-rules
+git push origin --delete chore/context-docs-and-ai-rules
+git fetch --prune
+git status
+git branch -r
+```
+
+Expected result:
+
+- local branch removed
+- remote branch removed
+- working tree clean
+- only active remote branches shown
 
 ## Commit message convention
 
