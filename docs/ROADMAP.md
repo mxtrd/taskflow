@@ -1,53 +1,64 @@
 # Roadmap
 
-## Stage 1 (current)
+## Stage 0 - Baseline (done)
 
-Recreate the existing project from the course.
+- Recreate course project foundation
+- Confirm integration with educational API
+- Keep working `dal/bll/ui` baseline
 
-## Stage 2
+## Stage 1 - Architecture migration
 
-Refactor project structure:
+- Introduce page-centric FSD-light folders (`app/pages/widgets/features/entities/shared`)
+- Keep compatibility while moving modules gradually
+- Move core API modules toward `entities/*/api`
+- Document boundaries and conventions
 
-- improve folder organization
-- simplify hooks
-- improve typing
-- remove duplicated logic
+## Stage 2 - Routing and page model
 
-## Stage 3
+- Add React Router
+- Implement core routes:
+  - `/login`
+  - `/boards`
+  - `/boards/:boardId`
+  - `/boards/:boardId/tasks/:taskId` (or details panel route model)
+  - `/profile`
+- Add protected route flow
 
-Add routing:
+## Stage 3 - State management
 
-React Router
+- Add Redux Toolkit
+- Introduce slices/selectors for auth, boards, tasks
+- Move state from local hooks to predictable shared store
 
-## Stage 4
+## Stage 4 - Forms and validation
 
-Add state management:
+- Add React Hook Form
+- Add Zod schemas for login, board, task forms
+- Standardize form error UX
 
-Redux Toolkit
+## Stage 5 - API client and auth flow hardening
 
-## Stage 5
+- Replace ad-hoc fetch calls with Axios client
+- Add request/response interceptors
+- Implement refresh-token flow and centralized error handling
 
-Improve forms:
+## Stage 6 - Product completeness (MVP)
 
-React Hook Form
-Zod validation
+- Finalize endpoints in active use:
+  - Auth: login/refresh/logout/me
+  - Boards Owner: my + create/update/delete
+  - Tasks Owner: list/details/create/update/delete
+- Polish loading/error/empty states
+- Add reusable UI components in `shared/ui`
 
-## Stage 6
+## Stage 7 - Advanced portfolio features (optional)
 
-Improve data fetching:
+- Task move/reorder + board reorder
+- Attachments and board image upload
+- Optimistic updates
+- WebSocket live updates
 
-Axios
-better error handling
+## Stage 8 - Optional expansion
 
-## Stage 7
-
-Advanced features:
-
-WebSocket updates
-optimistic UI updates
-
-## Stage 8
-
-Optional:
-
-Next.js migration
+- SSR-ready architecture exploration
+- Potential Next.js migration
