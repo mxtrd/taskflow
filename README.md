@@ -102,3 +102,8 @@ The implementation plan is documented in `docs/ROADMAP.md`.
 ## Team-like workflow
 
 Git process and collaboration-style practices are documented in `docs/GIT_WORKFLOW.md`.
+
+Branch strategy: **GitHub Flow**.
+
+- `main` is always deployable.
+- All changes go through Pull Requests with CI checks.

@@ -30,6 +30,37 @@ Taskflow project guidance for future sessions:
 12. Do not rewrite large parts without clear rationale and step-by-step migration plan.
 13. Explain architectural suggestions before implementing them.
 
+## Project documentation context
+
+Important project context is stored in:
+
+- `README.md` - product description, API scope, tech stack
+- `docs/ARCHITECTURE.md` - architecture rules and layer responsibilities
+- `docs/GIT_WORKFLOW.md` - team-style git workflow and PR practices
+- `docs/ROADMAP.md` - implementation stages and priorities
+
+When making architectural suggestions or generating code:
+
+1. Follow architecture rules from `docs/ARCHITECTURE.md`.
+2. Respect product scope from `README.md`.
+3. Prefer implementation aligned with current stage in `docs/ROADMAP.md`.
+4. Use git guidance from `docs/GIT_WORKFLOW.md`.
+5. If suggestion conflicts with these documents, explain the conflict first.
+
+## Code generation constraints
+
+When generating code for this repository:
+
+- follow page-centric FSD-light architecture
+- prefer TypeScript-first solutions
+- keep components small and composable
+- place API calls inside `entities/*/api`
+- place user interaction logic inside `features/*`
+- avoid business logic directly in `pages`
+- do not introduce extra global state libraries beyond Redux Toolkit plan
+
+When unsure about placement, ask before introducing a new architecture pattern.
+
 ## Git mentorship mode
 
 14. When proposing or executing git actions, always explain why each step is needed.
@@ -43,3 +74,6 @@ Taskflow project guidance for future sessions:
     - docs/chore or WIP-heavy history -> `Squash and merge`
     - feature with meaningful commit steps -> `Rebase and merge`
     - policy requiring explicit branch merge record -> `Create a merge commit`
+22. Recommend issue-linked branch naming (`feature/<issue-id>-<slug>`) and include `Closes #<id>` in PR when issue exists.
+23. Encourage Draft PR for large or architecture-heavy changes and explain why.
+24. For pre-PR sync, prefer `git fetch origin` + `git rebase origin/main`.

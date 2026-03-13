@@ -11,6 +11,12 @@ Recruiters and teams evaluate not only code, but also collaboration habits:
 - understandable PRs
 - predictable releases
 
+Workflow model: **GitHub Flow**.
+
+- `main` is always deployable
+- all changes go through Pull Requests
+- merge only after green CI checks
+
 ## Branch strategy
 
 - `main` - stable production-like branch
@@ -25,6 +31,18 @@ Example:
 - `fix/task-details-loading`
 - `refactor/task-api-layer`
 
+## Task tracking (issue -> branch -> PR)
+
+Every feature should be linked to a task/ticket.
+
+Example:
+
+- Issue: `#24 Add boards list page`
+- Branch: `feature/24-boards-list`
+- PR description: `Closes #24`
+
+If external tracker is unavailable, keep a local task ID in notes and mirror it in branch and PR text.
+
 ## Daily flow (team-style)
 
 1. Sync baseline
@@ -38,9 +56,8 @@ Example:
    - commit frequently with meaningful messages
    - Why: easier review and rollback.
 4. Re-sync with main before PR
-   - `git switch main && git pull origin main`
-   - `git switch <your-branch>`
-   - `git rebase main` (or merge main if preferred team strategy)
+   - `git fetch origin`
+   - `git rebase origin/main`
    - Why: reduce merge conflicts and keep history clean.
 5. Open Pull Request
    - include summary, motivation, test plan, and screenshots if UI changed
@@ -49,6 +66,16 @@ Example:
    - use standard merge strategy agreed by team
    - delete branch
    - Why: keep repository tidy.
+
+## Draft PR practice
+
+Open a Draft PR early when:
+
+- architecture needs feedback
+- feature is large
+- UI/UX requires early discussion
+
+This reduces rework and aligns implementation direction earlier.
 
 ## Canonical example (already practiced)
 
@@ -142,6 +169,12 @@ Before opening PR:
 - lint/build pass
 - manual smoke test completed
 - docs updated if architecture/behavior changed
+
+Quality gates:
+
+- CI must pass: `lint`, `typecheck`, `build`
+- prefer small PRs over large ones (guideline: split when practical)
+- if PR is large, explain why and list review hotspots
 
 Use `.github/PULL_REQUEST_TEMPLATE.md`.
 
