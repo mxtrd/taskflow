@@ -6,17 +6,30 @@ export function useTaskDetails(taskId: string | null, boardId: string | null) {
 
   useEffect(() => {
     if (!taskId || !boardId) {
-      setTaskDetails(null);
       return;
     }
+
+    let cancelled = false;
+
     getTask(taskId, boardId)
-      .then((json) => setTaskDetails(json.data))
+      .then((json) => {
+        if (!cancelled) {
+          setTaskDetails(json.data);
+        }
+      })
       .catch((error) => {
         console.error(error);
       });
+
+    return () => {
+      cancelled = true;
+    };
   }, [boardId, taskId]);
 
+  const visibleTaskDetails =
+    taskId && boardId && taskDetails?.id === taskId ? taskDetails : null;
+
   return {
-    taskDetails,
+    taskDetails: visibleTaskDetails,
   };
 }
