@@ -67,6 +67,20 @@ If external tracker is unavailable, keep a local task ID in notes and mirror it 
    - delete branch
    - Why: keep repository tidy.
 
+## Trunk-oriented practices on top of GitHub Flow
+
+Use GitHub Flow as the base and add lightweight trunk habits:
+
+- keep task branches short-lived (target: same day merge when possible)
+- prefer small PRs (recommended: one task/use-case per PR)
+- split large changes into stacked or sequential PRs
+- keep `main` releasable at all times
+
+Small PR guideline:
+
+- target around 100-300 changed lines when practical (excluding lock/docs noise)
+- if PR is larger, explain review hotspots and split rationale
+
 ## Draft PR practice
 
 Open a Draft PR early when:
@@ -76,6 +90,25 @@ Open a Draft PR early when:
 - UI/UX requires early discussion
 
 This reduces rework and aligns implementation direction earlier.
+
+## Feature flags policy
+
+For work-in-progress features that should not be visible in production-like flow:
+
+- merge behind a feature flag
+- keep default flag value `false`
+- enable only for testing scenarios
+- remove stale flags after rollout
+
+Example (`Vite` env):
+
+```env
+VITE_FF_TASK_DETAILS_V2=false
+```
+
+```ts
+const isTaskDetailsV2Enabled = import.meta.env.VITE_FF_TASK_DETAILS_V2 === 'true'
+```
 
 ## Canonical example (already practiced)
 
@@ -173,10 +206,29 @@ Before opening PR:
 Quality gates:
 
 - CI must pass: `lint`, `typecheck`, `build`
+- at least 1 approval is required before merge to `main`
 - prefer small PRs over large ones (guideline: split when practical)
 - if PR is large, explain why and list review hotspots
 
 Use `.github/PULL_REQUEST_TEMPLATE.md`.
+
+## Branch protection baseline (GitHub settings)
+
+Set protection for `main` in GitHub repository settings:
+
+1. `Settings` -> `Branches` -> `Add branch protection rule` -> `main`
+2. Enable `Require a pull request before merging`
+3. Enable `Require approvals` and set at least `1`
+4. Enable `Dismiss stale pull request approvals when new commits are pushed`
+5. Enable `Require status checks to pass before merging` and select CI check `checks`
+6. Enable `Require branches to be up to date before merging`
+7. Disable force-pushes and branch deletion for `main`
+
+Result:
+
+- direct pushes to `main` are blocked
+- merge is allowed only after review and green CI
+- branch history stays stable and audit-friendly
 
 ## Team interaction simulation (for portfolio)
 

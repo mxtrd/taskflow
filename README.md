@@ -107,3 +107,12 @@ Branch strategy: **GitHub Flow**.
 
 - `main` is always deployable.
 - All changes go through Pull Requests with CI checks.
+
+Trunk-oriented additions:
+
+- Prefer small, short-lived PRs (`one task -> one PR`) to reduce review risk.
+- Keep incomplete functionality behind feature flags and merge safely.
+
+Feature flags are managed via env vars (see `.env.example`), e.g.:
+
+- `VITE_FF_TASK_DETAILS_V2=false`
