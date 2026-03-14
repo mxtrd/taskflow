@@ -1,0 +1,10 @@
+// если вы хотите использовать sass-переменные - удалите root
+@use "./mixins/breakpoint.scss" as *;
+
+// colors
+:root {
+  // base
+  --content-width: 1240px;
+  --container-offset: 40px;
+  --container-width: calc(var(--content-width) + (var(--container-offset) * 2));
+}
