@@ -59,6 +59,8 @@ If external tracker is unavailable, keep a local task ID in notes and mirror it 
    - `git fetch origin`
    - `git rebase origin/main`
    - Why: reduce merge conflicts and keep history clean.
+   - If branch was already pushed before rebase: `git push --force-with-lease`
+   - Why: safely update remote branch after history rewrite.
 5. Open Pull Request
    - include summary, motivation, test plan, and screenshots if UI changed
    - Why: async communication and review clarity.
@@ -90,6 +92,23 @@ Open a Draft PR early when:
 - UI/UX requires early discussion
 
 This reduces rework and aligns implementation direction earlier.
+
+## Pre-PR sync rule (mandatory)
+
+Before opening PR after more than a short coding session, always sync with latest `main`:
+
+```bash
+git fetch origin
+git rebase origin/main
+```
+
+If rebase rewrote commits that were already pushed:
+
+```bash
+git push --force-with-lease
+```
+
+This keeps PR conflict risk lower and avoids surprise merge issues.
 
 ## Feature flags policy
 
@@ -199,7 +218,7 @@ Before opening PR:
 
 - branch is up to date with `main`
 - no debug leftovers or unrelated files
-- lint/build pass
+- lint/typecheck/build pass
 - manual smoke test completed
 - docs updated if architecture/behavior changed
 
