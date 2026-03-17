@@ -1,6 +1,8 @@
 /* stylelint-disable color-function-alias-notation */
 /* stylelint-disable declaration-no-important */
-@use "./mixins/breakpoint.scss" as *;
+@use './vars' as *;
+@use './fonts' as *;
+@use './mixins/breakpoint.scss' as *;
 
 *,
 *::before,
@@ -18,39 +20,45 @@
   }
 }
 
-.page__body {
+.pageBody {
   margin: 0;
   min-width: 375px;
   min-height: 100%;
   font-size: 16px;
+  color: var(--text-primary);
+  background: var(--bg-primary);
 }
 
-.page__icons {
+.pageIcons {
   display: none;
 }
 
-.site-container {
-  overflow: hidden; // если используете на сайте position: sticky - уберите эту настройку
+.siteContainer {
+  overflow: hidden; // if sticky is needed, remove this
 }
 
-.is-hidden {
+.main {
+  min-height: 100vh;
+}
+
+.isHidden {
   display: none !important;
 }
 
-.btn-reset {
+.btnReset {
   border: none;
   padding: 0;
   background: transparent;
   cursor: pointer;
 }
 
-.list-reset {
+.listReset {
   list-style: none;
   margin: 0;
   padding: 0;
 }
 
-.input-reset {
+.inputReset {
   -webkit-appearance: none;
   appearance: none;
   border: none;
@@ -65,7 +73,7 @@
   }
 }
 
-.sr-only {
+.srOnly {
   position: absolute;
   overflow: hidden;
   margin: -1px;
@@ -86,7 +94,7 @@
   text-align: center;
 }
 
-.stop-scroll {
+.stopScroll {
   position: fixed;
   left: 0;
   top: 0;
@@ -110,7 +118,6 @@
   navigation: auto;
 }
 
-/* Базовая анимация */
 ::view-transition-old(root),
 ::view-transition-new(root) {
   animation-duration: 0.5s;
