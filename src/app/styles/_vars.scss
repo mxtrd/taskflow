@@ -4,7 +4,35 @@
 // colors
 :root {
   // base
-  --content-width: 1240px;
-  --container-offset: 40px;
+  --font-family: "Nunito Sans", sans-serif;
+  --second-family: "Russo One", sans-serif;
+  --third-family: "Consolas", sans-serif;
+  --content-width: 1530px;
+  --container-offset: 30px;
   --container-width: calc(var(--content-width) + (var(--container-offset) * 2));
+
+  --accent: #d70024;
+	--accent-hover: #b6001f;
+	--accent-active: #99001a;
+	--green-color: #279957;
+	--red-color: #e53935;
+	--bg-primary: #121212;
+	--bg-surface: #1e1e1e;
+	--bg-elevated: #343434;
+	--bg-surface-hover: #2a2a2a;
+	--bg-surface-active: #333;
+	--bg-elevated-hover: #3d3d3d;
+	--bg-elevated-active: #464646;
+	--text-primary: #f0f0f0;
+	--text-secondary: #9d9d9d;
+	--yellow-color: #e99b21;
+	--light-bg-primary: #fff;
+	--light-bg-surface: #f5f5f5;
+	--light-bg-elevated: #e0e0e0;
+	--light-text-primary: #1a1a1a;
+	--light-text-secondary: #555;
+	--light-bg-surface-hover: #ebebeb;
+	--light-bg-surface-active: #e2e2e2;
+	--light-bg-elevated-hover: #dcdcdc;
+	--light-bg-elevated-active: #d4d4d4;
 }

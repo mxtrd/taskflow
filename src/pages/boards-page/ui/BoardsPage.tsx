@@ -1,6 +1,10 @@
+import BaseLayout from '@/app/layouts/base-layout'
+
 const BoardsPage = () => {
   return (
-    <div>BoardsPage</div>
+    <BaseLayout title="Taskflow" description="Taskflow - boards page">
+      <div>BoardsPage</div>
+    </BaseLayout>
   )
 }
 

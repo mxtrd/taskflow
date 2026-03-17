@@ -1,6 +1,11 @@
+import BaseLayout from '@/app/layouts/base-layout'
+import styles from './LoginPage.module.scss'
+
 const LoginPage = () => {
   return (
-    <div>LoginPage</div>
+    <BaseLayout title="Taskflow" description="Taskflow - login page">
+      
+    </BaseLayout>
   )
 }
 
