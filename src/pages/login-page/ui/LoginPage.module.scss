@@ -1,0 +1,39 @@
+.login {
+  
+}
+
+.content {
+  width: 600px;
+  margin: 0 auto;
+  padding: 50px;
+  border-radius: 20px;
+  background-color: var(--bg-surface);
+}
+
+.title {
+  margin: 0;
+  text-align: center;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 30px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  margin: 0;
+}
+
+.input {
+  height: 44px;
+  padding-inline: 16px;
+  border-radius: 100px;
+}
+
