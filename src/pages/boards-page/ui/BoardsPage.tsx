@@ -12,17 +12,23 @@ const BoardsPage = () => {
             <button className={styles.button} type="button">
               Create New Board
             </button>
-            <div className={styles.boards}>
-              <a className={styles.board} href="#">
-                <h3 className={styles.boardTitle}>Work</h3>
-              </a>
-              <a className={styles.board} href="#">
-                <h3 className={styles.boardTitle}>Study</h3>
-              </a>
-              <a className={styles.board} href="#">
-                <h3 className={styles.boardTitle}>Personal</h3>
-              </a>
-            </div>
+            <ul className={`${styles.boards} ${baseStyles.listReset}`}>
+              <li className={styles.board}>
+                <a className={styles.boardLink} href="#">
+                  <h3 className={styles.boardTitle}>Work</h3>
+                </a>
+              </li>
+              <li className={styles.board}>
+                <a className={styles.boardLink} href="#">
+                  <h3 className={styles.boardTitle}>Study</h3>
+                </a>
+              </li>
+              <li className={styles.board}>
+                <a className={styles.boardLink} href="#">
+                  <h3 className={styles.boardTitle}>Personal</h3>
+                </a>
+              </li>
+            </ul>
           </div>
         </div>
       </section>
