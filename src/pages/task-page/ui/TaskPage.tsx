@@ -16,7 +16,7 @@ const TaskPage = () => {
               </div>
               <div className={styles.column}>
                 <label className={styles.label} htmlFor="description">Description</label>
-                <textarea className={styles.description} type="textarea" id="description" rows="5"></textarea>
+                <textarea className={styles.description} id="description" rows={5}></textarea>
               </div>
               <div className={styles.column}>
                 <label className={styles.label} htmlFor="status">Status</label>
