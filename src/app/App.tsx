@@ -1,8 +1,8 @@
-import BoardPage from "@/pages/board-page"
+import TaskPage from "@/pages/task-page"
 
 const App = () => {
   return (
-      <BoardPage />
+      <TaskPage />
   )
 }
 
