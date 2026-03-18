@@ -97,6 +97,8 @@ const BoardsPage = () => {
     },
   ]
 
+  const hardcodedBoardId = "e11c9480-dd73-4b08-a5fd-452465467805"
+
   const hasBoards = true
 
   if (!hasBoards) {
@@ -113,8 +115,12 @@ const BoardsPage = () => {
               Create New Board
             </button>
             <ul className={`${styles.boards} ${baseStyles.listReset}`}>
-              {boards.map((board) => (
-                <BoardItem key={board.id} board={board} />
+              {boards.map((board, index) => (
+                <BoardItem 
+                  key={board.id} 
+                  board={board}
+                  to={index === 0 ? `/boards/${hardcodedBoardId}` : "#"}
+                />
               ))}
             </ul>
           </div>
