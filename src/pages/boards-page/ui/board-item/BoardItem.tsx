@@ -1,4 +1,5 @@
-import styles from "../BoardsPage.module.scss"
+import { Link } from "react-router-dom"
+import styles from "./BoardItem.module.scss"
 
 type Props = {
   board: {
@@ -7,14 +8,15 @@ type Props = {
       title: string
     }
   }
+  to: string
 }
 
-const BoardItem = ({ board }: Props) => {
+const BoardItem = ({ board, to }: Props) => {
   return (
     <li className={styles.board}>
-      <a className={styles.boardLink} href="#">
+      <Link className={styles.boardLink} to={to}>
         <h3 className={styles.boardTitle}>{board.attributes.title}</h3>
-      </a>
+      </Link>
     </li>
   )
 }
