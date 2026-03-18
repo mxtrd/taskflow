@@ -1,0 +1,30 @@
+.content {
+  width: 600px;
+}
+
+.form {
+  display: grid;
+  gap: 20px;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  &:last-child {
+    justify-self: end;
+  }
+}
+
+.description {
+  resize: none;
+}
+
+.select {
+  width: 200px;
+}
+
+.button {
+  width: 75px;
+}
