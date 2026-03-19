@@ -1,22 +1,28 @@
-import { Link } from "react-router-dom"
-import styles from "./BoardItem.module.scss"
+import { Link } from 'react-router-dom'
+import type { LocalBoard } from '@/shared/mocks/taskflowData'
+import styles from './BoardItem.module.scss'
 
 type Props = {
-  board: {
-    id: string
-    attributes: {
-      title: string
-    }
-  }
+  board: LocalBoard
   to: string
+  onDeleteBoardButtonClick: (boardId: string) => void
 }
 
-const BoardItem = ({ board, to }: Props) => {
+const BoardItem = ({ board, to, onDeleteBoardButtonClick }: Props) => {
   return (
     <li className={styles.board}>
-      <Link className={styles.boardLink} to={to}>
-        <h3 className={styles.boardTitle}>{board.attributes.title}</h3>
-      </Link>
+      <button
+        className={styles.button}
+        onClick={() => onDeleteBoardButtonClick(board.id)}
+      >
+        Delete
+      </button>
+      <div className={styles.body}>
+        <Link className={styles.link} to={to}>
+          <h3 className={styles.title}>{board.title}</h3>
+        </Link>
+        {/* <p className={styles.description}>{board.description}</p> */}
+      </div>
     </li>
   )
 }
