@@ -6,12 +6,14 @@ import styles from './BoardsPage.module.scss'
 import { useState } from 'react'
 
 const BoardsPage = () => {
-  const [boards] = useState(mockBoards)
+  const [boards, setBoards] = useState(mockBoards)
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')
   // const hasBoards = boards.length > 0
 
   const startCreateBoard = () => {
+    if(isCreatingBoard) return
+    
     setIsCreatingBoard(true)
   }
 
@@ -21,7 +23,19 @@ const BoardsPage = () => {
   }
 
   const saveBoardDraft = () => {
-    console.log('Save draft board title:', newBoardTitle)
+    const title = newBoardTitle.trim()
+
+    if (!title) return
+
+    const newBoard = {
+      id: crypto?.randomUUID() ?? Date.now().toString(),
+      title,
+      description: '',
+    }
+    // functional state update (функциональное обновление стейта)
+    setBoards((prevBoards) => [newBoard, ...prevBoards])
+    setNewBoardTitle('')
+    setIsCreatingBoard(false)
   }
 
   const deleteAllBoards = () => {
@@ -78,7 +92,13 @@ const BoardsPage = () => {
                       onChange={(e) => setNewBoardTitle(e.target.value)}
                       placeholder='Board title...'
                     />
-                    <button type='button' onClick={saveBoardDraft}>Save</button>
+                    <button 
+                      type='button' 
+                      onClick={saveBoardDraft}
+                      disabled={!newBoardTitle.trim()}
+                    >
+                      Save
+                      </button>
                     <button type='button' onClick={cancelCreateBoard}>Cancel</button>
                   </div>
                 </li>
