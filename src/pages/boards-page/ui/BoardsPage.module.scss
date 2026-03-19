@@ -5,6 +5,16 @@
   gap: 20px;
 }
 
+.board {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 250px;
+  height: 150px;
+  background-color: var(--bg-surface);
+}
+
 .buttons {
   display: flex;
   gap: 10px;
