@@ -1,8 +1,16 @@
 .board {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 200px;
+  width: 250px;
   height: 150px;
   background-color: var(--bg-surface);
+}
+
+.button {
+  font-size: 12px;
+  position: absolute;
+  top: 5px;
+  right: 5px;
 }
