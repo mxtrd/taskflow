@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import { mockBoards } from '@/shared/mocks/taskflowData'
@@ -6,8 +5,7 @@ import BoardItem from './board-item/BoardItem'
 import styles from './BoardsPage.module.scss'
 
 const BoardsPage = () => {
-  const [boards, setBoards] = useState(mockBoards)
-  // const boards = mockBoards
+  const boards = mockBoards
   const hasBoards = boards.length > 0
 
   const deleteAllBoards = () => {
