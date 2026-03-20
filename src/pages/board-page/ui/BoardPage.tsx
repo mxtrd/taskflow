@@ -1,14 +1,22 @@
+import { useBoards } from '@/shared/hooks/useBoards'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { getTasksByBoardId } from '@/shared/mocks/taskflowData'
+import TaskItem from './task-item/TaskItem'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
-import { getBoardById, getTasksByBoardId } from '@/shared/mocks/taskflowData'
-import TaskItem from './task-item/TaskItem'
 import styles from './BoardPage.module.scss'
 
 const BoardPage = () => {
+  const { getBoardById, updateBoardTitle, updateBoardDescription } = useBoards()
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [draftTitle, setDraftTitle] = useState('')
+  const [isAddingDescription, setIsAddingDescription] = useState(false)
+  const [draftDescription, setDraftDescription] = useState('')
   const { boardId } = useParams<{ boardId: string }>()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const tasks = boardId ? getTasksByBoardId(boardId) : []
+  const hasDescription = Boolean(selectedBoard?.description?.trim())
 
   const deleteAllTasks = () => {
     console.log('Delete all tasks')
@@ -20,6 +28,48 @@ const BoardPage = () => {
 
   const toggleTaskComplete = (taskId: string, isDone: boolean) => {
     console.log(`Task ${taskId} ${isDone ? 'done' : 'not done'}`)
+  }
+
+  const startEditTitle = () => {
+    if (!selectedBoard) return
+    setDraftTitle(selectedBoard.title)
+    setIsEditingTitle(true)
+  }
+
+  const cancelEditTitle = () => {
+    setDraftTitle('')
+    setIsEditingTitle(false)
+  }
+
+  const saveTitle = () => {
+    if(!boardId) return
+
+    const normalizedTitle = draftTitle.trim()
+    if (!normalizedTitle) return
+    
+    updateBoardTitle(boardId, normalizedTitle)
+    setDraftTitle('')
+    setIsEditingTitle(false)
+  }
+
+  const startEditDescription = () => {
+    if (!selectedBoard) return
+    setDraftDescription(selectedBoard.description ?? '')
+    setIsAddingDescription(true)
+  }
+
+  const cancelAddDescription = () => {
+    setDraftDescription('')
+    setIsAddingDescription(false)
+  }
+
+  const saveDescription = () => {
+    if (!boardId) return
+
+    const normalizedDescription = draftDescription.trim()
+    updateBoardDescription(boardId, normalizedDescription)
+    setDraftDescription('')
+    setIsAddingDescription(false)
   }
 
   if (!selectedBoard) {
@@ -39,8 +89,55 @@ const BoardPage = () => {
       <section className={styles.board}>
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
-            <h1 className={styles.title}>{selectedBoard.title}</h1>
-            <p className={styles.description}>{selectedBoard.description}</p>
+            {isEditingTitle ? (
+              <div>
+                <input
+                  type='text'
+                  value={draftTitle}
+                  onChange={(e) => setDraftTitle(e.target.value)}
+                  placeholder='Edit title'
+                />
+                <button type='button' onClick={saveTitle} disabled={!draftTitle.trim()}>
+                  Save
+                </button>
+                <button type='button' onClick={cancelEditTitle}>
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <>
+                <h1 className={styles.title}>{selectedBoard.title}</h1>
+                <button type='button' onClick={startEditTitle}>Edit</button>
+              </>
+            )}
+            {isAddingDescription ? (
+              <div>
+                <textarea
+                  value={draftDescription}
+                  onChange={(e) => setDraftDescription(e.target.value)}
+                  placeholder='Add board description'
+                />
+                <button type='button' onClick={saveDescription}>
+                  Save
+                </button>
+                <button type='button' onClick={cancelAddDescription}>
+                  Cancel
+                </button>
+              </div>
+            ) : hasDescription ? (
+              <>
+                <p className={styles.description}>
+                  {selectedBoard.description}
+                </p>
+                <button type='button' onClick={startEditDescription}>
+                  Edit description
+                </button>
+              </>
+            ) : (
+              <button type='button' onClick={startEditDescription}>
+                Add description
+              </button>
+            )}
             <div className={styles.buttons}>
               <button className={styles.button} type='button'>
                 New Task

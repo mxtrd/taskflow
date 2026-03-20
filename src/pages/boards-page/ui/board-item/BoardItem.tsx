@@ -21,7 +21,6 @@ const BoardItem = ({ board, to, onDeleteBoardButtonClick }: Props) => {
         <Link className={styles.link} to={to}>
           <h3 className={styles.title}>{board.title}</h3>
         </Link>
-        {/* <p className={styles.description}>{board.description}</p> */}
       </div>
     </li>
   )
