@@ -1,11 +1,16 @@
+import { useBoards } from '@/shared/contexts/BoardsContext'
+import { useState } from 'react'
 import { useParams } from 'react-router-dom'
+import { getTasksByBoardId } from '@/shared/mocks/taskflowData'
+import TaskItem from './task-item/TaskItem'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
-import { getBoardById, getTasksByBoardId } from '@/shared/mocks/taskflowData'
-import TaskItem from './task-item/TaskItem'
 import styles from './BoardPage.module.scss'
 
 const BoardPage = () => {
+  const { getBoardById, updateBoardDescription } = useBoards()
+  const [isAddingDescription, setIsAddingDescription] = useState(false)
+  const [draftDescription, setDraftDescription] = useState('')
   const { boardId } = useParams<{ boardId: string }>()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const tasks = boardId ? getTasksByBoardId(boardId) : []
@@ -20,6 +25,24 @@ const BoardPage = () => {
 
   const toggleTaskComplete = (taskId: string, isDone: boolean) => {
     console.log(`Task ${taskId} ${isDone ? 'done' : 'not done'}`)
+  }
+
+  const startAddDescription = () => {
+    if (!selectedBoard) return
+    setDraftDescription(selectedBoard.description ?? '')
+    setIsAddingDescription(true)
+  }
+
+  const cancelAddDescription = () => {
+    setDraftDescription('')
+    setIsAddingDescription(false)
+  }
+
+  const saveDescription = () => {
+    if (!boardId) return
+    updateBoardDescription(boardId, draftDescription)
+    setDraftDescription('')
+    setIsAddingDescription(false)
   }
 
   if (!selectedBoard) {
@@ -40,7 +63,31 @@ const BoardPage = () => {
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             <h1 className={styles.title}>{selectedBoard.title}</h1>
-            <p className={styles.description}>{selectedBoard.description}</p>
+            {selectedBoard.description ? (
+              <p className={styles.description}>{selectedBoard.description}</p>
+            ) : isAddingDescription ? (
+              <div>
+                <textarea
+                  value={draftDescription}
+                  onChange={(e) => setDraftDescription(e.target.value)}
+                  placeholder='Add board description'
+                />
+                <button
+                  type='button'
+                  onClick={saveDescription}
+                  disabled={!draftDescription.trim()}
+                >
+                  Save
+                </button>
+                <button type='button' onClick={cancelAddDescription}>
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <button type='button' onClick={startAddDescription}>
+                Add description
+              </button>
+            )}
             <div className={styles.buttons}>
               <button className={styles.button} type='button'>
                 New Task

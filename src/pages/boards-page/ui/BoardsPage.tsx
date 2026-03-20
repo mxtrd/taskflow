@@ -1,12 +1,13 @@
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
-import { mockBoards } from '@/shared/mocks/taskflowData'
+// import { mockBoards } from '@/shared/mocks/taskflowData'
 import BoardItem from './board-item/BoardItem'
 import styles from './BoardsPage.module.scss'
 import { useState } from 'react'
+import { useBoards } from '@/shared/contexts/BoardsContext'
 
 const BoardsPage = () => {
-  const [boards, setBoards] = useState(mockBoards)
+  const { boards, addBoard } = useBoards()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')
   // const hasBoards = boards.length > 0
@@ -27,13 +28,7 @@ const BoardsPage = () => {
 
     if (!title) return
 
-    const newBoard = {
-      id: crypto?.randomUUID() ?? Date.now().toString(),
-      title,
-      description: '',
-    }
-    // functional state update (функциональное обновление стейта)
-    setBoards((prevBoards) => [newBoard, ...prevBoards])
+    addBoard(title)
     setNewBoardTitle('')
     setIsCreatingBoard(false)
   }
