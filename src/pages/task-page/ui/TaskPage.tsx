@@ -1,11 +1,14 @@
 import { useParams } from 'react-router-dom'
+import { useBoards } from '@/shared/hooks/useBoards'
+import { useTasks } from '@/shared/hooks/useTasks'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
-import { getBoardById, getTaskById } from '@/shared/mocks/taskflowData'
 import styles from './TaskPage.module.scss'
 
 const TaskPage = () => {
   const { boardId, taskId } = useParams<{ boardId: string; taskId: string }>()
+  const { getBoardById } = useBoards()
+  const { getTaskById } = useTasks()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const selectedTask = boardId && taskId ? getTaskById(boardId, taskId) : undefined
 
