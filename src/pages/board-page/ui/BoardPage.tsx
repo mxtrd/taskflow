@@ -1,4 +1,4 @@
-import { useBoards } from '@/shared/contexts/BoardsContext'
+import { useBoards } from '@/shared/hooks/useBoards'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { getTasksByBoardId } from '@/shared/mocks/taskflowData'

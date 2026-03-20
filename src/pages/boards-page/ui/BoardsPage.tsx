@@ -4,7 +4,7 @@ import baseStyles from '@/app/styles/base.module.scss'
 import BoardItem from './board-item/BoardItem'
 import styles from './BoardsPage.module.scss'
 import { useState } from 'react'
-import { useBoards } from '@/shared/contexts/BoardsContext'
+import { useBoards } from '@/shared/hooks/useBoards'
 
 const BoardsPage = () => {
   const { boards, addBoard } = useBoards()

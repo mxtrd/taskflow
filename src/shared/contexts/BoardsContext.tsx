@@ -1,15 +1,6 @@
-import { createContext, useContext, useState, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { mockBoards, type LocalBoard } from '@/shared/mocks/taskflowData'
-
-type BoardsContextValue = {
-  boards: LocalBoard[]
-  addBoard: (title: string) => void
-  getBoardById: (boardId: string) => LocalBoard | undefined,
-  updateBoardTitle: (boardId: string, title: string) => void,
-  updateBoardDescription: (boardId: string, description: string) => void
-}
-
-const BoardsContext = createContext<BoardsContextValue | null>(null)
+import { BoardsContext } from './boards-context'
 
 export const BoardsProvider = ({ children }: { children: ReactNode }) => { 
   const [boards, setBoards] = useState<LocalBoard[]>(mockBoards)
@@ -60,10 +51,3 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
   return <BoardsContext.Provider value={value}>{children}</BoardsContext.Provider>
 }
 
-export const useBoards = () => {
-  const context = useContext(BoardsContext)
-  if(!context) {
-    throw new Error('useBoards must be used within BoardsProvider')
-  }
-  return context
-}
