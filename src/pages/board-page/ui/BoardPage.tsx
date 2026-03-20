@@ -1,7 +1,7 @@
 import { useBoards } from '@/shared/hooks/useBoards'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { getTasksByBoardId } from '@/shared/mocks/taskflowData'
+import { useTasks } from '@/shared/hooks/useTasks'
 import TaskItem from './task-item/TaskItem'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
@@ -9,10 +9,15 @@ import styles from './BoardPage.module.scss'
 
 const BoardPage = () => {
   const { getBoardById, updateBoardTitle, updateBoardDescription } = useBoards()
+  const { getTasksByBoardId, addTask } = useTasks()
+
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
   const [isAddingDescription, setIsAddingDescription] = useState(false)
   const [draftDescription, setDraftDescription] = useState('')
+  const [isCreatingTask, setIsCreatingTask] = useState(false)
+  const [newTaskTitle, setNewTaskTitle] = useState('')
+
   const { boardId } = useParams<{ boardId: string }>()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const tasks = boardId ? getTasksByBoardId(boardId) : []
@@ -42,11 +47,11 @@ const BoardPage = () => {
   }
 
   const saveTitle = () => {
-    if(!boardId) return
+    if (!boardId) return
 
     const normalizedTitle = draftTitle.trim()
     if (!normalizedTitle) return
-    
+
     updateBoardTitle(boardId, normalizedTitle)
     setDraftTitle('')
     setIsEditingTitle(false)
@@ -70,6 +75,27 @@ const BoardPage = () => {
     updateBoardDescription(boardId, normalizedDescription)
     setDraftDescription('')
     setIsAddingDescription(false)
+  }
+
+  const startCreateTask = () => {
+    if(isCreatingTask) return
+    setIsCreatingTask(true)
+  }
+
+  const cancelCreateTask = () => {
+    setNewTaskTitle('')
+    setIsCreatingTask(false)
+  }
+
+  const saveTaskDraft = () => {
+    if(!boardId) return
+
+    const title = newTaskTitle.trim()
+    if(!title) return
+
+    addTask(boardId, title)
+    setNewTaskTitle('')
+    setIsCreatingTask(false)
   }
 
   if (!selectedBoard) {
@@ -97,7 +123,11 @@ const BoardPage = () => {
                   onChange={(e) => setDraftTitle(e.target.value)}
                   placeholder='Edit title'
                 />
-                <button type='button' onClick={saveTitle} disabled={!draftTitle.trim()}>
+                <button
+                  type='button'
+                  onClick={saveTitle}
+                  disabled={!draftTitle.trim()}
+                >
                   Save
                 </button>
                 <button type='button' onClick={cancelEditTitle}>
@@ -107,7 +137,9 @@ const BoardPage = () => {
             ) : (
               <>
                 <h1 className={styles.title}>{selectedBoard.title}</h1>
-                <button type='button' onClick={startEditTitle}>Edit</button>
+                <button type='button' onClick={startEditTitle}>
+                  Edit
+                </button>
               </>
             )}
             {isAddingDescription ? (
@@ -139,7 +171,11 @@ const BoardPage = () => {
               </button>
             )}
             <div className={styles.buttons}>
-              <button className={styles.button} type='button'>
+              <button
+                className={styles.button}
+                type='button'
+                onClick={startCreateTask}
+              >
                 New Task
               </button>
               <button
@@ -150,6 +186,29 @@ const BoardPage = () => {
                 Delete All Tasks
               </button>
             </div>
+            {isCreatingTask && (
+              <div>
+                <input
+                  type='text'
+                  value={newTaskTitle}
+                  onChange={(e) => setNewTaskTitle(e.target.value)}
+                  placeholder='Task title...'
+                />
+                <button
+                  type='button'
+                  onClick={saveTaskDraft}
+                  disabled={!newTaskTitle.trim()}
+                >
+                  Save
+                </button>
+                <button
+                  type='button'
+                  onClick={cancelCreateTask}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
             {tasks.length === 0 ? (
               <p>No tasks yet</p>
             ) : (
