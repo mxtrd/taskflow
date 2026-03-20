@@ -8,7 +8,9 @@ import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardPage.module.scss'
 
 const BoardPage = () => {
-  const { getBoardById, updateBoardDescription } = useBoards()
+  const { getBoardById, updateBoardTitle, updateBoardDescription } = useBoards()
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const [draftTitle, setDraftTitle] = useState('')
   const [isAddingDescription, setIsAddingDescription] = useState(false)
   const [draftDescription, setDraftDescription] = useState('')
   const { boardId } = useParams<{ boardId: string }>()
@@ -26,6 +28,28 @@ const BoardPage = () => {
 
   const toggleTaskComplete = (taskId: string, isDone: boolean) => {
     console.log(`Task ${taskId} ${isDone ? 'done' : 'not done'}`)
+  }
+
+  const startEditTitle = () => {
+    if (!selectedBoard) return
+    setDraftTitle(selectedBoard.title)
+    setIsEditingTitle(true)
+  }
+
+  const cancelEditTitle = () => {
+    setDraftTitle('')
+    setIsEditingTitle(false)
+  }
+
+  const saveTitle = () => {
+    if(!boardId) return
+
+    const normalizedTitle = draftTitle.trim()
+    if (!normalizedTitle) return
+    
+    updateBoardTitle(boardId, normalizedTitle)
+    setDraftTitle('')
+    setIsEditingTitle(false)
   }
 
   const startEditDescription = () => {
@@ -65,7 +89,27 @@ const BoardPage = () => {
       <section className={styles.board}>
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
-            <h1 className={styles.title}>{selectedBoard.title}</h1>
+            {isEditingTitle ? (
+              <div>
+                <input
+                  type='text'
+                  value={draftTitle}
+                  onChange={(e) => setDraftTitle(e.target.value)}
+                  placeholder='Edit title'
+                />
+                <button type='button' onClick={saveTitle} disabled={!draftTitle.trim()}>
+                  Save
+                </button>
+                <button type='button' onClick={cancelEditTitle}>
+                  Cancel
+                </button>
+              </div>
+            ) : (
+              <>
+                <h1 className={styles.title}>{selectedBoard.title}</h1>
+                <button type='button' onClick={startEditTitle}>Edit</button>
+              </>
+            )}
             {isAddingDescription ? (
               <div>
                 <textarea
@@ -73,10 +117,7 @@ const BoardPage = () => {
                   onChange={(e) => setDraftDescription(e.target.value)}
                   placeholder='Add board description'
                 />
-                <button
-                  type='button'
-                  onClick={saveDescription}
-                >
+                <button type='button' onClick={saveDescription}>
                   Save
                 </button>
                 <button type='button' onClick={cancelAddDescription}>

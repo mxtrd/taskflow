@@ -5,6 +5,7 @@ type BoardsContextValue = {
   boards: LocalBoard[]
   addBoard: (title: string) => void
   getBoardById: (boardId: string) => LocalBoard | undefined,
+  updateBoardTitle: (boardId: string, title: string) => void,
   updateBoardDescription: (boardId: string, description: string) => void
 }
 
@@ -28,6 +29,16 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
 
   const getBoardById = (boardId: string) => boards.find((board) => board.id === boardId)
 
+  const updateBoardTitle = (boardId: string, title: string) => {
+    const normalizedTitle = title.trim()
+
+    setBoards((prevBoards) => 
+      prevBoards.map((board) => 
+        board.id === boardId ? {...board, title: normalizedTitle} : board
+      )
+    )
+  }
+
   const updateBoardDescription = (boardId: string, description: string) => {
     const normalizedDescription = description.trim()
 
@@ -42,6 +53,7 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
     boards,
     addBoard,
     getBoardById,
+    updateBoardTitle,
     updateBoardDescription
   }
 
