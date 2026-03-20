@@ -14,6 +14,7 @@ const BoardPage = () => {
   const { boardId } = useParams<{ boardId: string }>()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const tasks = boardId ? getTasksByBoardId(boardId) : []
+  const hasDescription = Boolean(selectedBoard?.description?.trim())
 
   const deleteAllTasks = () => {
     console.log('Delete all tasks')
@@ -27,7 +28,7 @@ const BoardPage = () => {
     console.log(`Task ${taskId} ${isDone ? 'done' : 'not done'}`)
   }
 
-  const startAddDescription = () => {
+  const startEditDescription = () => {
     if (!selectedBoard) return
     setDraftDescription(selectedBoard.description ?? '')
     setIsAddingDescription(true)
@@ -40,7 +41,9 @@ const BoardPage = () => {
 
   const saveDescription = () => {
     if (!boardId) return
-    updateBoardDescription(boardId, draftDescription)
+
+    const normalizedDescription = draftDescription.trim()
+    updateBoardDescription(boardId, normalizedDescription)
     setDraftDescription('')
     setIsAddingDescription(false)
   }
@@ -63,9 +66,7 @@ const BoardPage = () => {
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             <h1 className={styles.title}>{selectedBoard.title}</h1>
-            {selectedBoard.description ? (
-              <p className={styles.description}>{selectedBoard.description}</p>
-            ) : isAddingDescription ? (
+            {isAddingDescription ? (
               <div>
                 <textarea
                   value={draftDescription}
@@ -75,7 +76,6 @@ const BoardPage = () => {
                 <button
                   type='button'
                   onClick={saveDescription}
-                  disabled={!draftDescription.trim()}
                 >
                   Save
                 </button>
@@ -83,8 +83,17 @@ const BoardPage = () => {
                   Cancel
                 </button>
               </div>
+            ) : hasDescription ? (
+              <>
+                <p className={styles.description}>
+                  {selectedBoard.description}
+                </p>
+                <button type='button' onClick={startEditDescription}>
+                  Edit description
+                </button>
+              </>
             ) : (
-              <button type='button' onClick={startAddDescription}>
+              <button type='button' onClick={startEditDescription}>
                 Add description
               </button>
             )}

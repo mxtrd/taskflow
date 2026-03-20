@@ -160,8 +160,7 @@ export const mockTasksByBoardId: Record<string, LocalTask[]> = {
   ],
 }
 
-export const getTasksByBoardId = (boardId: string): LocalTask[] =>
-  mockTasksByBoardId[boardId] ?? []
+export const getTasksByBoardId = (boardId: string): LocalTask[] => mockTasksByBoardId[boardId] ?? []
 
 export const getBoardById = (boardId: string): LocalBoard | undefined =>
   mockBoards.find((board) => board.id === boardId)
