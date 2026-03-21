@@ -1,3 +1,4 @@
+import type { SubmitEventHandler } from 'react'
 import { useBoards } from '@/shared/hooks/useBoards'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -78,7 +79,7 @@ const BoardPage = () => {
   }
 
   const startCreateTask = () => {
-    if(isCreatingTask) return
+    if (isCreatingTask) return
     setIsCreatingTask(true)
   }
 
@@ -87,16 +88,30 @@ const BoardPage = () => {
     setIsCreatingTask(false)
   }
 
-  const saveTaskDraft = () => {
-    if(!boardId) return
+  const handleCreateTaskSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
+    if (!boardId) return
 
-    const title = newTaskTitle.trim()
-    if(!title) return
+    const formData = new FormData(event.currentTarget)
+    const title = String(formData.get('title') ?? '').trim()
+    if (!title) return
 
     addTask(boardId, title)
     setNewTaskTitle('')
     setIsCreatingTask(false)
   }
+
+
+  // const saveTaskDraft = () => {
+  //   if(!boardId) return
+
+  //   const title = newTaskTitle.trim()
+  //   if(!title) return
+
+  //   addTask(boardId, title)
+  //   setNewTaskTitle('')
+  //   setIsCreatingTask(false)
+  // }
 
   if (!selectedBoard) {
     return (
@@ -187,27 +202,43 @@ const BoardPage = () => {
               </button>
             </div>
             {isCreatingTask && (
-              <div>
+              <form onSubmit={handleCreateTaskSubmit}>
                 <input
                   type='text'
+                  name='title'
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   placeholder='Task title...'
+                  required
                 />
-                <button
-                  type='button'
-                  onClick={saveTaskDraft}
-                  disabled={!newTaskTitle.trim()}
-                >
+                <button type='submit' disabled={!newTaskTitle.trim()}>
                   Save
                 </button>
-                <button
-                  type='button'
-                  onClick={cancelCreateTask}
-                >
+                <button type='button' onClick={cancelCreateTask}>
                   Cancel
                 </button>
-              </div>
+              </form>
+              // <div>
+              //   <input
+              //     type='text'
+              //     value={newTaskTitle}
+              //     onChange={(e) => setNewTaskTitle(e.target.value)}
+              //     placeholder='Task title...'
+              //   />
+              //   <button
+              //     type='button'
+              //     onClick={saveTaskDraft}
+              //     disabled={!newTaskTitle.trim()}
+              //   >
+              //     Save
+              //   </button>
+              //   <button
+              //     type='button'
+              //     onClick={cancelCreateTask}
+              //   >
+              //     Cancel
+              //   </button>
+              // </div>
             )}
             {tasks.length === 0 ? (
               <p>No tasks yet</p>
