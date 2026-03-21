@@ -82,14 +82,26 @@ const BoardPage = () => {
     setIsAddingDescription(false)
   }
 
-  const saveDescription = () => {
+  const handleDescriptionSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
     if (!boardId) return
 
-    const normalizedDescription = draftDescription.trim()
+    const formData = new FormData(event.currentTarget)
+    const normalizedDescription = String(formData.get('description') ?? '').trim()
+
     updateBoardDescription(boardId, normalizedDescription)
     setDraftDescription('')
     setIsAddingDescription(false)
   }
+
+  // const saveDescription = () => {
+  //   if (!boardId) return
+
+  //   const normalizedDescription = draftDescription.trim()
+  //   updateBoardDescription(boardId, normalizedDescription)
+  //   setDraftDescription('')
+  //   setIsAddingDescription(false)
+  // }
 
   const startCreateTask = () => {
     if (isCreatingTask) return
@@ -187,19 +199,32 @@ const BoardPage = () => {
               </>
             )}
             {isAddingDescription ? (
-              <div>
+              <form onSubmit={handleDescriptionSubmit}>
                 <textarea
+                  name='description'
                   value={draftDescription}
                   onChange={(e) => setDraftDescription(e.target.value)}
                   placeholder='Add board description'
+                  rows={4}
                 />
-                <button type='button' onClick={saveDescription}>
-                  Save
-                </button>
+                <button type='submit'>Save</button>
                 <button type='button' onClick={cancelAddDescription}>
                   Cancel
                 </button>
-              </div>
+              </form>
+              // <div>
+              //   <textarea
+              //     value={draftDescription}
+              //     onChange={(e) => setDraftDescription(e.target.value)}
+              //     placeholder='Add board description'
+              //   />
+              //   <button type='button' onClick={saveDescription}>
+              //     Save
+              //   </button>
+              //   <button type='button' onClick={cancelAddDescription}>
+              //     Cancel
+              //   </button>
+              // </div>
             ) : hasDescription ? (
               <>
                 <p className={styles.description}>
