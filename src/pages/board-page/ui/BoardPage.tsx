@@ -1,3 +1,4 @@
+import type { SubmitEventHandler } from 'react'
 import { useBoards } from '@/shared/hooks/useBoards'
 import { useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -46,16 +47,29 @@ const BoardPage = () => {
     setIsEditingTitle(false)
   }
 
-  const saveTitle = () => {
+  const handleTitleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
     if (!boardId) return
 
-    const normalizedTitle = draftTitle.trim()
+    const formData = new FormData(event.currentTarget)
+    const normalizedTitle = String(formData.get('title') ?? '').trim()
     if (!normalizedTitle) return
 
     updateBoardTitle(boardId, normalizedTitle)
     setDraftTitle('')
     setIsEditingTitle(false)
   }
+
+  // const saveTitle = () => {
+  //   if (!boardId) return
+
+  //   const normalizedTitle = draftTitle.trim()
+  //   if (!normalizedTitle) return
+
+  //   updateBoardTitle(boardId, normalizedTitle)
+  //   setDraftTitle('')
+  //   setIsEditingTitle(false)
+  // }
 
   const startEditDescription = () => {
     if (!selectedBoard) return
@@ -68,17 +82,29 @@ const BoardPage = () => {
     setIsAddingDescription(false)
   }
 
-  const saveDescription = () => {
+  const handleDescriptionSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
     if (!boardId) return
 
-    const normalizedDescription = draftDescription.trim()
+    const formData = new FormData(event.currentTarget)
+    const normalizedDescription = String(formData.get('description') ?? '').trim()
+
     updateBoardDescription(boardId, normalizedDescription)
     setDraftDescription('')
     setIsAddingDescription(false)
   }
 
+  // const saveDescription = () => {
+  //   if (!boardId) return
+
+  //   const normalizedDescription = draftDescription.trim()
+  //   updateBoardDescription(boardId, normalizedDescription)
+  //   setDraftDescription('')
+  //   setIsAddingDescription(false)
+  // }
+
   const startCreateTask = () => {
-    if(isCreatingTask) return
+    if (isCreatingTask) return
     setIsCreatingTask(true)
   }
 
@@ -87,16 +113,30 @@ const BoardPage = () => {
     setIsCreatingTask(false)
   }
 
-  const saveTaskDraft = () => {
-    if(!boardId) return
+  const handleCreateTaskSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
+    if (!boardId) return
 
-    const title = newTaskTitle.trim()
-    if(!title) return
+    const formData = new FormData(event.currentTarget)
+    const title = String(formData.get('title') ?? '').trim()
+    if (!title) return
 
     addTask(boardId, title)
     setNewTaskTitle('')
     setIsCreatingTask(false)
   }
+
+
+  // const saveTaskDraft = () => {
+  //   if(!boardId) return
+
+  //   const title = newTaskTitle.trim()
+  //   if(!title) return
+
+  //   addTask(boardId, title)
+  //   setNewTaskTitle('')
+  //   setIsCreatingTask(false)
+  // }
 
   if (!selectedBoard) {
     return (
@@ -116,24 +156,38 @@ const BoardPage = () => {
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             {isEditingTitle ? (
-              <div>
+              <form onSubmit={handleTitleSubmit}>
                 <input
                   type='text'
+                  name='title'
                   value={draftTitle}
                   onChange={(e) => setDraftTitle(e.target.value)}
                   placeholder='Edit title'
+                  required
                 />
-                <button
-                  type='button'
-                  onClick={saveTitle}
-                  disabled={!draftTitle.trim()}
-                >
-                  Save
-                </button>
+                <button type='submit'>Save</button>
                 <button type='button' onClick={cancelEditTitle}>
                   Cancel
                 </button>
-              </div>
+              </form>
+              // <div>
+              //   <input
+              //     type='text'
+              //     value={draftTitle}
+              //     onChange={(e) => setDraftTitle(e.target.value)}
+              //     placeholder='Edit title'
+              //   />
+              //   <button
+              //     type='button'
+              //     onClick={saveTitle}
+              //     disabled={!draftTitle.trim()}
+              //   >
+              //     Save
+              //   </button>
+              //   <button type='button' onClick={cancelEditTitle}>
+              //     Cancel
+              //   </button>
+              // </div>
             ) : (
               <>
                 <h1 className={styles.title}>{selectedBoard.title}</h1>
@@ -143,19 +197,32 @@ const BoardPage = () => {
               </>
             )}
             {isAddingDescription ? (
-              <div>
+              <form onSubmit={handleDescriptionSubmit}>
                 <textarea
+                  name='description'
                   value={draftDescription}
                   onChange={(e) => setDraftDescription(e.target.value)}
                   placeholder='Add board description'
+                  rows={4}
                 />
-                <button type='button' onClick={saveDescription}>
-                  Save
-                </button>
+                <button type='submit'>Save</button>
                 <button type='button' onClick={cancelAddDescription}>
                   Cancel
                 </button>
-              </div>
+              </form>
+              // <div>
+              //   <textarea
+              //     value={draftDescription}
+              //     onChange={(e) => setDraftDescription(e.target.value)}
+              //     placeholder='Add board description'
+              //   />
+              //   <button type='button' onClick={saveDescription}>
+              //     Save
+              //   </button>
+              //   <button type='button' onClick={cancelAddDescription}>
+              //     Cancel
+              //   </button>
+              // </div>
             ) : hasDescription ? (
               <>
                 <p className={styles.description}>
@@ -187,27 +254,41 @@ const BoardPage = () => {
               </button>
             </div>
             {isCreatingTask && (
-              <div>
+              <form onSubmit={handleCreateTaskSubmit}>
                 <input
                   type='text'
+                  name='title'
                   value={newTaskTitle}
                   onChange={(e) => setNewTaskTitle(e.target.value)}
                   placeholder='Task title...'
+                  required
                 />
-                <button
-                  type='button'
-                  onClick={saveTaskDraft}
-                  disabled={!newTaskTitle.trim()}
-                >
-                  Save
-                </button>
-                <button
-                  type='button'
-                  onClick={cancelCreateTask}
-                >
+                <button type='submit'>Save</button>
+                <button type='button' onClick={cancelCreateTask}>
                   Cancel
                 </button>
-              </div>
+              </form>
+              // <div>
+              //   <input
+              //     type='text'
+              //     value={newTaskTitle}
+              //     onChange={(e) => setNewTaskTitle(e.target.value)}
+              //     placeholder='Task title...'
+              //   />
+              //   <button
+              //     type='button'
+              //     onClick={saveTaskDraft}
+              //     disabled={!newTaskTitle.trim()}
+              //   >
+              //     Save
+              //   </button>
+              //   <button
+              //     type='button'
+              //     onClick={cancelCreateTask}
+              //   >
+              //     Cancel
+              //   </button>
+              // </div>
             )}
             {tasks.length === 0 ? (
               <p>No tasks yet</p>
