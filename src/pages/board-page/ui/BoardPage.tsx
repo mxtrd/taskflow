@@ -47,16 +47,29 @@ const BoardPage = () => {
     setIsEditingTitle(false)
   }
 
-  const saveTitle = () => {
+  const handleTitleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
     if (!boardId) return
 
-    const normalizedTitle = draftTitle.trim()
+    const formData = new FormData(event.currentTarget)
+    const normalizedTitle = String(formData.get('title') ?? '').trim()
     if (!normalizedTitle) return
 
     updateBoardTitle(boardId, normalizedTitle)
     setDraftTitle('')
     setIsEditingTitle(false)
   }
+
+  // const saveTitle = () => {
+  //   if (!boardId) return
+
+  //   const normalizedTitle = draftTitle.trim()
+  //   if (!normalizedTitle) return
+
+  //   updateBoardTitle(boardId, normalizedTitle)
+  //   setDraftTitle('')
+  //   setIsEditingTitle(false)
+  // }
 
   const startEditDescription = () => {
     if (!selectedBoard) return
@@ -131,24 +144,40 @@ const BoardPage = () => {
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             {isEditingTitle ? (
-              <div>
+              <form onSubmit={handleTitleSubmit}>
                 <input
                   type='text'
+                  name='title'
                   value={draftTitle}
                   onChange={(e) => setDraftTitle(e.target.value)}
                   placeholder='Edit title'
+                  required
                 />
-                <button
-                  type='button'
-                  onClick={saveTitle}
-                  disabled={!draftTitle.trim()}
-                >
+                <button type='submit' disabled={!draftTitle.trim()}>
                   Save
                 </button>
                 <button type='button' onClick={cancelEditTitle}>
                   Cancel
                 </button>
-              </div>
+              </form>
+              // <div>
+              //   <input
+              //     type='text'
+              //     value={draftTitle}
+              //     onChange={(e) => setDraftTitle(e.target.value)}
+              //     placeholder='Edit title'
+              //   />
+              //   <button
+              //     type='button'
+              //     onClick={saveTitle}
+              //     disabled={!draftTitle.trim()}
+              //   >
+              //     Save
+              //   </button>
+              //   <button type='button' onClick={cancelEditTitle}>
+              //     Cancel
+              //   </button>
+              // </div>
             ) : (
               <>
                 <h1 className={styles.title}>{selectedBoard.title}</h1>
