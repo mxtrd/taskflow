@@ -1,7 +1,6 @@
 import type { SubmitEventHandler } from 'react'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
-// import { mockBoards } from '@/shared/mocks/taskflowData'
 import BoardItem from './board-item/BoardItem'
 import styles from './BoardsPage.module.scss'
 import { useState } from 'react'
@@ -103,9 +102,7 @@ const BoardsPage = () => {
                       placeholder='Board title...'
                       required
                     />
-                    <button type='submit' disabled={!newBoardTitle.trim()}>
-                      Save
-                    </button>
+                    <button type='submit'>Save</button>
                     <button type='button' onClick={cancelCreateBoard}>
                       Cancel
                     </button>

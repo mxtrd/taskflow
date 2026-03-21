@@ -165,9 +165,7 @@ const BoardPage = () => {
                   placeholder='Edit title'
                   required
                 />
-                <button type='submit' disabled={!draftTitle.trim()}>
-                  Save
-                </button>
+                <button type='submit'>Save</button>
                 <button type='button' onClick={cancelEditTitle}>
                   Cancel
                 </button>
@@ -265,9 +263,7 @@ const BoardPage = () => {
                   placeholder='Task title...'
                   required
                 />
-                <button type='submit' disabled={!newTaskTitle.trim()}>
-                  Save
-                </button>
+                <button type='submit'>Save</button>
                 <button type='button' onClick={cancelCreateTask}>
                   Cancel
                 </button>
