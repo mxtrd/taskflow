@@ -1,3 +1,4 @@
+import type { SubmitEventHandler } from 'react'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 // import { mockBoards } from '@/shared/mocks/taskflowData'
@@ -13,8 +14,8 @@ const BoardsPage = () => {
   // const hasBoards = boards.length > 0
 
   const startCreateBoard = () => {
-    if(isCreatingBoard) return
-    
+    if (isCreatingBoard) return
+
     setIsCreatingBoard(true)
   }
 
@@ -23,15 +24,28 @@ const BoardsPage = () => {
     setNewBoardTitle('')
   }
 
-  const saveBoardDraft = () => {
-    const title = newBoardTitle.trim()
+  const handleCreateBoardSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
 
+    const formData = new FormData(event.currentTarget)
+    const title = String(formData.get('title') ?? '').trim()
     if (!title) return
 
     addBoard(title)
     setNewBoardTitle('')
     setIsCreatingBoard(false)
+
   }
+
+  // const saveBoardDraft = () => {
+  //   const title = newBoardTitle.trim()
+
+  //   if (!title) return
+
+  //   addBoard(title)
+  //   setNewBoardTitle('')
+  //   setIsCreatingBoard(false)
+  // }
 
   const deleteAllBoards = () => {
     console.log('Delete all boards')
@@ -80,22 +94,38 @@ const BoardsPage = () => {
             <ul className={`${styles.boards} ${baseStyles.listReset}`}>
               {isCreatingBoard && (
                 <li className={styles.board}>
-                  <div>
+                  <form onSubmit={handleCreateBoardSubmit}>
+                    <input
+                      type='text'
+                      name='title'
+                      value={newBoardTitle}
+                      onChange={(e) => setNewBoardTitle(e.target.value)}
+                      placeholder='Board title...'
+                      required
+                    />
+                    <button type='submit' disabled={!newBoardTitle.trim()}>
+                      Save
+                    </button>
+                    <button type='button' onClick={cancelCreateBoard}>
+                      Cancel
+                    </button>
+                  </form>
+                  {/* <div>
                     <input
                       type='text'
                       value={newBoardTitle}
                       onChange={(e) => setNewBoardTitle(e.target.value)}
                       placeholder='Board title...'
                     />
-                    <button 
-                      type='button' 
+                    <button
+                      type='button'
                       onClick={saveBoardDraft}
                       disabled={!newBoardTitle.trim()}
                     >
                       Save
-                      </button>
+                    </button>
                     <button type='button' onClick={cancelCreateBoard}>Cancel</button>
-                  </div>
+                  </div> */}
                 </li>
               )}
               {boards.map((board) => (
