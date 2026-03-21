@@ -1,7 +1,6 @@
 import { mockTasksByBoardId, type LocalTask, type TasksByBoardId } from '@/shared/mocks/taskflowData'
 import { useState, type ReactNode } from 'react'
-import { type TaskUpdate } from './tasks-context'
-import { TasksContext } from './tasks-context'
+import { TasksContext, type TaskUpdate } from './tasks-context'
 
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const [tasksByBoardId, setTasksByBoardId] = useState<TasksByBoardId>(mockTasksByBoardId)

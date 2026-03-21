@@ -1,3 +1,5 @@
+import type { SubmitEventHandler } from 'react'
+import type { TaskStatus } from '@/shared/mocks/taskflowData'
 import { useParams } from 'react-router-dom'
 import { useBoards } from '@/shared/hooks/useBoards'
 import { useTasks } from '@/shared/hooks/useTasks'
@@ -8,9 +10,28 @@ import styles from './TaskPage.module.scss'
 const TaskPage = () => {
   const { boardId, taskId } = useParams<{ boardId: string; taskId: string }>()
   const { getBoardById } = useBoards()
-  const { getTaskById } = useTasks()
+  const { getTaskById, updateTask } = useTasks()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const selectedTask = boardId && taskId ? getTaskById(boardId, taskId) : undefined
+
+  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
+    event.preventDefault()
+
+    if (!boardId || !taskId || !selectedTask) return
+
+    const formData = new FormData(event.currentTarget)
+    const title = String(formData.get('title') ?? '').trim()
+    const description = String(formData.get('description') ?? '')
+    const statusRaw = Number(formData.get('status'))
+
+    if (!title) return
+
+    const status: TaskStatus = 
+      statusRaw === 0 || statusRaw === 1 || statusRaw === 2 ? statusRaw : selectedTask.status
+
+      updateTask(boardId, taskId, { title, description, status })
+  }
+
 
   if (!selectedBoard || !selectedTask) {
     return (
@@ -30,7 +51,7 @@ const TaskPage = () => {
         <div className={baseStyles.container}>
           <div className={styles.content}>
             <h1 className={styles.title}>Task Details</h1>
-            <form className={styles.form} action='#'>
+            <form className={styles.form} onSubmit={handleSubmit}>
               <div className={styles.column}>
                 <label className={styles.label} htmlFor='title'>
                   Title
@@ -39,7 +60,9 @@ const TaskPage = () => {
                   className={styles.input}
                   type='text'
                   id='title'
+                  name='title'
                   defaultValue={selectedTask.title}
+                  required
                 />
               </div>
               <div className={styles.column}>
@@ -49,6 +72,7 @@ const TaskPage = () => {
                 <textarea
                   className={styles.description}
                   id='description'
+                  name='description'
                   rows={5}
                   defaultValue={selectedTask.description}
                 ></textarea>
