@@ -32,7 +32,9 @@ const TaskPage = () => {
             <h1 className={styles.title}>Task Details</h1>
             <form className={styles.form} action='#'>
               <div className={styles.column}>
-                <label className={styles.label} htmlFor="title">Title</label>
+                <label className={styles.label} htmlFor='title'>
+                  Title
+                </label>
                 <input
                   className={styles.input}
                   type='text'
@@ -41,7 +43,9 @@ const TaskPage = () => {
                 />
               </div>
               <div className={styles.column}>
-                <label className={styles.label} htmlFor="description">Description</label>
+                <label className={styles.label} htmlFor='description'>
+                  Description
+                </label>
                 <textarea
                   className={styles.description}
                   id='description'
@@ -50,7 +54,9 @@ const TaskPage = () => {
                 ></textarea>
               </div>
               <div className={styles.column}>
-                <label className={styles.label} htmlFor="status">Status</label>
+                <label className={styles.label} htmlFor='status'>
+                  Status
+                </label>
                 <select
                   className={styles.select}
                   name='status'
@@ -70,7 +76,12 @@ const TaskPage = () => {
               </div>
               <div className={styles.column}>
                 <label className={styles.label}>Board</label>
-                <input className={styles.input} type='text' value={selectedBoard.title} readOnly />
+                <input
+                  className={styles.input}
+                  type='text'
+                  value={selectedBoard.title}
+                  readOnly
+                />
               </div>
               <div className={styles.column}>
                 <button className={styles.button} type='submit'>

@@ -14,6 +14,8 @@ export type LocalTask = {
   status: TaskStatus
 }
 
+export type TasksByBoardId = Record<string, LocalTask[]>
+
 export const mockBoards: LocalBoard[] = [
   {
     id: 'board-web-foundation',
@@ -37,13 +39,14 @@ export const mockBoards: LocalBoard[] = [
   },
 ]
 
-export const mockTasksByBoardId: Record<string, LocalTask[]> = {
+export const mockTasksByBoardId: TasksByBoardId = {
   'board-web-foundation': [
     {
       id: 'task-html-layout',
       boardId: 'board-web-foundation',
       title: 'HTML layout',
-      description: 'Build semantic page sections with proper heading structure.',
+      description:
+        'Build semantic page sections with proper heading structure.',
       status: 0,
     },
     {
@@ -57,7 +60,8 @@ export const mockTasksByBoardId: Record<string, LocalTask[]> = {
       id: 'task-dom-events',
       boardId: 'board-web-foundation',
       title: 'DOM events',
-      description: 'Handle click, input, and keyboard events in vanilla examples.',
+      description:
+        'Handle click, input, and keyboard events in vanilla examples.',
       status: 1,
     },
     {
@@ -87,7 +91,8 @@ export const mockTasksByBoardId: Record<string, LocalTask[]> = {
       id: 'task-router-flow',
       boardId: 'board-react-core',
       title: 'Router flow',
-      description: 'Connect boards list, board details, and task details routes.',
+      description:
+        'Connect boards list, board details, and task details routes.',
       status: 0,
     },
     {
@@ -159,11 +164,3 @@ export const mockTasksByBoardId: Record<string, LocalTask[]> = {
     },
   ],
 }
-
-export const getTasksByBoardId = (boardId: string): LocalTask[] => mockTasksByBoardId[boardId] ?? []
-
-export const getBoardById = (boardId: string): LocalBoard | undefined =>
-  mockBoards.find((board) => board.id === boardId)
-
-export const getTaskById = (boardId: string, taskId: string): LocalTask | undefined =>
-  getTasksByBoardId(boardId).find((task) => task.id === taskId)
