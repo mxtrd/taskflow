@@ -76,6 +76,16 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const removeTasksForBoard = (boardId: string) => {
+    setTasksByBoardId((prev) => {
+      if (!(boardId in prev)) return prev
+
+      const next = { ...prev }
+      delete next[boardId]
+      return next
+    })
+  }
+
   const value = {
     getTasksByBoardId,
     getTaskById,
@@ -83,7 +93,8 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     updateTask,
     deleteAllTasksForBoard,
     clearAllTasks,
-    deleteTask
+    deleteTask,
+    removeTasksForBoard
   }
 
   return <TasksContext.Provider value={value}>

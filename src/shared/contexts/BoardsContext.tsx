@@ -44,13 +44,18 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
     setBoards([])
   }
 
+  const deleteBoard = (boardId: string) => {
+    setBoards((prevBoards) => prevBoards.filter((board) => board.id !== boardId))
+  }
+
   const value = {
     boards,
     addBoard,
     getBoardById,
     updateBoardTitle,
     updateBoardDescription,
-    deleteAllBoards
+    deleteAllBoards,
+    deleteBoard
   }
 
   return <BoardsContext.Provider value={value}>{children}</BoardsContext.Provider>

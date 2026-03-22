@@ -8,8 +8,8 @@ import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardsPage.module.scss'
 
 const BoardsPage = () => {
-  const { boards, addBoard, deleteAllBoards } = useBoards()
-  const { clearAllTasks } = useTasks()
+  const { boards, addBoard, deleteAllBoards, deleteBoard } = useBoards()
+  const { clearAllTasks, removeTasksForBoard } = useTasks()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')
 
@@ -44,8 +44,9 @@ const BoardsPage = () => {
     clearAllTasks()
   }
 
-  const deleteBoard = (boardId: string) => {
-    console.log(`Delete one board with id: ${boardId}`)
+  const deleteBoardHandler = (boardId: string) => {
+    deleteBoard(boardId)
+    removeTasksForBoard(boardId)
   }
 
   return (
@@ -98,7 +99,7 @@ const BoardsPage = () => {
                     key={board.id}
                     board={board}
                     to={`/boards/${board.id}`}
-                    onDeleteBoardButtonClick={deleteBoard}
+                    onDeleteBoardButtonClick={deleteBoardHandler}
                   />
                 ))}
               </ul>

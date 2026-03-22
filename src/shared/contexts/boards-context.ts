@@ -8,6 +8,7 @@ export type BoardsContextValue = {
   updateBoardTitle: (boardId: string, title: string) => void
   updateBoardDescription: (boardId: string, description: string) => void
   deleteAllBoards: () => void
+  deleteBoard: (boardId: string) => void
 }
 
 export const BoardsContext = createContext<BoardsContextValue | null>(null)
