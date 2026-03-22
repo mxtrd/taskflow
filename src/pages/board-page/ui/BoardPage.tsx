@@ -10,7 +10,7 @@ import styles from './BoardPage.module.scss'
 
 const BoardPage = () => {
   const { getBoardById, updateBoardTitle, updateBoardDescription } = useBoards()
-  const { getTasksByBoardId, addTask, deleteAllTasksForBoard } = useTasks()
+  const { getTasksByBoardId, addTask, deleteAllTasksForBoard, deleteTask } = useTasks()
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
@@ -34,8 +34,10 @@ const BoardPage = () => {
     deleteAllTasksForBoard(boardId)
   }
 
-  const deleteTask = (taskId: string) => {
-    console.log(`Delete task with id: ${taskId}`)
+  const deleteTaskHandler = (taskId: string) => {
+    if(!boardId) return
+
+    deleteTask(boardId, taskId)
   }
 
   const toggleTaskComplete = (taskId: string, isDone: boolean) => {
@@ -66,17 +68,6 @@ const BoardPage = () => {
     setIsEditingTitle(false)
   }
 
-  // const saveTitle = () => {
-  //   if (!boardId) return
-
-  //   const normalizedTitle = draftTitle.trim()
-  //   if (!normalizedTitle) return
-
-  //   updateBoardTitle(boardId, normalizedTitle)
-  //   setDraftTitle('')
-  //   setIsEditingTitle(false)
-  // }
-
   const startEditDescription = () => {
     if (!selectedBoard) return
     setDraftDescription(selectedBoard.description ?? '')
@@ -100,15 +91,6 @@ const BoardPage = () => {
     setIsAddingDescription(false)
   }
 
-  // const saveDescription = () => {
-  //   if (!boardId) return
-
-  //   const normalizedDescription = draftDescription.trim()
-  //   updateBoardDescription(boardId, normalizedDescription)
-  //   setDraftDescription('')
-  //   setIsAddingDescription(false)
-  // }
-
   const startCreateTask = () => {
     if (isCreatingTask) return
     setIsCreatingTask(true)
@@ -131,18 +113,6 @@ const BoardPage = () => {
     setNewTaskTitle('')
     setIsCreatingTask(false)
   }
-
-
-  // const saveTaskDraft = () => {
-  //   if(!boardId) return
-
-  //   const title = newTaskTitle.trim()
-  //   if(!title) return
-
-  //   addTask(boardId, title)
-  //   setNewTaskTitle('')
-  //   setIsCreatingTask(false)
-  // }
 
   if (!selectedBoard) {
     return (
@@ -176,24 +146,6 @@ const BoardPage = () => {
                   Cancel
                 </button>
               </form>
-              // <div>
-              //   <input
-              //     type='text'
-              //     value={draftTitle}
-              //     onChange={(e) => setDraftTitle(e.target.value)}
-              //     placeholder='Edit title'
-              //   />
-              //   <button
-              //     type='button'
-              //     onClick={saveTitle}
-              //     disabled={!draftTitle.trim()}
-              //   >
-              //     Save
-              //   </button>
-              //   <button type='button' onClick={cancelEditTitle}>
-              //     Cancel
-              //   </button>
-              // </div>
             ) : (
               <>
                 <h1 className={styles.title}>{selectedBoard.title}</h1>
@@ -216,19 +168,6 @@ const BoardPage = () => {
                   Cancel
                 </button>
               </form>
-              // <div>
-              //   <textarea
-              //     value={draftDescription}
-              //     onChange={(e) => setDraftDescription(e.target.value)}
-              //     placeholder='Add board description'
-              //   />
-              //   <button type='button' onClick={saveDescription}>
-              //     Save
-              //   </button>
-              //   <button type='button' onClick={cancelAddDescription}>
-              //     Cancel
-              //   </button>
-              // </div>
             ) : hasDescription ? (
               <>
                 <p className={styles.description}>
@@ -274,27 +213,6 @@ const BoardPage = () => {
                   Cancel
                 </button>
               </form>
-              // <div>
-              //   <input
-              //     type='text'
-              //     value={newTaskTitle}
-              //     onChange={(e) => setNewTaskTitle(e.target.value)}
-              //     placeholder='Task title...'
-              //   />
-              //   <button
-              //     type='button'
-              //     onClick={saveTaskDraft}
-              //     disabled={!newTaskTitle.trim()}
-              //   >
-              //     Save
-              //   </button>
-              //   <button
-              //     type='button'
-              //     onClick={cancelCreateTask}
-              //   >
-              //     Cancel
-              //   </button>
-              // </div>
             )}
             {tasks.length === 0 ? (
               <p>No tasks yet</p>
@@ -305,8 +223,8 @@ const BoardPage = () => {
                     key={task.id}
                     boardId={selectedBoard.id}
                     task={task}
-                    onDeleteTaskButtonClick={deleteTask}
                     onTaskCompleteChange={toggleTaskComplete}
+                    onDeleteTaskButtonCLick={deleteTaskHandler}
                   />
                 ))}
               </ul>

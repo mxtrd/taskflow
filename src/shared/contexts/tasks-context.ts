@@ -10,6 +10,7 @@ export type TasksContextValue = {
   updateTask: (boardId: string, taskId: string, updated: TaskUpdate) => void
   deleteAllTasksForBoard: (boardId: string) => void
   clearAllTasks: () => void
+  deleteTask: (boardId: string, taskId: string) => void
 }
 
 export const TasksContext = createContext<TasksContextValue | null>(null)
