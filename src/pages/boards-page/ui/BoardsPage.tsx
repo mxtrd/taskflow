@@ -1,16 +1,17 @@
+import { useBoards } from '@/shared/hooks/useBoards'
+import { useTasks } from '@/shared/hooks/useTasks'
+import { useState } from 'react'
 import type { SubmitEventHandler } from 'react'
+import BoardItem from './board-item/BoardItem'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
-import BoardItem from './board-item/BoardItem'
 import styles from './BoardsPage.module.scss'
-import { useState } from 'react'
-import { useBoards } from '@/shared/hooks/useBoards'
 
 const BoardsPage = () => {
-  const { boards, addBoard } = useBoards()
+  const { boards, addBoard, deleteAllBoards, deleteBoard } = useBoards()
+  const { clearAllTasks, removeTasksForBoard } = useTasks()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')
-  // const hasBoards = boards.length > 0
 
   const startCreateBoard = () => {
     if (isCreatingBoard) return
@@ -33,40 +34,20 @@ const BoardsPage = () => {
     addBoard(title)
     setNewBoardTitle('')
     setIsCreatingBoard(false)
-
   }
 
-  // const saveBoardDraft = () => {
-  //   const title = newBoardTitle.trim()
+  const deleteAllBoardsHandler = () => {
+    const ok = confirm('Delete all boards? All tasks will be removed too?')
+    if (!ok) return
 
-  //   if (!title) return
-
-  //   addBoard(title)
-  //   setNewBoardTitle('')
-  //   setIsCreatingBoard(false)
-  // }
-
-  const deleteAllBoards = () => {
-    console.log('Delete all boards')
+    deleteAllBoards()
+    clearAllTasks()
   }
 
-  const deleteBoard = (boardId: string) => {
-    console.log(`Delete one board with id: ${boardId}`)
+  const deleteBoardHandler = (boardId: string) => {
+    deleteBoard(boardId)
+    removeTasksForBoard(boardId)
   }
-
-  // if (!hasBoards) {
-  //   return (
-  //     <BaseLayout title='Taskflow' description='Taskflow - boards page'>
-  //       <section className={styles.boards}>
-  //         <div className={baseStyles.container}>
-  //           <div className={baseStyles.content}>
-  //             <h1 className={styles.title}>No boards</h1>
-  //           </div>
-  //         </div>
-  //       </section>
-  //     </BaseLayout>
-  //   )
-  // }
 
   return (
     <BaseLayout title='Taskflow' description='Taskflow - boards page'>
@@ -85,55 +66,44 @@ const BoardsPage = () => {
               <button
                 className={styles.button}
                 type='button'
-                onClick={deleteAllBoards}
+                onClick={deleteAllBoardsHandler}
+                disabled={boards.length === 0}
               >
                 Delete All Boards
               </button>
             </div>
-            <ul className={`${styles.boards} ${baseStyles.listReset}`}>
-              {isCreatingBoard && (
-                <li className={styles.board}>
-                  <form onSubmit={handleCreateBoardSubmit}>
-                    <input
-                      type='text'
-                      name='title'
-                      value={newBoardTitle}
-                      onChange={(e) => setNewBoardTitle(e.target.value)}
-                      placeholder='Board title...'
-                      required
-                    />
-                    <button type='submit'>Save</button>
-                    <button type='button' onClick={cancelCreateBoard}>
-                      Cancel
-                    </button>
-                  </form>
-                  {/* <div>
-                    <input
-                      type='text'
-                      value={newBoardTitle}
-                      onChange={(e) => setNewBoardTitle(e.target.value)}
-                      placeholder='Board title...'
-                    />
-                    <button
-                      type='button'
-                      onClick={saveBoardDraft}
-                      disabled={!newBoardTitle.trim()}
-                    >
-                      Save
-                    </button>
-                    <button type='button' onClick={cancelCreateBoard}>Cancel</button>
-                  </div> */}
-                </li>
-              )}
-              {boards.map((board) => (
-                <BoardItem
-                  key={board.id}
-                  board={board}
-                  to={`/boards/${board.id}`}
-                  onDeleteBoardButtonClick={deleteBoard}
-                />
-              ))}
-            </ul>
+            {boards.length === 0 && !isCreatingBoard ? (
+              <p>No boards yet</p>
+            ) : (
+              <ul className={`${styles.boards} ${baseStyles.listReset}`}>
+                {isCreatingBoard && (
+                  <li className={styles.board}>
+                    <form onSubmit={handleCreateBoardSubmit}>
+                      <input
+                        type='text'
+                        name='title'
+                        value={newBoardTitle}
+                        onChange={(e) => setNewBoardTitle(e.target.value)}
+                        placeholder='Board title...'
+                        required
+                      />
+                      <button type='submit'>Save</button>
+                      <button type='button' onClick={cancelCreateBoard}>
+                        Cancel
+                      </button>
+                    </form>
+                  </li>
+                )}
+                {boards.map((board) => (
+                  <BoardItem
+                    key={board.id}
+                    board={board}
+                    to={`/boards/${board.id}`}
+                    onDeleteBoardButtonClick={deleteBoardHandler}
+                  />
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </section>

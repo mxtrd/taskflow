@@ -5,11 +5,11 @@ import styles from './TaskItem.module.scss'
 type Props = {
   boardId: string
   task: LocalTask
-  onDeleteTaskButtonClick: (taskId: string) => void
-  onTaskCompleteChange: (taskId: string, isDone: boolean) => void
+  onTaskCompleteChange: (taskId: string, isDone: boolean) => void,
+  onDeleteTaskButtonCLick: (taskId: string) => void
 }
 
-const TaskItem = ({ boardId, task, onDeleteTaskButtonClick, onTaskCompleteChange }: Props) => {
+const TaskItem = ({ boardId, task, onTaskCompleteChange, onDeleteTaskButtonCLick }: Props) => {
   const isCompleted = task.status === 1
   const taskPath = `/boards/${boardId}/tasks/${task.id}`
 
@@ -35,7 +35,7 @@ const TaskItem = ({ boardId, task, onDeleteTaskButtonClick, onTaskCompleteChange
           <li className={styles.dropdownItem}>
             <button
               className={styles.dropdownButton}
-              onClick={() => onDeleteTaskButtonClick(task.id)}
+              onClick={() => onDeleteTaskButtonCLick(task.id)}
             >
               Delete
             </button>
