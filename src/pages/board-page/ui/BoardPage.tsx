@@ -10,7 +10,7 @@ import styles from './BoardPage.module.scss'
 
 const BoardPage = () => {
   const { getBoardById, updateBoardTitle, updateBoardDescription } = useBoards()
-  const { getTasksByBoardId, addTask } = useTasks()
+  const { getTasksByBoardId, addTask, deleteAllTasksForBoard } = useTasks()
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
@@ -25,7 +25,13 @@ const BoardPage = () => {
   const hasDescription = Boolean(selectedBoard?.description?.trim())
 
   const deleteAllTasks = () => {
-    console.log('Delete all tasks')
+
+    if (!boardId) return
+
+    const isConfirmed = confirm('Are you sure you want to delete all tasks in this board?')
+    if (!isConfirmed) return
+
+    deleteAllTasksForBoard(boardId)
   }
 
   const deleteTask = (taskId: string) => {
