@@ -57,12 +57,17 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     }))
   }
 
+  const clearAllTasks = () => {
+    setTasksByBoardId({})
+  }
+
   const value = {
     getTasksByBoardId,
     getTaskById,
     addTask,
     updateTask,
-    deleteAllTasksForBoard
+    deleteAllTasksForBoard,
+    clearAllTasks
   }
 
   return <TasksContext.Provider value={value}>
