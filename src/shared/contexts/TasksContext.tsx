@@ -1,9 +1,21 @@
 import { mockTasksByBoardId, type LocalTask, type TasksByBoardId } from '@/shared/mocks/taskflowData'
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
+import { TASKS_STORAGE_KEY } from '@/shared/lib/taskflow-storage'
 import { TasksContext, type TaskUpdate } from './tasks-context'
 
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasksByBoardId, setTasksByBoardId] = useState<TasksByBoardId>(mockTasksByBoardId)
+  const [tasksByBoardId, setTasksByBoardId] = useState<TasksByBoardId>(() => {
+    const savedTasksByBoardId = localStorage.getItem(TASKS_STORAGE_KEY)
+    if (savedTasksByBoardId) {
+      return JSON.parse(savedTasksByBoardId) as TasksByBoardId
+    }
+
+    return mockTasksByBoardId
+  })
+
+  useEffect(() => {
+    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasksByBoardId))
+  }, [tasksByBoardId])
 
   const getTasksByBoardId = (boardId: string): LocalTask[] => tasksByBoardId[boardId] ?? []
 

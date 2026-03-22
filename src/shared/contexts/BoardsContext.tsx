@@ -1,9 +1,21 @@
-import { useState, type ReactNode } from 'react'
+import { useState, useEffect, type ReactNode } from 'react'
 import { mockBoards, type LocalBoard } from '@/shared/mocks/taskflowData'
+import { BOARDS_STORAGE_KEY } from '@/shared/lib/taskflow-storage'
 import { BoardsContext } from './boards-context'
 
 export const BoardsProvider = ({ children }: { children: ReactNode }) => { 
-  const [boards, setBoards] = useState<LocalBoard[]>(mockBoards)
+  const [boards, setBoards] = useState<LocalBoard[]>(() => {
+    const savedBoards = localStorage.getItem(BOARDS_STORAGE_KEY)
+    if(savedBoards) {
+      return JSON.parse(savedBoards) as LocalBoard[]
+    }
+
+    return mockBoards
+  })
+
+  useEffect(() => {
+    localStorage.setItem(BOARDS_STORAGE_KEY, JSON.stringify(boards))
+  }, [boards])
 
   const addBoard = (title: string) => {
     const normalizedTitle = title.trim()
