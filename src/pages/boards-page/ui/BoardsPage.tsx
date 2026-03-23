@@ -53,7 +53,7 @@ const BoardsPage = () => {
 
   const searchBoardsNormalized = searchBoardsQuery.trim().toLowerCase()
   const filteredBoards = searchBoardsNormalized.length > 0
-    ? boards.filter(({ title }) => title.toLowerCase().includes(searchNormalized))
+    ? boards.filter(({ title }) => title.toLowerCase().includes(searchBoardsNormalized))
     : boards
 
   const hasBoards = boards.length > 0
@@ -126,7 +126,7 @@ const BoardsPage = () => {
                       />
                     ))}
                 </ul>
-                {noMatches && <p>Boards not found</p>}
+                {noBoardsMatches && <p>Boards not found</p>}
               </>
             )}
           </div>
