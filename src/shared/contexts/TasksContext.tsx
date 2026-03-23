@@ -1,4 +1,4 @@
-import { mockTasksByBoardId, type LocalTask, type TasksByBoardId } from '@/shared/mocks/taskflowData'
+import { mockTasksByBoardId, type LocalTask, type TasksByBoardId, type TaskStatus } from '@/shared/mocks/taskflowData'
 import { useState, useEffect, type ReactNode } from 'react'
 import { TASKS_STORAGE_KEY } from '@/shared/lib/taskflow-storage'
 import { TasksContext, type TaskUpdate } from './tasks-context'
@@ -76,7 +76,7 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   const deleteTask = (boardId: string, taskId: string) => {
     setTasksByBoardId((prev) => {
       const list = prev[boardId]
-      if(!list) return prev
+      if (!list) return prev
 
       const nextList = list.filter((task) => task.id !== taskId)
       if (nextList.length === list.length) return prev
@@ -98,6 +98,24 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     })
   }
 
+  const toggleTaskComplete = (boardId: string, taskId: string, isDone: boolean) => {
+    setTasksByBoardId((prev) => {
+      const list = prev[boardId]
+      if (!list) return prev
+
+      const nextStatus: TaskStatus = isDone ? 1 : 0
+
+      const nextList = list.map((task) =>
+        task.id === taskId ? { ...task, status: nextStatus } : task
+      )
+
+      return {
+        ...prev,
+        [boardId]: nextList,
+      }
+    })
+  }
+
   const value = {
     getTasksByBoardId,
     getTaskById,
@@ -106,7 +124,8 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     deleteAllTasksForBoard,
     clearAllTasks,
     deleteTask,
-    removeTasksForBoard
+    removeTasksForBoard,
+    toggleTaskComplete
   }
 
   return <TasksContext.Provider value={value}>

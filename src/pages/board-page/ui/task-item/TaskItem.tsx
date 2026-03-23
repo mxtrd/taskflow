@@ -5,7 +5,7 @@ import styles from './TaskItem.module.scss'
 type Props = {
   boardId: string
   task: LocalTask
-  onTaskCompleteChange: (taskId: string, isDone: boolean) => void,
+  onTaskCompleteChange: (boardId: string, taskId: string, isDone: boolean) => void,
   onDeleteTaskButtonCLick: (taskId: string) => void
 }
 
@@ -20,7 +20,7 @@ const TaskItem = ({ boardId, task, onTaskCompleteChange, onDeleteTaskButtonCLick
           type='checkbox'
           id={task.id}
           checked={isCompleted}
-          onChange={(event) => onTaskCompleteChange(task.id, event.target.checked)}
+          onChange={(event) => onTaskCompleteChange(boardId, task.id, event.target.checked)}
         />
         <label htmlFor={task.id}>{task.title}</label>
       </div>

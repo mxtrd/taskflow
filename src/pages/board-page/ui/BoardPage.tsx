@@ -10,7 +10,7 @@ import styles from './BoardPage.module.scss'
 
 const BoardPage = () => {
   const { getBoardById, updateBoardTitle, updateBoardDescription } = useBoards()
-  const { getTasksByBoardId, addTask, deleteAllTasksForBoard, deleteTask } = useTasks()
+  const { getTasksByBoardId, addTask, deleteAllTasksForBoard, deleteTask, toggleTaskComplete } = useTasks()
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
@@ -41,9 +41,9 @@ const BoardPage = () => {
     deleteTask(boardId, taskId)
   }
 
-  const toggleTaskComplete = (taskId: string, isDone: boolean) => {
-    console.log(`Task ${taskId} ${isDone ? 'done' : 'not done'}`)
-  }
+  // const toggleTaskComplete = (taskId: string, isDone: boolean) => {
+  //   console.log(`Task ${taskId} ${isDone ? 'done' : 'not done'}`)
+  // }
 
   const startEditTitle = () => {
     if (!selectedBoard) return
