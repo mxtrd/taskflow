@@ -18,6 +18,7 @@ const BoardPage = () => {
   const [draftDescription, setDraftDescription] = useState('')
   const [isCreatingTask, setIsCreatingTask] = useState(false)
   const [newTaskTitle, setNewTaskTitle] = useState('')
+  const [searchTasksQuery, setSearchTasksQuery] = useState('')
 
   const { boardId } = useParams<{ boardId: string }>()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
@@ -35,7 +36,7 @@ const BoardPage = () => {
   }
 
   const deleteTaskHandler = (taskId: string) => {
-    if(!boardId) return
+    if (!boardId) return
 
     deleteTask(boardId, taskId)
   }
@@ -113,6 +114,15 @@ const BoardPage = () => {
     setNewTaskTitle('')
     setIsCreatingTask(false)
   }
+
+  const searchTasksNormalized = searchTasksQuery.trim().toLowerCase()
+  const filteredTasks = searchTasksNormalized.length > 0
+    ? tasks.filter(({ title }) => title.toLowerCase().includes(searchTasksNormalized))
+    : tasks
+
+  const hasTasks = tasks.length > 0
+  const hasActivetasksSearch = searchTasksNormalized.length > 0
+  const noTasksMatches = hasTasks && hasActivetasksSearch && filteredTasks.length === 0
 
   if (!selectedBoard) {
     return (
@@ -198,6 +208,15 @@ const BoardPage = () => {
                 Delete All Tasks
               </button>
             </div>
+            <form>
+              <input
+                type="search"
+                value={searchTasksQuery}
+                onChange={(event) => setSearchTasksQuery(event.target.value)}
+                placeholder="find task"
+                autoComplete="off"
+              />
+            </form>
             {isCreatingTask && (
               <form onSubmit={handleCreateTaskSubmit}>
                 <input
@@ -214,20 +233,24 @@ const BoardPage = () => {
                 </button>
               </form>
             )}
-            {tasks.length === 0 ? (
+            {!hasTasks ? (
               <p>No tasks yet</p>
             ) : (
-              <ul className={`${styles.tasks} ${baseStyles.listReset}`}>
-                {tasks.map((task) => (
-                  <TaskItem
-                    key={task.id}
-                    boardId={selectedBoard.id}
-                    task={task}
-                    onTaskCompleteChange={toggleTaskComplete}
-                    onDeleteTaskButtonCLick={deleteTaskHandler}
-                  />
-                ))}
-              </ul>
+              <>
+                <ul className={`${styles.tasks} ${baseStyles.listReset}`}>
+                  {!noTasksMatches &&
+                    filteredTasks.map((task) => (
+                      <TaskItem
+                        key={task.id}
+                        boardId={selectedBoard.id}
+                        task={task}
+                        onTaskCompleteChange={toggleTaskComplete}
+                        onDeleteTaskButtonCLick={deleteTaskHandler}
+                      />
+                    ))}
+                </ul>
+                {noTasksMatches && <p>Tasks not found</p>}
+              </>
             )}
           </div>
         </div>

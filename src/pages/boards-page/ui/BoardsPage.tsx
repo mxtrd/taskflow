@@ -12,6 +12,7 @@ const BoardsPage = () => {
   const { clearAllTasks, removeTasksForBoard } = useTasks()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')
+  const [searchBoardsQuery, setSearchBoardsQuery] = useState('')
 
   const startCreateBoard = () => {
     if (isCreatingBoard) return
@@ -34,6 +35,7 @@ const BoardsPage = () => {
     addBoard(title)
     setNewBoardTitle('')
     setIsCreatingBoard(false)
+    setSearchBoardsQuery('')
   }
 
   const deleteAllBoardsHandler = () => {
@@ -48,6 +50,16 @@ const BoardsPage = () => {
     deleteBoard(boardId)
     removeTasksForBoard(boardId)
   }
+
+  const searchBoardsNormalized = searchBoardsQuery.trim().toLowerCase()
+  const filteredBoards = searchBoardsNormalized.length > 0
+    ? boards.filter(({ title }) => title.toLowerCase().includes(searchBoardsNormalized))
+    : boards
+
+  const hasBoards = boards.length > 0
+  const hasActiveBoardsSearch = searchBoardsNormalized.length > 0
+  const noBoardsMatches = hasBoards && hasActiveBoardsSearch && filteredBoards.length === 0
+
 
   return (
     <BaseLayout title='Taskflow' description='Taskflow - boards page'>
@@ -72,37 +84,50 @@ const BoardsPage = () => {
                 Delete All Boards
               </button>
             </div>
+            <form>
+              <input
+                type="search"
+                value={searchBoardsQuery}
+                onChange={(event) => setSearchBoardsQuery(event.target.value)}
+                placeholder="find board"
+                autoComplete="off"
+              />
+            </form>
             {boards.length === 0 && !isCreatingBoard ? (
               <p>No boards yet</p>
             ) : (
-              <ul className={`${styles.boards} ${baseStyles.listReset}`}>
-                {isCreatingBoard && (
-                  <li className={styles.board}>
-                    <form onSubmit={handleCreateBoardSubmit}>
-                      <input
-                        type='text'
-                        name='title'
-                        value={newBoardTitle}
-                        onChange={(e) => setNewBoardTitle(e.target.value)}
-                        placeholder='Board title...'
-                        required
+              <>
+                <ul className={`${styles.boards} ${baseStyles.listReset}`}>
+                  {isCreatingBoard && (
+                    <li className={styles.board}>
+                      <form onSubmit={handleCreateBoardSubmit}>
+                        <input
+                          type='text'
+                          name='title'
+                          value={newBoardTitle}
+                          onChange={(e) => setNewBoardTitle(e.target.value)}
+                          placeholder='Board title...'
+                          required
+                        />
+                        <button type='submit'>Save</button>
+                        <button type='button' onClick={cancelCreateBoard}>
+                          Cancel
+                        </button>
+                      </form>
+                    </li>
+                  )}
+                  {!noBoardsMatches &&
+                    filteredBoards.map((board) => (
+                      <BoardItem
+                        key={board.id}
+                        board={board}
+                        to={`/boards/${board.id}`}
+                        onDeleteBoardButtonClick={deleteBoardHandler}
                       />
-                      <button type='submit'>Save</button>
-                      <button type='button' onClick={cancelCreateBoard}>
-                        Cancel
-                      </button>
-                    </form>
-                  </li>
-                )}
-                {boards.map((board) => (
-                  <BoardItem
-                    key={board.id}
-                    board={board}
-                    to={`/boards/${board.id}`}
-                    onDeleteBoardButtonClick={deleteBoardHandler}
-                  />
-                ))}
-              </ul>
+                    ))}
+                </ul>
+                {noBoardsMatches && <p>Boards not found</p>}
+              </>
             )}
           </div>
         </div>
