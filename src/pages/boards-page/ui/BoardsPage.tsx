@@ -51,14 +51,14 @@ const BoardsPage = () => {
     removeTasksForBoard(boardId)
   }
 
-  const searchNormalized = searchBoardsQuery.trim().toLowerCase()
-  const filteredBoards = searchNormalized.length > 0
+  const searchBoardsNormalized = searchBoardsQuery.trim().toLowerCase()
+  const filteredBoards = searchBoardsNormalized.length > 0
     ? boards.filter(({ title }) => title.toLowerCase().includes(searchNormalized))
     : boards
 
   const hasBoards = boards.length > 0
-  const hasActiveSearch = searchNormalized.length > 0
-  const noMatches = hasBoards && hasActiveSearch && filteredBoards.length === 0
+  const hasActiveBoardsSearch = searchBoardsNormalized.length > 0
+  const noBoardsMatches = hasBoards && hasActiveBoardsSearch && filteredBoards.length === 0
 
 
   return (
@@ -116,7 +116,7 @@ const BoardsPage = () => {
                       </form>
                     </li>
                   )}
-                  {!noMatches &&
+                  {!noBoardsMatches &&
                     filteredBoards.map((board) => (
                       <BoardItem
                         key={board.id}
