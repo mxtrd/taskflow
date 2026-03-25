@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTasks } from '@/shared/hooks/useTasks'
 import TaskItem from './task-item/TaskItem'
+import SearchField from '@/shared/ui/search-field'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardPage.module.scss'
@@ -209,12 +210,11 @@ const BoardPage = () => {
               </button>
             </div>
             <form>
-              <input
-                type="search"
+              <SearchField
                 value={searchTasksQuery}
+                name='tasksSearch'
                 onChange={(event) => setSearchTasksQuery(event.target.value)}
                 placeholder="find task"
-                autoComplete="off"
               />
             </form>
             {isCreatingTask && (
