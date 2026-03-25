@@ -3,6 +3,7 @@ import { useTasks } from '@/shared/hooks/useTasks'
 import { useState } from 'react'
 import type { SubmitEventHandler } from 'react'
 import BoardItem from './board-item/BoardItem'
+import SearchField from '@/shared/ui/search-field'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardsPage.module.scss'
@@ -85,12 +86,11 @@ const BoardsPage = () => {
               </button>
             </div>
             <form>
-              <input
-                type="search"
+              <SearchField
                 value={searchBoardsQuery}
+                name='boardsSearch'
                 onChange={(event) => setSearchBoardsQuery(event.target.value)}
                 placeholder="find board"
-                autoComplete="off"
               />
             </form>
             {boards.length === 0 && !isCreatingBoard ? (
