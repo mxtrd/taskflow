@@ -3,6 +3,14 @@ import baseStyles from "@/app/styles/base.module.scss"
 import styles from "./LoginPage.module.scss"
 
 const LoginPage = () => {
+
+  const handleOAuthStart = async () => {
+    const callbackUrl = `${window.location.origin}${import.meta.env.BASE_URL}oauth2/callback`
+    const normalizedCallbackUrl = callbackUrl.replace(/([^:]\/)\/+/g, '$1')
+    const url = `${import.meta.env.VITE_API_BASE_URL}/auth/oauth-redirect?callbackUrl=${encodeURIComponent(normalizedCallbackUrl)}`
+    window.location.href = url
+  }
+
   return (
     <BaseLayout title="Taskflow" description="Taskflow - login page">
       <section className={styles.login}>
@@ -33,6 +41,9 @@ const LoginPage = () => {
                 </button>
               </div>
             </form>
+            <button type='button' onClick={handleOAuthStart}>
+              Login via OAuth
+            </button>
           </div>
         </div>
       </section>

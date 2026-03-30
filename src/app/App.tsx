@@ -3,6 +3,7 @@ import LoginPage from "@/pages/login-page"
 import BoardsPage from "@/pages/boards-page"
 import BoardPage from "@/pages/board-page"
 import TaskPage from "@/pages/task-page"
+import OAuthCallbackPage from "@/pages/oauth-callback"
 
 const ProfilePage = () => <div>Profile Page</div>
 const NotFoundPage = () => <div>404 Page not found</div>
@@ -10,6 +11,7 @@ const NotFoundPage = () => <div>404 Page not found</div>
 const App = () => {
   return (
     <Routes>
+      <Route path='/oauth2/callback' element={<OAuthCallbackPage />} />
       <Route path="/login" element={<LoginPage />} />
       <Route path="/boards" element={<BoardsPage />} />
       <Route path="/boards/:boardId" element={<BoardPage />} />
