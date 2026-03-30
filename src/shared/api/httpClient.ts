@@ -45,6 +45,10 @@ export const httpClient = {
       throw new Error(`HTTP ${response.status} for ${path}`)
     }
 
+    if (response.status === 204) {
+      return undefined as T
+    }
+
     return response.json() as Promise<T>
   },
 

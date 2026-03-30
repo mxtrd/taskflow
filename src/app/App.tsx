@@ -4,8 +4,26 @@ import BoardsPage from "@/pages/boards-page"
 import BoardPage from "@/pages/board-page"
 import TaskPage from "@/pages/task-page"
 import OAuthCallbackPage from "@/pages/oauth-callback"
+import RequireAuth from "./RequireAuth"
+import { useAuth } from "@/shared/hooks/useAuth"
 
-const ProfilePage = () => <div>Profile Page</div>
+const ProfilePage = () => {
+  const { me, logout } = useAuth()
+
+  const handleLogout = async () => {
+    await logout()
+  }
+
+  return (
+    <div>
+      <h1>Profile Page</h1>
+      <p>Logged in as: {me?.login ?? 'unknown'}</p>
+      <button type='button' onClick={handleLogout}>
+        Logout
+      </button>
+    </div>
+  )
+}
 const NotFoundPage = () => <div>404 Page not found</div>
 
 const App = () => {
@@ -13,10 +31,12 @@ const App = () => {
     <Routes>
       <Route path='/oauth2/callback' element={<OAuthCallbackPage />} />
       <Route path="/login" element={<LoginPage />} />
-      <Route path="/boards" element={<BoardsPage />} />
-      <Route path="/boards/:boardId" element={<BoardPage />} />
-      <Route path="/boards/:boardId/tasks/:taskId" element={<TaskPage />} />
-      <Route path="/profile" element={<ProfilePage />} />
+      <Route element={<RequireAuth />}>
+        <Route path="/boards" element={<BoardsPage />} />
+        <Route path="/boards/:boardId" element={<BoardPage />} />
+        <Route path="/boards/:boardId/tasks/:taskId" element={<TaskPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
+      </Route>
 
       <Route path="/" element={<Navigate to="/boards" replace />} />
       <Route path="*" element={<NotFoundPage />} />

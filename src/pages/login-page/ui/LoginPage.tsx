@@ -17,7 +17,7 @@ const LoginPage = () => {
         <div className={baseStyles.container}>
           <div className={styles.content}>
             <h1 className={styles.title}>Task Manager</h1>
-            <form className={styles.loginForm} action="#">
+            {/* <form className={styles.loginForm} action="#">
               <div className={styles.column}>
                 <label className={styles.label} htmlFor="useremail">
                   Email
@@ -40,7 +40,7 @@ const LoginPage = () => {
                   Login
                 </button>
               </div>
-            </form>
+            </form> */}
             <button type='button' onClick={handleOAuthStart}>
               Login via OAuth
             </button>
