@@ -1,4 +1,4 @@
-export type TaskStatus = 0 | 1 | 2
+export type TaskStatus = 0 | 1 | 2 | 3
 
 export type LocalBoard = {
   id: string

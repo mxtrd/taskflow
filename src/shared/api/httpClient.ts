@@ -6,6 +6,15 @@ type RequestOptions = {
   method?: HttpMethod
   body?: unknown
   headers?: HeadersInit
+  /**
+   * For endpoints where Authorization header must be omitted,
+   * e.g. `/auth/refresh` in this educational backend.
+   */
+  skipAuthorizationHeader?: boolean
+  /**
+   * Prevent `401 -> refresh -> retry` recursion on the retry itself.
+   */
+  skipAuthRefresh?: boolean
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
@@ -26,10 +35,12 @@ const defaultHeaders: HeadersInit = {
 
 export const httpClient = {
   async request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+    const normalizedPath = path.replace(/\/+$/, '')
+    const isRefreshEndpoint = normalizedPath === '/auth/refresh'
+
     const accessToken = authStorage.getAccessToken()
-    const authHeaders: HeadersInit = accessToken
-      ? { Authorization: `Bearer ${accessToken}` }
-      : {}
+    const authHeaders: HeadersInit =
+      !options.skipAuthorizationHeader && accessToken ? { Authorization: `Bearer ${accessToken}` } : {}
 
     const response = await fetch(`${API_BASE_URL}${path}`, {
       method: options.method ?? 'GET',
@@ -40,6 +51,21 @@ export const httpClient = {
       },
       body: options.body ? JSON.stringify(options.body) : undefined,
     })
+
+    // If access token is expired/invalid, try to refresh and retry once.
+    if (response.status === 401 && !options.skipAuthRefresh && !isRefreshEndpoint) {
+      if (!refreshInFlight) {
+        refreshInFlight = refreshTokens()
+      }
+
+      const refreshOk = await refreshInFlight.finally(() => {
+        refreshInFlight = null
+      })
+
+      if (refreshOk) {
+        return this.request<T>(path, { ...options, skipAuthRefresh: true })
+      }
+    }
 
     if (!response.ok) {
       throw new Error(`HTTP ${response.status} for ${path}`)
@@ -71,4 +97,36 @@ export const httpClient = {
   delete<T>(path: string, options: Omit<RequestOptions, 'method' | 'body'> = {}): Promise<T> {
     return this.request<T>(path, { ...options, method: 'DELETE' })
   },
+}
+
+let refreshInFlight: Promise<boolean> | null = null
+
+async function refreshTokens(): Promise<boolean> {
+  const refreshToken = authStorage.getRefreshToken()
+  if (!refreshToken) return false
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: 'POST',
+      headers: defaultHeaders,
+      body: JSON.stringify({ refreshToken }),
+    })
+
+    if (!response.ok) {
+      authStorage.clearAll()
+      window.dispatchEvent(new Event('auth:logout'))
+      return false
+    }
+
+    const tokens = (await response.json()) as { accessToken: string; refreshToken: string }
+    authStorage.setAccessToken(tokens.accessToken)
+    authStorage.setRefreshToken(tokens.refreshToken)
+    return true
+  } catch {
+    authStorage.clearAll()
+    window.dispatchEvent(new Event('auth:logout'))
+    return false
+  } finally {
+    // No-op: state cleanup is done above on failure paths.
+  }
 }

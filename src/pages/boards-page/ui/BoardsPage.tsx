@@ -9,7 +9,7 @@ import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardsPage.module.scss'
 
 const BoardsPage = () => {
-  const { boards, addBoard, deleteAllBoards, deleteBoard } = useBoards()
+  const { boards, isLoadingBoards, boardsError, addBoard, deleteAllBoards, deleteBoard } = useBoards()
   const { clearAllTasks, removeTasksForBoard } = useTasks()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')
@@ -93,6 +93,8 @@ const BoardsPage = () => {
                 placeholder="find board"
               />
             </form>
+            {isLoadingBoards && <p>Loading boards...</p>}
+            {boardsError && <p>{boardsError}</p>}
             {boards.length === 0 && !isCreatingBoard ? (
               <p>No boards yet</p>
             ) : (

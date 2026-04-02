@@ -1,6 +1,6 @@
 import type { SubmitEventHandler } from 'react'
 import { useBoards } from '@/shared/hooks/useBoards'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTasks } from '@/shared/hooks/useTasks'
 import TaskItem from './task-item/TaskItem'
@@ -10,8 +10,8 @@ import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardPage.module.scss'
 
 const BoardPage = () => {
-  const { getBoardById, updateBoardTitle, updateBoardDescription } = useBoards()
-  const { getTasksByBoardId, addTask, deleteAllTasksForBoard, deleteTask, toggleTaskComplete } = useTasks()
+  const { getBoardById, updateBoardTitle, updateBoardDescription, boardsError } = useBoards()
+  const { getTasksByBoardId, loadTasksByBoardId, isLoadingTasks, tasksError, addTask, deleteAllTasksForBoard, deleteTask, toggleTaskComplete } = useTasks()
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
@@ -25,6 +25,14 @@ const BoardPage = () => {
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const tasks = boardId ? getTasksByBoardId(boardId) : []
   const hasDescription = Boolean(selectedBoard?.description?.trim())
+
+  useEffect(() => {
+    if (!boardId) return
+
+    loadTasksByBoardId(boardId).catch((error) => {
+      console.error('Failed to load tasks by board id:', error)
+    })
+  }, [boardId, loadTasksByBoardId])
 
   const deleteAllTasks = () => {
 
@@ -217,6 +225,9 @@ const BoardPage = () => {
                 placeholder="find task"
               />
             </form>
+            {boardsError && <p>{boardsError}</p>}
+            {isLoadingTasks && <p>Loading tasks...</p>}
+            {tasksError && <p>{tasksError}</p>}
             {isCreatingTask && (
               <form onSubmit={handleCreateTaskSubmit}>
                 <input

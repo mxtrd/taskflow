@@ -1,72 +1,247 @@
-import { mockTasksByBoardId, type LocalTask, type TasksByBoardId, type TaskStatus } from '@/shared/mocks/taskflowData'
-import { useState, useEffect, type ReactNode } from 'react'
-import { TASKS_STORAGE_KEY } from '@/shared/lib/taskflow-storage'
+import { type LocalTask, type TasksByBoardId, type TaskStatus } from '@/shared/mocks/taskflowData'
+import { useCallback, useState, type ReactNode } from 'react'
+import { createTask as createTaskApi } from '@/entities/tasks/api/createTask'
+import { updateTask as updateTaskApi } from '@/entities/tasks/api/updateTask'
+import { deleteTask as deleteTaskApi } from '@/entities/tasks/api/deleteTask'
+import { getTasksByBoardId as getTasksByBoardIdApi } from '@/entities/tasks/api/getTasksByBoardId'
+import { getTaskById as getTaskByIdApi } from '@/entities/tasks/api/getTaskById'
 import { TasksContext, type TaskUpdate } from './tasks-context'
 
+type TaskMeta = {
+  priority: number
+  startDate?: string
+  deadline?: string
+}
+
+const asValidIsoDate = (value: unknown): string | undefined => {
+  if (typeof value !== 'string') return undefined
+  const normalized = value.trim()
+  if (!normalized) return undefined
+
+  // Backend expects ISO 8601 date strings.
+  const parsed = Date.parse(normalized)
+  if (Number.isNaN(parsed)) return undefined
+
+  return normalized
+}
+
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasksByBoardId, setTasksByBoardId] = useState<TasksByBoardId>(() => {
-    const savedTasksByBoardId = localStorage.getItem(TASKS_STORAGE_KEY)
-    if (savedTasksByBoardId) {
-      return JSON.parse(savedTasksByBoardId) as TasksByBoardId
-    }
-
-    return mockTasksByBoardId
-  })
-
-  useEffect(() => {
-    localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasksByBoardId))
-  }, [tasksByBoardId])
+  const [tasksByBoardId, setTasksByBoardId] = useState<TasksByBoardId>({})
+  const [taskMetaById, setTaskMetaById] = useState<Record<string, TaskMeta>>({})
+  const [isLoadingTasks, setIsLoadingTasks] = useState(false)
+  const [tasksError, setTasksError] = useState<string | null>(null)
 
   const getTasksByBoardId = (boardId: string): LocalTask[] => tasksByBoardId[boardId] ?? []
 
   const getTaskById = (boardId: string, taskId: string): LocalTask | undefined =>
     getTasksByBoardId(boardId).find((task) => task.id === taskId)
 
+  const normalizeTaskStatus = (status: number): TaskStatus => {
+    return status === 0 || status === 1 || status === 2 || status === 3 ? status : 0
+  }
+
+  const loadTasksByBoardId = useCallback(async (boardId: string) => {
+    setIsLoadingTasks(true)
+    setTasksError(null)
+    try {
+      const response = await getTasksByBoardIdApi(boardId)
+
+      const mapped: LocalTask[] = response.data.map((task) => ({
+        id: task.id,
+        boardId,
+        title: task.attributes.title,
+        description: task.attributes.description ?? '',
+        status: normalizeTaskStatus(task.attributes.status),
+      }))
+
+      const nextMeta = response.data.reduce<Record<string, TaskMeta>>((acc, task) => {
+        acc[task.id] = {
+          priority: task.attributes.priority,
+          startDate: asValidIsoDate(task.attributes.startDate),
+          deadline: asValidIsoDate(task.attributes.deadline),
+        }
+        return acc
+      }, {})
+
+      setTasksByBoardId((prev) => ({
+        ...prev,
+        [boardId]: mapped,
+      }))
+      setTaskMetaById((prev) => ({ ...prev, ...nextMeta }))
+    } catch (error) {
+      setTasksError('Failed to load tasks')
+      throw error
+    } finally {
+      setIsLoadingTasks(false)
+    }
+  }, [])
+
+  const loadTaskById = useCallback(async (boardId: string, taskId: string) => {
+    setIsLoadingTasks(true)
+    setTasksError(null)
+    try {
+      const response = await getTaskByIdApi(boardId, taskId)
+      const dto = response.data
+
+      const nextTask: LocalTask = {
+        id: dto.id,
+        boardId,
+        title: dto.attributes.title,
+        description: dto.attributes.description ?? '',
+        status: normalizeTaskStatus(dto.attributes.status),
+      }
+      const nextTaskMeta: TaskMeta = {
+        priority: dto.attributes.priority,
+        startDate: asValidIsoDate(dto.attributes.startDate),
+        deadline: asValidIsoDate(dto.attributes.deadline),
+      }
+
+      setTasksByBoardId((prev) => {
+        const list = prev[boardId] ?? []
+        const index = list.findIndex((task) => task.id === taskId)
+
+        if (index === -1) {
+          return {
+            ...prev,
+            [boardId]: [nextTask, ...list],
+          }
+        }
+
+        const nextList = [...list]
+        nextList[index] = nextTask
+
+        return {
+          ...prev,
+          [boardId]: nextList,
+        }
+      })
+      setTaskMetaById((prev) => ({ ...prev, [taskId]: nextTaskMeta }))
+    } catch (error) {
+      setTasksError('Failed to load task details')
+      throw error
+    } finally {
+      setIsLoadingTasks(false)
+    }
+  }, [])
+
   const addTask = (boardId: string, title: string) => {
     const normalizedTitle = title.trim()
     if (!normalizedTitle) return
 
-    const newTask: LocalTask = {
-      id: crypto?.randomUUID?.() ?? Date.now().toString(),
-      boardId,
-      title: normalizedTitle,
-      description: '',
-      status: 2, //draft
-    }
+    void (async () => {
+      try {
+        setTasksError(null)
+        const response = await createTaskApi(boardId, { title: normalizedTitle })
+        const dto = response.data
+        const newTask: LocalTask = {
+          id: dto.id,
+          boardId,
+          title: dto.attributes.title,
+          description: dto.attributes.description ?? '',
+          status: normalizeTaskStatus(dto.attributes.status),
+        }
 
-    setTasksByBoardId((prev) => ({
-      ...prev,
-      [boardId]: [newTask, ...(prev[boardId] ?? [])],
-    }))
+        setTasksByBoardId((prev) => ({
+          ...prev,
+          [boardId]: [newTask, ...(prev[boardId] ?? [])],
+        }))
+        setTaskMetaById((prev) => ({
+          ...prev,
+          [dto.id]: {
+            priority: dto.attributes.priority,
+            startDate: asValidIsoDate(dto.attributes.startDate),
+            deadline: asValidIsoDate(dto.attributes.deadline),
+          },
+        }))
+      } catch (error) {
+        setTasksError('Failed to create task')
+        console.error('Failed to create task:', error)
+      }
+    })()
   }
 
   const updateTask = (boardId: string, taskId: string, updated: TaskUpdate) => {
     if (updated.title !== undefined && updated.title.trim() === '') {
       return
     }
+    const currentTask = getTaskById(boardId, taskId)
+    if (!currentTask) return
+    const currentMeta = taskMetaById[taskId]
 
-    setTasksByBoardId((prev) => {
-      const list = prev[boardId]
-      if (!list) return prev
+    void (async () => {
+      try {
+        setTasksError(null)
+        const response = await updateTaskApi(boardId, taskId, {
+          title: updated.title ?? currentTask.title,
+          description: updated.description ?? currentTask.description,
+          status: updated.status ?? currentTask.status,
+          priority: currentMeta?.priority ?? 0,
+          ...(currentMeta?.startDate ? { startDate: currentMeta.startDate } : {}),
+          ...(currentMeta?.deadline ? { deadline: currentMeta.deadline } : {}),
+        })
 
-      const index = list.findIndex((task) => task.id === taskId)
-      if (index === -1) return prev
+        const dto = response.data
+        const nextTask: LocalTask = {
+          id: dto.id,
+          boardId,
+          title: dto.attributes.title,
+          description: dto.attributes.description ?? '',
+          status: normalizeTaskStatus(dto.attributes.status),
+        }
 
-      const nextList = [...list]
-      nextList[index] = { ...nextList[index], ...updated }
+        setTasksByBoardId((prev) => {
+          const list = prev[boardId] ?? []
+          const index = list.findIndex((task) => task.id === taskId)
+          if (index === -1) return prev
 
-      return {
-        ...prev,
-        [boardId]: nextList
+          const nextList = [...list]
+          nextList[index] = nextTask
+
+          return {
+            ...prev,
+            [boardId]: nextList,
+          }
+        })
+        setTaskMetaById((prev) => ({
+          ...prev,
+          [taskId]: {
+            priority: dto.attributes.priority,
+            startDate: asValidIsoDate(dto.attributes.startDate),
+            deadline: asValidIsoDate(dto.attributes.deadline),
+          },
+        }))
+      } catch (error) {
+        setTasksError('Failed to update task')
+        console.error('Failed to update task:', error)
       }
-    })
+    })()
   }
 
   const deleteAllTasksForBoard = (boardId: string) => {
-    setTasksByBoardId((prev) => ({
-      ...prev,
-      [boardId]: [],
-    }))
+    const ids = (tasksByBoardId[boardId] ?? []).map((task) => task.id)
+    void (async () => {
+      setTasksError(null)
+      for (const id of ids) {
+        try {
+          await deleteTaskApi(boardId, id)
+        } catch (error) {
+          setTasksError('Failed to delete one or more tasks')
+          console.error(`Failed to delete task ${id}:`, error)
+        }
+      }
+
+      setTasksByBoardId((prev) => ({
+        ...prev,
+        [boardId]: [],
+      }))
+      setTaskMetaById((prev) => {
+        const next = { ...prev }
+        for (const id of ids) {
+          delete next[id]
+        }
+        return next
+      })
+    })()
   }
 
   const clearAllTasks = () => {
@@ -74,18 +249,33 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const deleteTask = (boardId: string, taskId: string) => {
-    setTasksByBoardId((prev) => {
-      const list = prev[boardId]
-      if (!list) return prev
+    void (async () => {
+      try {
+        setTasksError(null)
+        await deleteTaskApi(boardId, taskId)
+        setTasksByBoardId((prev) => {
+          const list = prev[boardId]
+          if (!list) return prev
 
-      const nextList = list.filter((task) => task.id !== taskId)
-      if (nextList.length === list.length) return prev
+          const nextList = list.filter((task) => task.id !== taskId)
+          if (nextList.length === list.length) return prev
 
-      return {
-        ...prev,
-        [boardId]: nextList,
+          return {
+            ...prev,
+            [boardId]: nextList,
+          }
+        })
+        setTaskMetaById((prev) => {
+          if (!(taskId in prev)) return prev
+          const next = { ...prev }
+          delete next[taskId]
+          return next
+        })
+      } catch (error) {
+        setTasksError('Failed to delete task')
+        console.error('Failed to delete task:', error)
       }
-    })
+    })()
   }
 
   const removeTasksForBoard = (boardId: string) => {
@@ -96,29 +286,30 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
       delete next[boardId]
       return next
     })
-  }
+    setTaskMetaById((prev) => {
+      const ids = (tasksByBoardId[boardId] ?? []).map((task) => task.id)
+      if (ids.length === 0) return prev
 
-  const toggleTaskComplete = (boardId: string, taskId: string, isDone: boolean) => {
-    setTasksByBoardId((prev) => {
-      const list = prev[boardId]
-      if (!list) return prev
-
-      const nextStatus: TaskStatus = isDone ? 1 : 0
-
-      const nextList = list.map((task) =>
-        task.id === taskId ? { ...task, status: nextStatus } : task
-      )
-
-      return {
-        ...prev,
-        [boardId]: nextList,
+      const next = { ...prev }
+      for (const id of ids) {
+        delete next[id]
       }
+      return next
     })
   }
 
+  const toggleTaskComplete = (boardId: string, taskId: string, isDone: boolean) => {
+    const nextStatus: TaskStatus = isDone ? 1 : 0
+    updateTask(boardId, taskId, { status: nextStatus })
+  }
+
   const value = {
+    isLoadingTasks,
+    tasksError,
     getTasksByBoardId,
     getTaskById,
+    loadTasksByBoardId,
+    loadTaskById,
     addTask,
     updateTask,
     deleteAllTasksForBoard,

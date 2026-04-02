@@ -3,6 +3,8 @@ import type { LocalBoard } from '@/shared/mocks/taskflowData'
 
 export type BoardsContextValue = {
   boards: LocalBoard[]
+  isLoadingBoards: boolean
+  boardsError: string | null
   addBoard: (title: string) => void
   getBoardById: (boardId: string) => LocalBoard | undefined
   updateBoardTitle: (boardId: string, title: string) => void
