@@ -29,7 +29,8 @@ Taskflow is not a full Trello clone. It is a focused task manager with:
 
 - Auth: `POST /auth/login`, `POST /auth/refresh`, `POST /auth/logout`, `GET /auth/me`
 - Boards (owner): `GET /boards/my`, `POST /boards`, `PUT /boards/{boardId}`, `DELETE /boards/{boardId}`
-- Tasks (owner): `GET /boards/{boardId}/tasks`, `GET /boards/{boardId}/tasks/{taskId}`, `POST /boards/{boardId}/tasks`, `PUT /boards/{boardId}/tasks/{taskId}`, `DELETE /boards/{boardId}/tasks/{taskId}`
+- Tasks (public read): `GET /boards/{boardId}/tasks`, `GET /boards/{boardId}/tasks/{taskId}`
+- Tasks (owner write): `POST /boards/{boardId}/tasks`, `PUT /boards/{boardId}/tasks/{taskId}`, `DELETE /boards/{boardId}/tasks/{taskId}`
 
 ### Optional later
 
@@ -64,7 +65,12 @@ The image `docs/assets/ui-draft-pages.png` stores the rough page design referenc
 
 ## Architecture direction
 
-Current state follows course-style layers (`dal / bll / ui`).
+Current implementation is already migrated to page-centric folders with API-driven data:
+
+- auth session bootstrap (`me`) and token refresh retry flow
+- boards read/write via owner endpoints
+- tasks read via public endpoints and write via owner endpoints
+- local boards/tasks storage removed from active flow
 
 Target state is **page-centric FSD-light**:
 
@@ -83,17 +89,46 @@ See details in `docs/ARCHITECTURE.md`.
 
 - React
 - TypeScript
+- React Router
 - Fetch API
 - CSS Modules
 
 ### Planned
 
-- React Router
 - Redux Toolkit
+- RTK Query (option A data-fetching strategy)
 - React Hook Form
 - Zod
-- Axios
+- Axios (option B data-fetching strategy)
 - WebSocket (optional advanced stage)
+
+## Auth behavior
+
+- OAuth login exchanges `code` for token pair.
+- App stores `accessToken` and `refreshToken` in localStorage.
+- If API returns `401`, client performs `POST /auth/refresh`, updates tokens, and retries the original request once.
+
+## State and data layer options (next stage)
+
+The project keeps two planned implementation tracks and will choose one:
+
+- Option A: `RTK + RTK Query`
+  - Modern Redux-native data fetching and cache invalidation
+  - Less manual async boilerplate
+- Option B: `RTK + Axios`
+  - Explicit custom API client and interceptors architecture
+  - Good when the portfolio focus is HTTP client design
+
+## Environment
+
+Required env vars:
+
+- `VITE_API_BASE_URL`
+- `VITE_API_KEY`
+
+Optional:
+
+- `VITE_FF_TASK_DETAILS_V2=false`
 
 ## Roadmap
 

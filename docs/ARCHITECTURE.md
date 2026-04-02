@@ -10,6 +10,14 @@ The codebase started from a course-oriented layered approach:
 
 This baseline is valid for early learning, but not ideal for scaling product features.
 
+Current implemented baseline in this repository:
+
+- routing is page-centric (`/login`, `/boards`, `/boards/:boardId`, `/boards/:boardId/tasks/:taskId`, `/profile`)
+- auth is session-based with token pair and refresh retry on `401`
+- boards use owner endpoints for read/write
+- tasks use public endpoints for read and owner endpoints for write
+- app state is currently native React Context/hooks (RTK planned later)
+
 ## Target state: page-centric FSD-light
 
 Taskflow uses a practical hybrid:
@@ -59,6 +67,11 @@ Taskflow uses a practical hybrid:
 UI/Page -> Feature -> Entity API -> Backend API  
 Backend response -> Entity model mapping -> Feature state -> UI
 
+Current practical variation:
+
+UI/Page -> Context action -> Entity API -> Backend API  
+Backend response -> DTO mapping -> Context state -> UI
+
 ## API placement decision
 
 For this project, API modules are colocated with entities because API endpoints mostly describe resources (users, boards, tasks), not only user actions.
@@ -67,6 +80,32 @@ Use this rule:
 
 - Put low-level resource requests in `entities/*/api`
 - Put scenario orchestration in `features/*`
+
+## Current endpoint strategy
+
+Because the educational backend exposes different capabilities for owner and public routes:
+
+- Boards: owner endpoints for list/create/update/delete
+- Tasks read: public endpoints (`GET /boards/{boardId}/tasks`, `GET /boards/{boardId}/tasks/{taskId}`)
+- Tasks write: owner endpoints (`POST/PUT/DELETE /boards/{boardId}/tasks...`)
+
+This hybrid is an intentional implementation choice for MVP compatibility with the API contract.
+
+## Planned data-layer strategy (decision pending)
+
+Two valid next-step options are supported:
+
+- **Option A: RTK + RTK Query**
+  - Use RTK Query as primary server-state layer
+  - Keep endpoint declarations and cache invalidation close to Redux store
+  - Reduce manual request lifecycle code in components/contexts
+
+- **Option B: RTK + Axios**
+  - Use RTK slices/selectors for state and Axios for HTTP communication
+  - Centralize auth refresh and error normalization in Axios interceptors
+  - Keep explicit control over request orchestration and transport logic
+
+Both options should preserve existing entity API contracts and route-level behavior.
 
 ## Migration notes
 

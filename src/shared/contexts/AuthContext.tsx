@@ -10,8 +10,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const accessToken = authStorage.getAccessToken()
+    const refreshToken = authStorage.getRefreshToken()
 
-    if (!accessToken) {
+    // If either token exists, try to hydrate session via `/auth/me`.
+    // When access token is expired, `httpClient` will auto-refresh and retry.
+    if (!accessToken && !refreshToken) {
       setIsCheckingAuth(false)
       return
     }
@@ -27,6 +30,16 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       .finally(() => {
         setIsCheckingAuth(false)
       })
+  }, [])
+
+  useEffect(() => {
+    const handleLogout = () => {
+      setMe(null)
+      setIsCheckingAuth(false)
+    }
+
+    window.addEventListener('auth:logout', handleLogout)
+    return () => window.removeEventListener('auth:logout', handleLogout)
   }, [])
 
   const signIn = useCallback(async ({ accessToken, refreshToken }: SignInPayload) => {

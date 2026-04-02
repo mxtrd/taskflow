@@ -19,7 +19,8 @@ Taskflow project guidance for future sessions:
 7. Core endpoints:
    - Auth: `login`, `refresh`, `logout`, `me`
    - Boards owner: `my`, `create`, `update`, `delete`
-   - Tasks owner: `list`, `details`, `create`, `update`, `delete`
+   - Tasks public: `list`, `details`
+   - Tasks owner: `create`, `update`, `delete`
 8. Treat reorder/move/attachments/websocket as optional post-MVP enhancements.
 9. If endpoint screenshots include all API routes, treat them as reference only; prioritize the MVP endpoint list from `README.md`.
 
@@ -58,6 +59,9 @@ When generating code for this repository:
 - place user interaction logic inside `features/*`
 - avoid business logic directly in `pages`
 - do not introduce extra global state libraries beyond Redux Toolkit plan
+- support two planned data-layer variants until user chooses:
+  - Option A: `RTK + RTK Query`
+  - Option B: `RTK + Axios` (interceptors-focused)
 
 When unsure about placement, ask before introducing a new architecture pattern.
 

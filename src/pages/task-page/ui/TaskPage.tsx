@@ -1,5 +1,6 @@
 import type { SubmitEventHandler } from 'react'
 import type { TaskStatus } from '@/shared/mocks/taskflowData'
+import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useBoards } from '@/shared/hooks/useBoards'
 import { useTasks } from '@/shared/hooks/useTasks'
@@ -9,10 +10,18 @@ import styles from './TaskPage.module.scss'
 
 const TaskPage = () => {
   const { boardId, taskId } = useParams<{ boardId: string; taskId: string }>()
-  const { getBoardById } = useBoards()
-  const { getTaskById, updateTask } = useTasks()
+  const { getBoardById, boardsError } = useBoards()
+  const { getTaskById, loadTaskById, isLoadingTasks, tasksError, updateTask } = useTasks()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const selectedTask = boardId && taskId ? getTaskById(boardId, taskId) : undefined
+
+  useEffect(() => {
+    if (!boardId || !taskId) return
+
+    loadTaskById(boardId, taskId).catch((error) => {
+      console.error('Failed to load task details:', error)
+    })
+  }, [boardId, taskId, loadTaskById])
 
   const handleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
     event.preventDefault()
@@ -26,19 +35,35 @@ const TaskPage = () => {
 
     if (!title) return
 
-    const status: TaskStatus = 
-      statusRaw === 0 || statusRaw === 1 || statusRaw === 2 ? statusRaw : selectedTask.status
+    const status: TaskStatus =
+      statusRaw === 0 || statusRaw === 1 || statusRaw === 2 || statusRaw === 3
+        ? statusRaw
+        : selectedTask.status
 
       updateTask(boardId, taskId, { title, description, status })
   }
 
 
-  if (!selectedBoard || !selectedTask) {
+  if (!selectedBoard) {
     return (
       <BaseLayout title='Taskflow' description='Taskflow - task page'>
         <section className={styles.task}>
           <div className={baseStyles.container}>
             <div className={styles.content}>Task not found</div>
+          </div>
+        </section>
+      </BaseLayout>
+    )
+  }
+
+  if (!selectedTask) {
+    return (
+      <BaseLayout title='Taskflow' description='Taskflow - task page'>
+        <section className={styles.task}>
+          <div className={baseStyles.container}>
+            <div className={styles.content}>
+              {isLoadingTasks ? 'Loading task details...' : 'Task not found'}
+            </div>
           </div>
         </section>
       </BaseLayout>
@@ -51,6 +76,9 @@ const TaskPage = () => {
         <div className={baseStyles.container}>
           <div className={styles.content}>
             <h1 className={styles.title}>Task Details</h1>
+            {isLoadingTasks && <p>Loading task details...</p>}
+            {boardsError && <p>{boardsError}</p>}
+            {tasksError && <p>{tasksError}</p>}
             <form className={styles.form} onSubmit={handleSubmit}>
               <div className={styles.column}>
                 <label className={styles.label} htmlFor='title'>
@@ -95,6 +123,9 @@ const TaskPage = () => {
                   </option>
                   <option className={styles.option} value='2'>
                     Draft
+                  </option>
+                  <option className={styles.option} value='3'>
+                    Backlog
                   </option>
                 </select>
               </div>
