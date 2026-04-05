@@ -5,25 +5,27 @@ import BoardPage from "@/pages/board-page"
 import TaskPage from "@/pages/task-page"
 import OAuthCallbackPage from "@/pages/oauth-callback"
 import RequireAuth from "./RequireAuth"
-import { useAuth } from "@/shared/hooks/useAuth"
+// import { useAuth } from "@/shared/hooks/useAuth"
+import ProfilePage from "@/pages/profile-page"
 
-const ProfilePage = () => {
-  const { me, logout } = useAuth()
+// const ProfilePage = () => {
+//   const { me, logout } = useAuth()
+  
+//   const handleLogout = async () => {
+//     await logout()
+//   }
 
-  const handleLogout = async () => {
-    await logout()
-  }
+//   return (
+//     <div>
+//       <h1>Profile Page</h1>
+//       <p>Logged in as: {me?.login ?? 'unknown'}</p>
+//       <button type='button' onClick={handleLogout}>
+//         Logout
+//       </button>
+//     </div>
+//   )
+// }
 
-  return (
-    <div>
-      <h1>Profile Page</h1>
-      <p>Logged in as: {me?.login ?? 'unknown'}</p>
-      <button type='button' onClick={handleLogout}>
-        Logout
-      </button>
-    </div>
-  )
-}
 const NotFoundPage = () => <div>404 Page not found</div>
 
 const App = () => {
