@@ -12,7 +12,7 @@ const LoginPage = () => {
   }
 
   return (
-    <BaseLayout title="Taskflow" description="Taskflow - login page">
+    <BaseLayout title="Taskflow | Login" description="Taskflow - login page">
       <section className={styles.login}>
         <div className={baseStyles.container}>
           <div className={styles.content}>

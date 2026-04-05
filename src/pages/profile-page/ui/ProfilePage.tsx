@@ -1,20 +1,29 @@
 import { useAuth } from "@/shared/hooks/useAuth"
+import BaseLayout from '@/app/layouts/base-layout'
+import baseStyles from '@/app/styles/base.module.scss'
+import styles from './ProfilePage.module.scss'
 
 const ProfilePage = () => {
   const { me, logout } = useAuth()
-  
+
   const handleLogout = async () => {
     await logout()
   }
 
   return (
-    <div>
-      <h1>Profile Page</h1>
-      <p>Logged in as: {me?.login ?? 'unknown'}</p>
-      <button type='button' onClick={handleLogout}>
-        Logout
-      </button>
-    </div>
+    <BaseLayout title='Taskflow' description='Taskflow - profile page'>
+      <section className={styles.boards}>
+        <div className={baseStyles.container}>
+          <div className={baseStyles.content}>
+            <h1 className={styles.title}>Profile Page</h1>
+            <p>Logged in as: {me?.login ?? 'unknown'}</p>
+            <button type='button' onClick={handleLogout}>
+              Logout
+            </button>
+          </div>
+        </div>
+      </section>
+    </BaseLayout>
   )
 }
 
