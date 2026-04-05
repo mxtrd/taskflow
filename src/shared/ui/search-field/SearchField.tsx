@@ -5,11 +5,19 @@ type Props = {
   value: string
   name: string
   onChange: ChangeEventHandler<HTMLInputElement>
-  placeholder: string,
+  placeholder: string
   autoComplete?: string
 }
 
-const SearchField = ({ value, name, onChange, placeholder, autoComplete = 'off' }: Props) => {
+const SearchField = (props: Props) => {
+  const {
+    value,
+    name,
+    onChange,
+    placeholder,
+    autoComplete = 'off'
+  } = props
+
   return (
     <input
       className={styles.root}
