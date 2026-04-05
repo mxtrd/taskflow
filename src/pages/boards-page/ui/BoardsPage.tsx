@@ -70,17 +70,20 @@ const BoardsPage = () => {
           <div className={baseStyles.content}>
             <h1 className={styles.title}>My Boards</h1>
             <div className={styles.buttons}>
-              <Button className={styles.button} type='button' onClick={startCreateBoard}>
+              <Button
+                className={styles.createBoard}
+                onClick={startCreateBoard}
+              >
                 Create New Board
               </Button>
-              <button
-                className={styles.button}
-                type='button'
+              <Button
+                variant='secondary'
+                className={styles.deleteBoard}
                 onClick={deleteAllBoardsHandler}
                 disabled={boards.length === 0}
               >
                 Delete All Boards
-              </button>
+              </Button>
             </div>
             <form>
               <SearchField
@@ -108,10 +111,20 @@ const BoardsPage = () => {
                           placeholder='Board title...'
                           required
                         />
-                        <button type='submit'>Save</button>
-                        <button type='button' onClick={cancelCreateBoard}>
+                        {/* <button type='submit'>Save</button> */}
+                        <Button
+                          // className={styles.deleteBoard}
+                          type="submit"
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant='secondary'
+                          // className={styles.deleteBoard}
+                          onClick={cancelCreateBoard}
+                        >
                           Cancel
-                        </button>
+                        </Button>
                       </form>
                     </li>
                   )}

@@ -7,6 +7,7 @@ import { useTasks } from '@/shared/hooks/useTasks'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './TaskPage.module.scss'
+import Button from '@/shared/ui/button'
 
 const TaskPage = () => {
   const { boardId, taskId } = useParams<{ boardId: string; taskId: string }>()
@@ -40,7 +41,7 @@ const TaskPage = () => {
         ? statusRaw
         : selectedTask.status
 
-      updateTask(boardId, taskId, { title, description, status })
+    updateTask(boardId, taskId, { title, description, status })
   }
 
 
@@ -139,9 +140,12 @@ const TaskPage = () => {
                 />
               </div>
               <div className={styles.column}>
-                <button className={styles.button} type='submit'>
+                <Button
+                  className={styles.button}
+                  type='submit'
+                >
                   Save
-                </button>
+                </Button>
               </div>
             </form>
           </div>
