@@ -8,6 +8,7 @@ import SearchField from '@/shared/ui/search-field'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardPage.module.scss'
+import Button from '@/shared/ui/button'
 
 const BoardPage = () => {
   const { getBoardById, updateBoardTitle, updateBoardDescription, boardsError } = useBoards()
@@ -202,20 +203,19 @@ const BoardPage = () => {
               </button>
             )}
             <div className={styles.buttons}>
-              <button
+              <Button
                 className={styles.button}
-                type='button'
                 onClick={startCreateTask}
               >
                 New Task
-              </button>
-              <button
+              </Button>
+              <Button
+                variant='secondary'
                 className={styles.button}
-                type='button'
                 onClick={deleteAllTasks}
               >
                 Delete All Tasks
-              </button>
+              </Button>
             </div>
             <form>
               <SearchField

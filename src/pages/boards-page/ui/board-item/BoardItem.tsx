@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom'
 import type { LocalBoard } from '@/shared/mocks/taskflowData'
 import styles from './BoardItem.module.scss'
+import Button from '@/shared/ui/button'
 
 type Props = {
   board: LocalBoard
@@ -11,12 +12,13 @@ type Props = {
 const BoardItem = ({ board, to, onDeleteBoardButtonClick }: Props) => {
   return (
     <li className={styles.board}>
-      <button
+      <Button
+        variant='secondary'
         className={styles.button}
         onClick={() => onDeleteBoardButtonClick(board.id)}
       >
         Delete
-      </button>
+      </Button>
       <div className={styles.body}>
         <Link className={styles.link} to={to}>
           <h3 className={styles.title}>{board.title}</h3>
