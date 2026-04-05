@@ -12,6 +12,8 @@ export type AuthContextValue = {
   me: MeResponse | null
   signIn: (payload: SignInPayload) => Promise<void>
   logout: () => Promise<void>
+  /** Restore mock session after logout when `VITE_DEV_OFFLINE=true` (dev only). */
+  enterLocalDevSession: () => void
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

@@ -2,13 +2,25 @@ import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react
 import { getMe, type MeResponse } from '@/entities/auth/api/getMe'
 import { logout as logoutApi } from '@/entities/auth/api/logout'
 import { authStorage } from '@/shared/lib/auth-storage'
+import { isDevOffline } from '@/shared/config/is-dev-offline'
 import { AuthContext, type SignInPayload } from './auth-context'
 
+const DEV_OFFLINE_ME: MeResponse = {
+  userId: 'dev-offline',
+  login: 'dev@offline.local',
+}
+
+const noopEnterLocalDevSession = () => {}
+
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true)
-  const [me, setMe] = useState<MeResponse | null>(null)
+  const [isCheckingAuth, setIsCheckingAuth] = useState(() => (isDevOffline ? false : true))
+  const [me, setMe] = useState<MeResponse | null>(() => (isDevOffline ? DEV_OFFLINE_ME : null))
 
   useEffect(() => {
+    if (isDevOffline) {
+      return
+    }
+
     const accessToken = authStorage.getAccessToken()
     const refreshToken = authStorage.getRefreshToken()
 
@@ -42,9 +54,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return () => window.removeEventListener('auth:logout', handleLogout)
   }, [])
 
+  const enterLocalDevSession = useCallback(() => {
+    if (!isDevOffline) return
+    setMe(DEV_OFFLINE_ME)
+  }, [])
+
   const signIn = useCallback(async ({ accessToken, refreshToken }: SignInPayload) => {
     authStorage.setAccessToken(accessToken)
     authStorage.setRefreshToken(refreshToken)
+
+    if (isDevOffline) {
+      setMe(DEV_OFFLINE_ME)
+      return
+    }
 
     try {
       const user = await getMe()
@@ -60,7 +82,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const refreshToken = authStorage.getRefreshToken()
 
     try {
-      if (refreshToken) {
+      if (refreshToken && !isDevOffline) {
         await logoutApi({ refreshToken })
       }
     } catch {
@@ -78,8 +100,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       me,
       signIn,
       logout,
+      enterLocalDevSession: isDevOffline ? enterLocalDevSession : noopEnterLocalDevSession,
     }),
-    [isCheckingAuth, me, signIn, logout]
+    [enterLocalDevSession, isCheckingAuth, me, signIn, logout]
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

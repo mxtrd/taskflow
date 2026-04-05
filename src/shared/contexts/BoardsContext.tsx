@@ -1,5 +1,7 @@
 import { useState, useEffect, type ReactNode } from 'react'
 import type { LocalBoard } from '@/shared/mocks/taskflowData'
+import { mockBoards } from '@/shared/mocks/taskflowData'
+import { isDevOffline } from '@/shared/config/is-dev-offline'
 import { getMyBoards } from '@/entities/boards/api/getMyBoards'
 import { createBoard } from '@/entities/boards/api/createBoard'
 import { updateBoard } from '@/entities/boards/api/updateBoard'
@@ -42,6 +44,18 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
       setBoardsError(null)
 
       try {
+        if (isDevOffline) {
+          if (!isMounted) return
+          setBoards(structuredClone(mockBoards))
+          setIsImportantById(
+            mockBoards.reduce<Record<string, boolean>>((acc, b) => {
+              acc[b.id] = false
+              return acc
+            }, {})
+          )
+          return
+        }
+
         const { data } = await getMyBoards()
         if (!isMounted) return
 
@@ -77,6 +91,19 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
     const normalizedTitle = title.trim()
     if(!normalizedTitle) return
 
+    if (isDevOffline) {
+      setBoardsError(null)
+      const id = `board-local-${crypto.randomUUID()}`
+      const newBoard: LocalBoard = {
+        id,
+        title: normalizedTitle,
+        description: '',
+      }
+      setBoards((prevBoards) => [newBoard, ...prevBoards])
+      setIsImportantById((prev) => ({ ...prev, [id]: false }))
+      return
+    }
+
     void (async () => {
       try {
         setBoardsError(null)
@@ -105,6 +132,14 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
 
     const current = boards.find((b) => b.id === boardId)
     if (!current) return
+
+    if (isDevOffline) {
+      setBoardsError(null)
+      setBoards((prevBoards) =>
+        prevBoards.map((b) => (b.id === boardId ? { ...b, title: normalizedTitle } : b))
+      )
+      return
+    }
 
     const isImportant = Boolean(isImportantById[boardId])
 
@@ -139,6 +174,14 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
     const current = boards.find((b) => b.id === boardId)
     if (!current) return
 
+    if (isDevOffline) {
+      setBoardsError(null)
+      setBoards((prevBoards) =>
+        prevBoards.map((b) => (b.id === boardId ? { ...b, description: normalizedDescription } : b))
+      )
+      return
+    }
+
     const isImportant = Boolean(isImportantById[boardId])
 
     void (async () => {
@@ -169,6 +212,13 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
   const deleteAllBoards = () => {
     const ids = boards.map((b) => b.id)
 
+    if (isDevOffline) {
+      setBoardsError(null)
+      setBoards([])
+      setIsImportantById({})
+      return
+    }
+
     void (async () => {
       setBoardsError(null)
       for (const id of ids) {
@@ -186,6 +236,18 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const deleteBoard = (boardId: string) => {
+    if (isDevOffline) {
+      setBoardsError(null)
+      setBoards((prevBoards) => prevBoards.filter((board) => board.id !== boardId))
+      setIsImportantById((prev) => {
+        if (!(boardId in prev)) return prev
+        const next = { ...prev }
+        delete next[boardId]
+        return next
+      })
+      return
+    }
+
     void (async () => {
       try {
         setBoardsError(null)

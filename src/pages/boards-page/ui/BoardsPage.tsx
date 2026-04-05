@@ -7,6 +7,7 @@ import SearchField from '@/shared/ui/search-field'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardsPage.module.scss'
+import Button from '@/shared/ui/button'
 
 const BoardsPage = () => {
   const { boards, isLoadingBoards, boardsError, addBoard, deleteAllBoards, deleteBoard } = useBoards()
@@ -69,13 +70,9 @@ const BoardsPage = () => {
           <div className={baseStyles.content}>
             <h1 className={styles.title}>My Boards</h1>
             <div className={styles.buttons}>
-              <button
-                className={styles.button}
-                type='button'
-                onClick={startCreateBoard}
-              >
+              <Button className={styles.button} type='button' onClick={startCreateBoard}>
                 Create New Board
-              </button>
+              </Button>
               <button
                 className={styles.button}
                 type='button'

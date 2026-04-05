@@ -1,5 +1,11 @@
-import { type LocalTask, type TasksByBoardId, type TaskStatus } from '@/shared/mocks/taskflowData'
+import {
+  type LocalTask,
+  type TasksByBoardId,
+  type TaskStatus,
+  mockTasksByBoardId,
+} from '@/shared/mocks/taskflowData'
 import { useCallback, useState, type ReactNode } from 'react'
+import { isDevOffline } from '@/shared/config/is-dev-offline'
 import { createTask as createTaskApi } from '@/entities/tasks/api/createTask'
 import { updateTask as updateTaskApi } from '@/entities/tasks/api/updateTask'
 import { deleteTask as deleteTaskApi } from '@/entities/tasks/api/deleteTask'
@@ -25,9 +31,23 @@ const asValidIsoDate = (value: unknown): string | undefined => {
   return normalized
 }
 
+const buildInitialTaskMeta = (byBoard: TasksByBoardId): Record<string, TaskMeta> => {
+  const meta: Record<string, TaskMeta> = {}
+  for (const tasks of Object.values(byBoard)) {
+    for (const t of tasks) {
+      meta[t.id] = { priority: 0 }
+    }
+  }
+  return meta
+}
+
 export const TasksProvider = ({ children }: { children: ReactNode }) => {
-  const [tasksByBoardId, setTasksByBoardId] = useState<TasksByBoardId>({})
-  const [taskMetaById, setTaskMetaById] = useState<Record<string, TaskMeta>>({})
+  const [tasksByBoardId, setTasksByBoardId] = useState<TasksByBoardId>(() =>
+    isDevOffline ? structuredClone(mockTasksByBoardId) : {}
+  )
+  const [taskMetaById, setTaskMetaById] = useState<Record<string, TaskMeta>>(() =>
+    isDevOffline ? buildInitialTaskMeta(mockTasksByBoardId) : {}
+  )
   const [isLoadingTasks, setIsLoadingTasks] = useState(false)
   const [tasksError, setTasksError] = useState<string | null>(null)
 
@@ -41,6 +61,17 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const loadTasksByBoardId = useCallback(async (boardId: string) => {
+    if (isDevOffline) {
+      setIsLoadingTasks(true)
+      setTasksError(null)
+      try {
+        await Promise.resolve()
+      } finally {
+        setIsLoadingTasks(false)
+      }
+      return
+    }
+
     setIsLoadingTasks(true)
     setTasksError(null)
     try {
@@ -77,6 +108,49 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   }, [])
 
   const loadTaskById = useCallback(async (boardId: string, taskId: string) => {
+    if (isDevOffline) {
+      setIsLoadingTasks(true)
+      setTasksError(null)
+      try {
+        const fromList = mockTasksByBoardId[boardId]
+        const fromMock = fromList?.find((t) => t.id === taskId)
+        if (!fromMock) {
+          throw new Error('Task not found')
+        }
+        const nextTask: LocalTask = structuredClone(fromMock)
+
+        setTasksByBoardId((prev) => {
+          const list = prev[boardId] ?? []
+          const index = list.findIndex((task) => task.id === taskId)
+
+          if (index === -1) {
+            return {
+              ...prev,
+              [boardId]: [nextTask, ...list],
+            }
+          }
+
+          const nextList = [...list]
+          nextList[index] = nextTask
+
+          return {
+            ...prev,
+            [boardId]: nextList,
+          }
+        })
+        setTaskMetaById((prev) => ({
+          ...prev,
+          [taskId]: prev[taskId] ?? { priority: 0 },
+        }))
+      } catch (error) {
+        setTasksError('Failed to load task details')
+        throw error
+      } finally {
+        setIsLoadingTasks(false)
+      }
+      return
+    }
+
     setIsLoadingTasks(true)
     setTasksError(null)
     try {
@@ -128,6 +202,28 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     const normalizedTitle = title.trim()
     if (!normalizedTitle) return
 
+    if (isDevOffline) {
+      setTasksError(null)
+      const id = `task-local-${crypto.randomUUID()}`
+      const newTask: LocalTask = {
+        id,
+        boardId,
+        title: normalizedTitle,
+        description: '',
+        status: 0,
+      }
+
+      setTasksByBoardId((prev) => ({
+        ...prev,
+        [boardId]: [newTask, ...(prev[boardId] ?? [])],
+      }))
+      setTaskMetaById((prev) => ({
+        ...prev,
+        [id]: { priority: 0 },
+      }))
+      return
+    }
+
     void (async () => {
       try {
         setTasksError(null)
@@ -167,6 +263,32 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
     const currentTask = getTaskById(boardId, taskId)
     if (!currentTask) return
     const currentMeta = taskMetaById[taskId]
+
+    if (isDevOffline) {
+      setTasksError(null)
+      const nextStatus = normalizeTaskStatus(updated.status ?? currentTask.status)
+      const nextTask: LocalTask = {
+        ...currentTask,
+        title: updated.title ?? currentTask.title,
+        description: updated.description ?? currentTask.description,
+        status: nextStatus,
+      }
+
+      setTasksByBoardId((prev) => {
+        const list = prev[boardId] ?? []
+        const index = list.findIndex((task) => task.id === taskId)
+        if (index === -1) return prev
+
+        const nextList = [...list]
+        nextList[index] = nextTask
+
+        return {
+          ...prev,
+          [boardId]: nextList,
+        }
+      })
+      return
+    }
 
     void (async () => {
       try {
@@ -219,6 +341,23 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
 
   const deleteAllTasksForBoard = (boardId: string) => {
     const ids = (tasksByBoardId[boardId] ?? []).map((task) => task.id)
+
+    if (isDevOffline) {
+      setTasksError(null)
+      setTasksByBoardId((prev) => ({
+        ...prev,
+        [boardId]: [],
+      }))
+      setTaskMetaById((prev) => {
+        const next = { ...prev }
+        for (const id of ids) {
+          delete next[id]
+        }
+        return next
+      })
+      return
+    }
+
     void (async () => {
       setTasksError(null)
       for (const id of ids) {
@@ -249,6 +388,29 @@ export const TasksProvider = ({ children }: { children: ReactNode }) => {
   }
 
   const deleteTask = (boardId: string, taskId: string) => {
+    if (isDevOffline) {
+      setTasksError(null)
+      setTasksByBoardId((prev) => {
+        const list = prev[boardId]
+        if (!list) return prev
+
+        const nextList = list.filter((task) => task.id !== taskId)
+        if (nextList.length === list.length) return prev
+
+        return {
+          ...prev,
+          [boardId]: nextList,
+        }
+      })
+      setTaskMetaById((prev) => {
+        if (!(taskId in prev)) return prev
+        const next = { ...prev }
+        delete next[taskId]
+        return next
+      })
+      return
+    }
+
     void (async () => {
       try {
         setTasksError(null)

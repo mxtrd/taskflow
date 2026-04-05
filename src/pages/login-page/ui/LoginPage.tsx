@@ -1,8 +1,13 @@
+import { useNavigate } from "react-router-dom"
 import BaseLayout from "@/app/layouts/base-layout"
 import baseStyles from "@/app/styles/base.module.scss"
+import { useAuth } from "@/shared/hooks/useAuth"
+import { isDevOffline } from "@/shared/config/is-dev-offline"
 import styles from "./LoginPage.module.scss"
 
 const LoginPage = () => {
+  const navigate = useNavigate()
+  const { isAuth, enterLocalDevSession } = useAuth()
 
   const handleOAuthStart = async () => {
     const callbackUrl = `${window.location.origin}${import.meta.env.BASE_URL}oauth2/callback`
@@ -11,36 +16,31 @@ const LoginPage = () => {
     window.location.href = url
   }
 
+  const handleContinueOffline = () => {
+    enterLocalDevSession()
+    navigate('/boards', { replace: true })
+  }
+
   return (
     <BaseLayout title="Taskflow | Login" description="Taskflow - login page">
       <section className={styles.login}>
         <div className={baseStyles.container}>
           <div className={styles.content}>
             <h1 className={styles.title}>Task Manager</h1>
-            {/* <form className={styles.loginForm} action="#">
-              <div className={styles.column}>
-                <label className={styles.label} htmlFor="useremail">
-                  Email
-                </label>
-                <input className={styles.input} type="email" name="email" id="useremail" />
+            {isDevOffline && (
+              <div className={styles.devOfflineNotice} role="status">
+                <p className={styles.devOfflineText}>
+                  Local layout mode: app data comes from{' '}
+                  <code className={styles.devOfflineCode}>src/shared/mocks/taskflowData.ts</code>{' '}
+                  (no API calls from boards/tasks/auth flows).
+                </p>
+                {!isAuth && (
+                  <button type="button" className={styles.devOfflineButton} onClick={handleContinueOffline}>
+                    Continue with mock session
+                  </button>
+                )}
               </div>
-              <div className={styles.column}>
-                <label className={styles.label} htmlFor="userpassword">
-                  Password
-                </label>
-                <input
-                  className={styles.input}
-                  type="password"
-                  name="password"
-                  id="userpassword"
-                />
-              </div>
-              <div className={styles.column}>
-                <button className={styles.button} type="submit">
-                  Login
-                </button>
-              </div>
-            </form> */}
+            )}
             <button type='button' onClick={handleOAuthStart}>
               Login via OAuth
             </button>

@@ -15,6 +15,40 @@
   text-align: center;
 }
 
+.devOfflineNotice {
+  margin-bottom: 24px;
+  padding: 16px;
+  border-radius: 12px;
+  background: color-mix(in srgb, var(--bg-surface) 85%, #3b82f6);
+  border: 1px solid color-mix(in srgb, #3b82f6 35%, transparent);
+}
+
+.devOfflineText {
+  margin: 0 0 12px;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.devOfflineCode {
+  font-size: 12px;
+  word-break: break-all;
+}
+
+.devOfflineButton {
+  width: 100%;
+  padding: 10px 16px;
+  border-radius: 100px;
+  border: none;
+  cursor: pointer;
+  font-weight: 600;
+  background: #2563eb;
+  color: #fff;
+}
+
+.devOfflineButton:hover {
+  filter: brightness(1.05);
+}
+
 .loginForm {
   display: flex;
   flex-direction: column;
