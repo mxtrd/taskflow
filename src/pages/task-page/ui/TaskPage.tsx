@@ -46,7 +46,7 @@ const TaskPage = () => {
 
   if (!selectedBoard) {
     return (
-      <BaseLayout title='Taskflow' description='Taskflow - task page'>
+      <BaseLayout title='Taskflow | Task' description='Taskflow - task page'>
         <section className={styles.task}>
           <div className={baseStyles.container}>
             <div className={styles.content}>Task not found</div>
@@ -58,7 +58,7 @@ const TaskPage = () => {
 
   if (!selectedTask) {
     return (
-      <BaseLayout title='Taskflow' description='Taskflow - task page'>
+      <BaseLayout title='Taskflow | Task' description='Taskflow - task page'>
         <section className={styles.task}>
           <div className={baseStyles.container}>
             <div className={styles.content}>
@@ -71,7 +71,7 @@ const TaskPage = () => {
   }
 
   return (
-    <BaseLayout title='Taskflow' description='Taskflow - task page'>
+    <BaseLayout title='Taskflow | Task' description='Taskflow - task page'>
       <section className={styles.task}>
         <div className={baseStyles.container}>
           <div className={styles.content}>

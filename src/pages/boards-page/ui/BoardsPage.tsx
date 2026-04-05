@@ -63,7 +63,7 @@ const BoardsPage = () => {
 
 
   return (
-    <BaseLayout title='Taskflow' description='Taskflow - boards page'>
+    <BaseLayout title='Taskflow | Boards' description='Taskflow - boards page'>
       <section className={styles.boards}>
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>

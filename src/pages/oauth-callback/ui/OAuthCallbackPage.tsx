@@ -2,6 +2,9 @@ import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { login } from '@/entities/auth/api/login'
 import { useAuth } from '@/shared/hooks/useAuth'
+import BaseLayout from '@/app/layouts/base-layout'
+import baseStyles from '@/app/styles/base.module.scss'
+import styles from './OAuthCallbackPage.module.scss'
 
 const OAuthCallbackPage = () => {
   const navigate = useNavigate()
@@ -47,7 +50,17 @@ const OAuthCallbackPage = () => {
     run()
   }, [navigate, signIn])
 
-  return <div>Authorizing...</div>
+  return (
+    <BaseLayout title='Taskflow' description='Taskflow - Authorizing page'>
+      <section className={styles.boards}>
+        <div className={baseStyles.container}>
+          <div className={baseStyles.content}>
+            <h1 className={styles.title}>Authorizing...</h1>
+          </div>
+        </div>
+      </section>
+    </BaseLayout>
+  )
 }
 
 export default OAuthCallbackPage

@@ -135,7 +135,7 @@ const BoardPage = () => {
 
   if (!selectedBoard) {
     return (
-      <BaseLayout title='Taskflow' description='Taskflow - board page'>
+      <BaseLayout title='Taskflow | Board' description='Taskflow - board page'>
         <section className={styles.board}>
           <div className={baseStyles.container}>
             <div className={baseStyles.content}>Board not found</div>
@@ -146,7 +146,7 @@ const BoardPage = () => {
   }
 
   return (
-    <BaseLayout title='Taskflow' description='Taskflow - board page'>
+    <BaseLayout title='Taskflow | Board' description='Taskflow - board page'>
       <section className={styles.board}>
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
