@@ -4,9 +4,11 @@ import { getMyBoards } from '@/entities/boards/api/getMyBoards'
 import { createBoard } from '@/entities/boards/api/createBoard'
 import { updateBoard } from '@/entities/boards/api/updateBoard'
 import { deleteBoard as deleteBoardApi } from '@/entities/boards/api/deleteBoard'
+import { useAuth } from '@/shared/hooks/useAuth'
 import { BoardsContext } from './boards-context'
 
-export const BoardsProvider = ({ children }: { children: ReactNode }) => { 
+export const BoardsProvider = ({ children }: { children: ReactNode }) => {
+  const { isAuth, isCheckingAuth } = useAuth()
   const [boards, setBoards] = useState<LocalBoard[]>([])
   const [isImportantById, setIsImportantById] = useState<Record<string, boolean>>({})
   const [isLoadingBoards, setIsLoadingBoards] = useState(true)
@@ -15,8 +17,32 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     let isMounted = true
 
-    getMyBoards()
-      .then(({ data }) => {
+    if (!isAuth) {
+      if (isCheckingAuth) {
+        return
+      }
+
+      void Promise.resolve().then(() => {
+        if (!isMounted) return
+        setBoards([])
+        setIsImportantById({})
+        setBoardsError(null)
+        setIsLoadingBoards(false)
+      })
+      return () => {
+        isMounted = false
+      }
+    }
+
+    void (async () => {
+      await Promise.resolve()
+      if (!isMounted) return
+
+      setIsLoadingBoards(true)
+      setBoardsError(null)
+
+      try {
+        const { data } = await getMyBoards()
         if (!isMounted) return
 
         const nextBoards: LocalBoard[] = data.map((b) => ({
@@ -31,21 +57,21 @@ export const BoardsProvider = ({ children }: { children: ReactNode }) => {
             return acc
           }, {})
         )
-      })
-      .catch((error) => {
+      } catch (error) {
         if (!isMounted) return
         setBoardsError('Failed to load boards')
         console.error('Failed to load my boards:', error)
-      })
-      .finally(() => {
-        if (!isMounted) return
-        setIsLoadingBoards(false)
-      })
+      } finally {
+        if (isMounted) {
+          setIsLoadingBoards(false)
+        }
+      }
+    })()
 
     return () => {
       isMounted = false
     }
-  }, [])
+  }, [isAuth, isCheckingAuth])
 
   const addBoard = (title: string) => {
     const normalizedTitle = title.trim()
