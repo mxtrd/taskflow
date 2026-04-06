@@ -1,0 +1,76 @@
+.header {
+  padding-block: 12px;
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--bg-elevated);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo,
+.profile,
+.backLink {
+  text-decoration: none;
+  font-family: var(--second-family);
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.profile,
+.backLink {
+  font-size: 16px;
+}
+// .bar {
+//   min-height: 52px;
+//   padding: 0 20px;
+//   display: flex;
+//   align-items: center;
+//   background-color: var(--bg-surface);
+//   border-bottom: 1px solid var(--bg-elevated);
+// }
+
+// .inner {
+//   width: 100%;
+//   max-width: var(--content-width);
+//   margin: 0 auto;
+// }
+
+// .innerSplit {
+//   display: flex;
+//   align-items: center;
+//   justify-content: space-between;
+//   gap: 16px;
+// }
+
+// .brand {
+//   font-weight: 700;
+//   font-size: 1.125rem;
+//   color: var(--text-primary);
+// }
+
+// .profile {
+//   max-width: 220px;
+//   overflow: hidden;
+//   text-overflow: ellipsis;
+//   white-space: nowrap;
+//   font-weight: 500;
+//   color: var(--text-primary);
+// }
+
+// .link {
+//   text-decoration: none;
+//   color: inherit;
+
+//   &:hover {
+//     color: var(--accent);
+//   }
+
+//   &:focus-visible {
+//     outline: 2px solid var(--accent);
+//     outline-offset: 2px;
+//   }
+// }
