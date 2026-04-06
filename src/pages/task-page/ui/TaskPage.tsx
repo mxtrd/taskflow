@@ -5,9 +5,10 @@ import { useParams } from 'react-router-dom'
 import { useBoards } from '@/shared/hooks/useBoards'
 import { useTasks } from '@/shared/hooks/useTasks'
 import BaseLayout from '@/app/layouts/base-layout'
+import Button from '@/shared/ui/button'
+import { TASK_STATUS_LABELS } from '@/shared/lib/task-status'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './TaskPage.module.scss'
-import Button from '@/shared/ui/button'
 
 const TaskPage = () => {
   const { boardId, taskId } = useParams<{ boardId: string; taskId: string }>()
@@ -44,6 +45,7 @@ const TaskPage = () => {
     updateTask(boardId, taskId, { title, description, status })
   }
 
+  const STATUS_ORDER: TaskStatus[] = [0, 1, 2, 3]
 
   if (!selectedBoard) {
     return (
@@ -116,18 +118,13 @@ const TaskPage = () => {
                   id='status'
                   defaultValue={String(selectedTask.status)}
                 >
-                  <option className={styles.option} value='0'>
-                    In Progress
-                  </option>
-                  <option className={styles.option} value='1'>
-                    Done
-                  </option>
-                  <option className={styles.option} value='2'>
-                    Draft
-                  </option>
-                  <option className={styles.option} value='3'>
-                    Backlog
-                  </option>
+                  {
+                    STATUS_ORDER.map((status) => (
+                      <option key={status} value={String(status)}>
+                        {TASK_STATUS_LABELS[status]}
+                      </option>
+                    ))
+                  }
                 </select>
               </div>
               <div className={styles.column}>
