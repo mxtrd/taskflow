@@ -1,4 +1,4 @@
-import clsx from 'clsx'
+// import clsx from 'clsx'
 import { Link, useLocation } from 'react-router-dom'
 import { useAuth } from '@/shared/hooks/useAuth'
 import baseStyles from '@/app/styles/base.module.scss'
@@ -18,7 +18,7 @@ const Header = () => {
       <header className={styles.header}>
         <div className={baseStyles.container}>
           <div className={styles.inner}>
-            <Link className={styles.backLink} to={`/boards/${boardId}`}>
+            <Link className={styles.backLink} to={`/boards/${boardId}`}>  
               ← Back
             </Link>
           </div>
