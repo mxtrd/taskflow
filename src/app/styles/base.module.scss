@@ -1,8 +1,8 @@
 /* stylelint-disable color-function-alias-notation */
 /* stylelint-disable declaration-no-important */
-@use './vars' as *;
-@use './fonts' as *;
-@use './mixins/breakpoint.scss' as *;
+@use "./vars" as *;
+@use "./fonts" as *;
+@use "./mixins/breakpoint.scss" as *;
 
 *,
 *::before,
@@ -42,7 +42,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 50px;
+  padding-block: 50px;
 }
 
 .isHidden {
@@ -92,6 +92,25 @@
   margin: 0 auto;
   padding: 0 var(--container-offset);
   max-width: var(--container-width);
+}
+
+.section {
+  max-width: 1590px;
+  width: 100%;
+}
+
+.content {
+}
+
+.title {
+  font-size: 32px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.descr {
+  font-size: 16px;
+  color: var(--text-secondary);
 }
 
 .centered {

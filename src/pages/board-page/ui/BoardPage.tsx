@@ -148,7 +148,7 @@ const BoardPage = () => {
 
   return (
     <BaseLayout title='Taskflow | Board' description='Taskflow - board page'>
-      <section className={styles.board}>
+      <section className={baseStyles.section}>
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             {isEditingTitle ? (
@@ -168,7 +168,7 @@ const BoardPage = () => {
               </form>
             ) : (
               <>
-                <h1 className={styles.title}>{selectedBoard.title}</h1>
+                <h1 className={baseStyles.title}>{selectedBoard.title}</h1>
                 <button type='button' onClick={startEditTitle}>
                   Edit
                 </button>
@@ -190,7 +190,7 @@ const BoardPage = () => {
               </form>
             ) : hasDescription ? (
               <>
-                <p className={styles.description}>
+                <p className={baseStyles.descr}>
                   {selectedBoard.description}
                 </p>
                 <button type='button' onClick={startEditDescription}>
@@ -225,9 +225,9 @@ const BoardPage = () => {
                 placeholder="find task"
               />
             </form>
-            {boardsError && <p>{boardsError}</p>}
-            {isLoadingTasks && <p>Loading tasks...</p>}
-            {tasksError && <p>{tasksError}</p>}
+            {boardsError && <p className={baseStyles.descr}>{boardsError}</p>}
+            {isLoadingTasks && <p className={baseStyles.descr}>Loading tasks...</p>}
+            {tasksError && <p className={baseStyles.descr}>{tasksError}</p>}
             {isCreatingTask && (
               <form onSubmit={handleCreateTaskSubmit}>
                 <input
@@ -245,10 +245,10 @@ const BoardPage = () => {
               </form>
             )}
             {!hasTasks ? (
-              <p>No tasks yet</p>
+              <p className={baseStyles.descr}>No tasks yet</p>
             ) : (
               <>
-                <ul className={`${styles.tasks} ${baseStyles.listReset}`}>
+                <ul className={`${baseStyles.listReset} ${styles.tasks}`}>
                   {!noTasksMatches &&
                     filteredTasks.map((task) => (
                       <TaskItem
@@ -260,7 +260,7 @@ const BoardPage = () => {
                       />
                     ))}
                 </ul>
-                {noTasksMatches && <p>Tasks not found</p>}
+                {noTasksMatches && <p className={baseStyles.descr}>Tasks not found</p>}
               </>
             )}
           </div>

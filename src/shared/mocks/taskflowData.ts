@@ -37,6 +37,11 @@ export const mockBoards: LocalBoard[] = [
     title: 'Deployment & CI',
     description: 'Build, checks, and delivery workflows.',
   },
+  {
+    id: 'board-state-and-data',
+    title: 'State & Data',
+    description: 'Server state, caching boundaries, and predictable updates.',
+  },
 ]
 
 export const mockTasksByBoardId: TasksByBoardId = {
@@ -71,6 +76,13 @@ export const mockTasksByBoardId: TasksByBoardId = {
       description: 'Add labels, focus order, and aria attributes to forms.',
       status: 0,
     },
+    {
+      id: 'task-responsive-media',
+      boardId: 'board-web-foundation',
+      title: 'Responsive media',
+      description: 'Use picture/srcset and fluid sizing for images and video.',
+      status: 3,
+    },
   ],
   'board-react-core': [
     {
@@ -102,6 +114,13 @@ export const mockTasksByBoardId: TasksByBoardId = {
       description: 'Add create/edit handlers for local UI forms.',
       status: 2,
     },
+    {
+      id: 'task-error-boundaries',
+      boardId: 'board-react-core',
+      title: 'Error boundaries',
+      description: 'Isolate render failures and show a recoverable fallback UI.',
+      status: 0,
+    },
   ],
   'board-typescript-practice': [
     {
@@ -132,6 +151,13 @@ export const mockTasksByBoardId: TasksByBoardId = {
       description: 'Show fallback content for unknown board and task params.',
       status: 0,
     },
+    {
+      id: 'task-generics',
+      boardId: 'board-typescript-practice',
+      title: 'Generics in UI helpers',
+      description: 'Type safe list mappers and API wrappers with generic params.',
+      status: 2,
+    },
   ],
   'board-deployment-and-ci': [
     {
@@ -161,6 +187,50 @@ export const mockTasksByBoardId: TasksByBoardId = {
       title: 'PR template quality',
       description: 'Fill summary, risk, rollback, and test plan sections.',
       status: 2,
+    },
+    {
+      id: 'task-ci-cache',
+      boardId: 'board-deployment-and-ci',
+      title: 'CI cache strategy',
+      description: 'Cache node_modules and build artifacts with stable keys.',
+      status: 3,
+    },
+  ],
+  'board-state-and-data': [
+    {
+      id: 'task-loading-states',
+      boardId: 'board-state-and-data',
+      title: 'Loading and empty states',
+      description: 'Skeletons, spinners, and friendly empty copy per screen.',
+      status: 0,
+    },
+    {
+      id: 'task-optimistic-updates',
+      boardId: 'board-state-and-data',
+      title: 'Optimistic UI',
+      description: 'Apply local changes first, reconcile on server response.',
+      status: 1,
+    },
+    {
+      id: 'task-invalidation',
+      boardId: 'board-state-and-data',
+      title: 'Stale data rules',
+      description: 'Define when to refetch after mutations and navigation.',
+      status: 0,
+    },
+    {
+      id: 'task-normalized-shape',
+      boardId: 'board-state-and-data',
+      title: 'Normalized collections',
+      description: 'Store entities by id to avoid duplicate nested copies.',
+      status: 2,
+    },
+    {
+      id: 'task-offline-tactics',
+      boardId: 'board-state-and-data',
+      title: 'Offline and retry',
+      description: 'Queue writes and surface retry when the network recovers.',
+      status: 3,
     },
   ],
 }
