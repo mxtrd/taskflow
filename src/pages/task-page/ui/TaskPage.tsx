@@ -75,13 +75,13 @@ const TaskPage = () => {
 
   return (
     <BaseLayout title='Taskflow | Task' description='Taskflow - task page'>
-      <section className={styles.task}>
+      <section className={baseStyles.section}>
         <div className={baseStyles.container}>
-          <div className={styles.content}>
-            <h1 className={styles.title}>Task Details</h1>
-            {isLoadingTasks && <p>Loading task details...</p>}
-            {boardsError && <p>{boardsError}</p>}
-            {tasksError && <p>{tasksError}</p>}
+          <div className={`${baseStyles.content} ${styles.taskContent}`}>
+            <h1 className={baseStyles.title}>Task Details</h1>
+            {isLoadingTasks && <p className={baseStyles.descr}>Loading task details...</p>}
+            {boardsError && <p className={baseStyles.descr}>{boardsError}</p>}
+            {tasksError && <p className={baseStyles.descr}>{tasksError}</p>}
             <form className={styles.form} onSubmit={handleSubmit}>
               <div className={styles.column}>
                 <label className={styles.label} htmlFor='title'>

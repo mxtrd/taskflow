@@ -5,9 +5,9 @@ import type { SubmitEventHandler } from 'react'
 import BoardItem from './board-item/BoardItem'
 import SearchField from '@/shared/ui/search-field'
 import BaseLayout from '@/app/layouts/base-layout'
+import Button from '@/shared/ui/button'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardsPage.module.scss'
-import Button from '@/shared/ui/button'
 
 const BoardsPage = () => {
   const { boards, isLoadingBoards, boardsError, addBoard, deleteAllBoards, deleteBoard } = useBoards()
@@ -65,10 +65,10 @@ const BoardsPage = () => {
 
   return (
     <BaseLayout title='Taskflow | Boards' description='Taskflow - boards page'>
-      <section className={styles.boards}>
+      <section className={baseStyles.section}>
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
-            <h1 className={styles.title}>My Boards</h1>
+            <h1 className={baseStyles.title}>My Boards</h1>
             <div className={styles.buttons}>
               <Button
                 className={styles.createBoard}
