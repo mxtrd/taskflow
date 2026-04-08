@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/redux-hooks'
 import {
   selectBoards,
@@ -34,95 +34,123 @@ export const useBoardsRedux = () => {
     void dispatch(fetchMyBoardsThunk())
   }, [dispatch])
 
-  const getBoardById = (boardId: string) => {
-    if (isDevOffline) return offlineBoards.find((b) => b.id === boardId)
-    return boards.find((b) => b.id === boardId)
-  }
+  const getBoardById = useCallback(
+    (boardId: string) => {
+      if (isDevOffline) return offlineBoards.find((b) => b.id === boardId)
+      return boards.find((b) => b.id === boardId)
+    },
+    [offlineBoards, boards]
+  )
 
-  const addBoard = (title: string) => {
-    const normalized = title.trim()
-    if (!normalized) return
+  const addBoard = useCallback(
+    (title: string) => {
+      const normalized = title.trim()
+      if (!normalized) return
 
-    if (isDevOffline) {
-      const id = `board-local-${crypto.randomUUID()}`
-      setOfflineBoards((prev) => [{ id, title: normalized, description: '' }, ...prev])
-      return
-    }
+      if (isDevOffline) {
+        const id = `board-local-${crypto.randomUUID()}`
+        setOfflineBoards((prev) => [{ id, title: normalized, description: '' }, ...prev])
+        return
+      }
 
-    void dispatch(createBoardThunk({ title: normalized }))
-  }
+      void dispatch(createBoardThunk({ title: normalized }))
+    },
+    [dispatch]
+  )
 
-  const updateBoardTitle = (boardId: string, title: string) => {
-    const normalized = title.trim()
-    if (!normalized) return
-    const current = getBoardById(boardId)
-    if (!current) return
+  const updateBoardTitle = useCallback(
+    (boardId: string, title: string) => {
+      const normalized = title.trim()
+      if (!normalized) return
+      const current = getBoardById(boardId)
+      if (!current) return
 
-    if (isDevOffline) {
-      setOfflineBoards((prev) => prev.map((b) => (b.id === boardId ? { ...b, title: normalized } : b)))
-      return
-    }
+      if (isDevOffline) {
+        setOfflineBoards((prev) => prev.map((b) => (b.id === boardId ? { ...b, title: normalized } : b)))
+        return
+      }
 
-    void dispatch(
-      updateBoardTitleThunk({
-        boardId,
-        title: normalized,
-        description: current.description ?? '',
-        isImportant: false,
-      })
-    )
-  }
+      void dispatch(
+        updateBoardTitleThunk({
+          boardId,
+          title: normalized,
+          description: current.description ?? '',
+          isImportant: false,
+        })
+      )
+    },
+    [dispatch, getBoardById]
+  )
 
-  const updateBoardDescription = (boardId: string, description: string) => {
-    const normalized = description.trim()
-    const current = getBoardById(boardId)
-    if (!current) return
+  const updateBoardDescription = useCallback(
+    (boardId: string, description: string) => {
+      const normalized = description.trim()
+      const current = getBoardById(boardId)
+      if (!current) return
 
-    if (isDevOffline) {
-      setOfflineBoards((prev) => prev.map((b) => (b.id === boardId ? { ...b, description: normalized } : b)))
-      return
-    }
+      if (isDevOffline) {
+        setOfflineBoards((prev) => prev.map((b) => (b.id === boardId ? { ...b, description: normalized } : b)))
+        return
+      }
 
-    void dispatch(
-      updateBoardDescriptionThunk({
-        boardId,
-        title: current.title,
-        description: normalized,
-        isImportant: false,
-      })
-    )
-  }
+      void dispatch(
+        updateBoardDescriptionThunk({
+          boardId,
+          title: current.title,
+          description: normalized,
+          isImportant: false,
+        })
+      )
+    },
+    [dispatch, getBoardById]
+  )
 
-  const deleteBoard = (boardId: string) => {
-    if (isDevOffline) {
-      setOfflineBoards((prev) => prev.filter((b) => b.id !== boardId))
-      return
-    }
-    void dispatch(deleteBoardThunk({ boardId }))
-  }
+  const deleteBoard = useCallback(
+    (boardId: string) => {
+      if (isDevOffline) {
+        setOfflineBoards((prev) => prev.filter((b) => b.id !== boardId))
+        return
+      }
+      void dispatch(deleteBoardThunk({ boardId }))
+    },
+    [dispatch]
+  )
 
-  const deleteAllBoards = () => {
+  const deleteAllBoards = useCallback(() => {
     if (isDevOffline) {
       setOfflineBoards([])
       return
     }
     void dispatch(deleteAllBoardsThunk())
-  }
+  }, [dispatch])
 
   const safeBoards = isDevOffline ? offlineBoards : boards
   const safeLoading = isDevOffline ? false : isLoadingBoards
   const safeError = isDevOffline ? null : boardsError
 
-  return {
-    boards: safeBoards,
-    isLoadingBoards: safeLoading,
-    boardsError: safeError,
-    addBoard,
-    getBoardById,
-    updateBoardTitle,
-    updateBoardDescription,
-    deleteAllBoards,
-    deleteBoard,
-  }
+  return useMemo(
+    () => ({
+      boards: safeBoards,
+      isLoadingBoards: safeLoading,
+      boardsError: safeError,
+      addBoard,
+      getBoardById,
+      updateBoardTitle,
+      updateBoardDescription,
+      deleteAllBoards,
+      deleteBoard,
+    }),
+    [
+      safeBoards,
+      safeLoading,
+      safeError,
+      addBoard,
+      getBoardById,
+      updateBoardTitle,
+      updateBoardDescription,
+      deleteAllBoards,
+      deleteBoard,
+    ]
+  )
 
 }
