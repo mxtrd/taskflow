@@ -1,23 +1,16 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
 import type { RootState } from '@/app/store/store'
-import type { LocalTask, TaskStatus } from '@/shared/mocks/taskflowData'
+import type { LocalTask } from '@/shared/mocks/taskflowData'
 import { getTasksByBoardId, type TaskDataDto } from '@/entities/tasks/api/getTasksByBoardId'
 import { getTaskById } from '@/entities/tasks/api/getTaskById'
 import { createTask } from '@/entities/tasks/api/createTask'
 import { updateTask } from '@/entities/tasks/api/updateTask'
 import { deleteTask } from '@/entities/tasks/api/deleteTask'
+import { mapTaskDtoToLocalTask } from '@/entities/tasks/model/mappers'
 import type { TaskUpdate } from '@/app/store/types/tasks'
 
-const normalizeTaskStatus = (status: number): TaskStatus =>
-  status === 0 || status === 1 || status === 2 || status === 3 ? status : 0
-
-const mapTaskDto = (boardId: string, dto: TaskDataDto): LocalTask => ({
-  id: dto.id,
-  boardId,
-  title: dto.attributes.title,
-  description: dto.attributes.description ?? '',
-  status: normalizeTaskStatus(dto.attributes.status),
-})
+const mapTaskDto = (boardId: string, dto: TaskDataDto): LocalTask =>
+  mapTaskDtoToLocalTask(boardId, dto)
 
 export const fetchTasksByBoardThunk = createAsyncThunk<LocalTask[], { boardId: string }>(
   'tasks/fetchByBoard',
