@@ -1,4 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit'
+import type { RootState } from '@/app/store/store'
 import type { LocalBoard } from '@/shared/mocks/taskflowData'
 import { getMyBoards } from '@/entities/boards/api/getMyBoards'
 import { createBoard } from '@/entities/boards/api/createBoard'
@@ -48,5 +49,29 @@ export const deleteBoardThunk = createAsyncThunk<string, { boardId: string }>(
   async ({ boardId }) => {
     await deleteBoard(boardId)
     return boardId
+  }
+)
+
+export const deleteAllBoardsThunk = createAsyncThunk<string[], void, { state: RootState }>(
+  'boards/deleteAllBoards',
+  async (_, { getState, rejectWithValue }) => {
+    const ids = getState().boards.items.map((b) => b.id)
+
+    const failed: string[] = []
+    await Promise.all(
+      ids.map(async (id) => {
+        try {
+          await deleteBoard(id)
+        } catch {
+          failed.push(id)
+        }
+      })
+    )
+
+    if (failed.length > 0) {
+      return rejectWithValue(failed)
+    }
+
+    return ids
   }
 )
