@@ -13,7 +13,7 @@ import {
   fetchTasksByBoardThunk,
   updateTaskThunk,
 } from '@/app/store/thunks/tasksThunks'
-import { resetTasks, setTasksForBoard } from '@/app/store/slices/tasksSlice'
+import { markTasksOfflineSeeded, resetTasks, setTasksForBoard } from '@/app/store/slices/tasksSlice'
 import { isDevOffline } from '@/shared/config/is-dev-offline'
 import {
   mockTasksByBoardId,
@@ -27,15 +27,17 @@ export const useTasksRedux = () => {
   const isLoadingTasks = useAppSelector(selectTasksLoading)
   const tasksError = useAppSelector(selectTasksError)
   const tasksByBoardId = useAppSelector((state: RootState) => state.tasks.byBoardId)
+  const isOfflineSeeded = useAppSelector((state: RootState) => state.tasks.isOfflineSeeded)
 
   useEffect(() => {
     if (!isDevOffline) return
-    if (Object.keys(tasksByBoardId).length > 0) return
+    if (isOfflineSeeded) return
 
     for (const [boardId, tasks] of Object.entries(mockTasksByBoardId)) {
       dispatch(setTasksForBoard({ boardId, tasks: structuredClone(tasks) }))
     }
-  }, [dispatch, tasksByBoardId])
+    dispatch(markTasksOfflineSeeded())
+  }, [dispatch, isOfflineSeeded])
 
   const getTasksByBoardId = useCallback(
     (boardId: string): LocalTask[] => {

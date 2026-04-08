@@ -13,12 +13,14 @@ type BoardsState = {
   items: LocalBoard[]
   isLoading: boolean
   error: string | null
+  isOfflineSeeded: boolean
 }
 
 const initialState: BoardsState = {
   items: [],
   isLoading: false,
   error: null,
+  isOfflineSeeded: false,
 }
 
 const boardsSlice = createSlice({
@@ -28,8 +30,8 @@ const boardsSlice = createSlice({
     setBoards(state, action: PayloadAction<LocalBoard[]>) {
       state.items = action.payload
     },
-    setBoardsError(state, action: PayloadAction<string | null>) {
-      state.error = action.payload
+    markBoardsOfflineSeeded(state) {
+      state.isOfflineSeeded = true
     },
     resetBoards(state) {
       state.items = []
@@ -89,5 +91,5 @@ const boardsSlice = createSlice({
   },
 })
 
-export const { setBoards, setBoardsError, resetBoards } = boardsSlice.actions
+export const { setBoards, markBoardsOfflineSeeded, resetBoards } = boardsSlice.actions
 export default boardsSlice.reducer

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/redux-hooks'
+import type { RootState } from '@/app/store/store'
 import {
   selectBoards,
   selectBoardsError,
@@ -15,29 +16,29 @@ import {
 } from '@/app/store/thunks/boardsThunks'
 import { isDevOffline } from '@/shared/config/is-dev-offline'
 import { mockBoards } from '@/shared/mocks/taskflowData'
-import { setBoards } from '@/app/store/slices/boardsSlice'
+import { markBoardsOfflineSeeded, setBoards } from '@/app/store/slices/boardsSlice'
 
 export const useBoardsRedux = () => {
   const dispatch = useAppDispatch()
   const boards = useAppSelector(selectBoards)
   const isLoadingBoards = useAppSelector(selectBoardsLoading)
   const boardsError = useAppSelector(selectBoardsError)
+  const isOfflineSeeded = useAppSelector((state: RootState) => state.boards.isOfflineSeeded)
 
   useEffect(() => {
-    if (isDevOffline) {
-      if (boards.length === 0) {
-        dispatch(setBoards(structuredClone(mockBoards)))
-      }
-      return
-    }
+    if (isDevOffline) return
     void dispatch(fetchMyBoardsThunk())
-  }, [dispatch, boards.length])
+  }, [dispatch])
+
+  useEffect(() => {
+    if (!isDevOffline) return
+    if (isOfflineSeeded) return
+    dispatch(setBoards(structuredClone(mockBoards)))
+    dispatch(markBoardsOfflineSeeded())
+  }, [dispatch, isOfflineSeeded])
 
   const getBoardById = useCallback(
-    (boardId: string) => {
-      if (isDevOffline) return boards.find((b) => b.id === boardId)
-      return boards.find((b) => b.id === boardId)
-    },
+    (boardId: string) => boards.find((b) => b.id === boardId),
     [boards]
   )
 

@@ -15,29 +15,28 @@ type TasksState = {
   byBoardId: TasksByBoardId
   isLoading: boolean
   error: string | null
+  isOfflineSeeded: boolean
 }
 
 const initialState: TasksState = {
   byBoardId: {},
   isLoading: false,
   error: null,
+  isOfflineSeeded: false,
 }
 
 const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    setTasksLoading(state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload
-    },
-    setTasksError(state, action: PayloadAction<string | null>) {
-      state.error = action.payload
-    },
     setTasksForBoard(
       state,
       action: PayloadAction<{ boardId: string, tasks: LocalTask[] }>
     ) {
       state.byBoardId[action.payload.boardId] = action.payload.tasks
+    },
+    markTasksOfflineSeeded(state) {
+      state.isOfflineSeeded = true
     },
     resetTasks(state) {
       state.byBoardId = {}
@@ -123,5 +122,5 @@ const tasksSlice = createSlice({
   },
 })
 
-export const { setTasksLoading,  setTasksError, setTasksForBoard, resetTasks } = tasksSlice.actions
+export const { setTasksForBoard, markTasksOfflineSeeded, resetTasks } = tasksSlice.actions
 export default tasksSlice.reducer
