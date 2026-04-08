@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/redux-hooks'
 import {
   selectTasksError,
@@ -13,12 +13,12 @@ import {
   fetchTasksByBoardThunk,
   updateTaskThunk,
 } from '@/app/store/thunks/tasksThunks'
+import { resetTasks, setTasksForBoard } from '@/app/store/slices/tasksSlice'
 import { isDevOffline } from '@/shared/config/is-dev-offline'
 import {
   mockTasksByBoardId,
   type LocalTask,
   type TaskStatus,
-  type TasksByBoardId,
 } from '@/shared/mocks/taskflowData'
 import type { TaskUpdate } from '@/app/store/types/tasks'
 
@@ -28,24 +28,28 @@ export const useTasksRedux = () => {
   const tasksError = useAppSelector(selectTasksError)
   const tasksByBoardId = useAppSelector((state: RootState) => state.tasks.byBoardId)
 
-  const [offlineTasksByBoardId, setOfflineTasksByBoardId] = useState<TasksByBoardId>(() =>
-    structuredClone(mockTasksByBoardId)
-  )
+  useEffect(() => {
+    if (!isDevOffline) return
+    if (Object.keys(tasksByBoardId).length > 0) return
+
+    for (const [boardId, tasks] of Object.entries(mockTasksByBoardId)) {
+      dispatch(setTasksForBoard({ boardId, tasks: structuredClone(tasks) }))
+    }
+  }, [dispatch, tasksByBoardId])
 
   const getTasksByBoardId = useCallback(
     (boardId: string): LocalTask[] => {
-      if (isDevOffline) return offlineTasksByBoardId[boardId] ?? []
       return tasksByBoardId[boardId] ?? []
     },
-    [offlineTasksByBoardId, tasksByBoardId]
+    [tasksByBoardId]
   )
 
   const getTaskById = useCallback(
     (boardId: string, taskId: string): LocalTask | undefined => {
-      const list = isDevOffline ? offlineTasksByBoardId[boardId] ?? [] : tasksByBoardId[boardId] ?? []
+      const list = tasksByBoardId[boardId] ?? []
       return list.find((task) => task.id === taskId)
     },
-    [offlineTasksByBoardId, tasksByBoardId]
+    [tasksByBoardId]
   )
 
   const loadTasksByBoardId = useCallback(
@@ -72,26 +76,28 @@ export const useTasksRedux = () => {
       if (isDevOffline) {
         const id = `task-local-${crypto.randomUUID()}`
         const task: LocalTask = { id, boardId, title: normalizedTitle, description: '', status: 0 }
-        setOfflineTasksByBoardId((prev) => ({
-          ...prev,
-          [boardId]: [task, ...(prev[boardId] ?? [])],
-        }))
+        dispatch(
+          setTasksForBoard({
+            boardId,
+            tasks: [task, ...(tasksByBoardId[boardId] ?? [])],
+          })
+        )
         return
       }
 
       void dispatch(createTaskThunk({ boardId, title: normalizedTitle }))
     },
-    [dispatch]
+    [dispatch, tasksByBoardId]
   )
 
   const updateTask = useCallback(
     (boardId: string, taskId: string, updated: TaskUpdate) => {
       if (isDevOffline) {
-        setOfflineTasksByBoardId((prev) => {
-          const list = prev[boardId] ?? []
-          return {
-            ...prev,
-            [boardId]: list.map((task) =>
+        const list = tasksByBoardId[boardId] ?? []
+        dispatch(
+          setTasksForBoard({
+            boardId,
+            tasks: list.map((task) =>
               task.id === taskId
                 ? {
                     ...task,
@@ -101,20 +107,20 @@ export const useTasksRedux = () => {
                   }
                 : task
             ),
-          }
-        })
+          })
+        )
         return
       }
 
       void dispatch(updateTaskThunk({ boardId, taskId, updated }))
     },
-    [dispatch]
+    [dispatch, tasksByBoardId]
   )
 
   const deleteAllTasksForBoard = useCallback(
     (boardId: string) => {
       if (isDevOffline) {
-        setOfflineTasksByBoardId((prev) => ({ ...prev, [boardId]: [] }))
+        dispatch(setTasksForBoard({ boardId, tasks: [] }))
         return
       }
       void dispatch(deleteAllTasksForBoardThunk({ boardId }))
@@ -123,32 +129,32 @@ export const useTasksRedux = () => {
   )
 
   const clearAllTasks = useCallback(() => {
-    if (isDevOffline) setOfflineTasksByBoardId({})
-  }, [])
+    if (isDevOffline) {
+      dispatch(resetTasks())
+    }
+  }, [dispatch])
 
   const deleteTask = useCallback(
     (boardId: string, taskId: string) => {
       if (isDevOffline) {
-        setOfflineTasksByBoardId((prev) => ({
-          ...prev,
-          [boardId]: (prev[boardId] ?? []).filter((task) => task.id !== taskId),
-        }))
+        dispatch(
+          setTasksForBoard({
+            boardId,
+            tasks: (tasksByBoardId[boardId] ?? []).filter((task) => task.id !== taskId),
+          })
+        )
         return
       }
       void dispatch(deleteTaskThunk({ boardId, taskId }))
     },
-    [dispatch]
+    [dispatch, tasksByBoardId]
   )
 
   const removeTasksForBoard = useCallback((boardId: string) => {
     if (isDevOffline) {
-      setOfflineTasksByBoardId((prev) => {
-        const next = { ...prev }
-        delete next[boardId]
-        return next
-      })
+      dispatch(setTasksForBoard({ boardId, tasks: [] }))
     }
-  }, [])
+  }, [dispatch])
 
   const toggleTaskComplete = useCallback(
     (boardId: string, taskId: string, isDone: boolean) => {
