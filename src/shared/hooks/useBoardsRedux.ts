@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/redux-hooks'
 import {
   selectBoards,
@@ -14,7 +14,7 @@ import {
   deleteAllBoardsThunk,
 } from '@/app/store/thunks/boardsThunks'
 import { isDevOffline } from '@/shared/config/is-dev-offline'
-import { mockBoards, type LocalBoard } from '@/shared/mocks/taskflowData'
+import { mockBoards } from '@/shared/mocks/taskflowData'
 import { setBoards } from '@/app/store/slices/boardsSlice'
 
 export const useBoardsRedux = () => {
@@ -23,23 +23,22 @@ export const useBoardsRedux = () => {
   const isLoadingBoards = useAppSelector(selectBoardsLoading)
   const boardsError = useAppSelector(selectBoardsError)
 
-  // Оффлайн-локалка для паритета
-  const [offlineBoards, setOfflineBoards] = useState<LocalBoard[]>(() => structuredClone(mockBoards))
-
   useEffect(() => {
     if (isDevOffline) {
-      dispatch(setBoards(structuredClone(mockBoards)))
+      if (boards.length === 0) {
+        dispatch(setBoards(structuredClone(mockBoards)))
+      }
       return
     }
     void dispatch(fetchMyBoardsThunk())
-  }, [dispatch])
+  }, [dispatch, boards.length])
 
   const getBoardById = useCallback(
     (boardId: string) => {
-      if (isDevOffline) return offlineBoards.find((b) => b.id === boardId)
+      if (isDevOffline) return boards.find((b) => b.id === boardId)
       return boards.find((b) => b.id === boardId)
     },
-    [offlineBoards, boards]
+    [boards]
   )
 
   const addBoard = useCallback(
@@ -49,13 +48,13 @@ export const useBoardsRedux = () => {
 
       if (isDevOffline) {
         const id = `board-local-${crypto.randomUUID()}`
-        setOfflineBoards((prev) => [{ id, title: normalized, description: '' }, ...prev])
+        dispatch(setBoards([{ id, title: normalized, description: '' }, ...boards]))
         return
       }
 
       void dispatch(createBoardThunk({ title: normalized }))
     },
-    [dispatch]
+    [dispatch, boards]
   )
 
   const updateBoardTitle = useCallback(
@@ -66,7 +65,9 @@ export const useBoardsRedux = () => {
       if (!current) return
 
       if (isDevOffline) {
-        setOfflineBoards((prev) => prev.map((b) => (b.id === boardId ? { ...b, title: normalized } : b)))
+        dispatch(
+          setBoards(boards.map((b) => (b.id === boardId ? { ...b, title: normalized } : b)))
+        )
         return
       }
 
@@ -79,7 +80,7 @@ export const useBoardsRedux = () => {
         })
       )
     },
-    [dispatch, getBoardById]
+    [boards, dispatch, getBoardById]
   )
 
   const updateBoardDescription = useCallback(
@@ -89,7 +90,9 @@ export const useBoardsRedux = () => {
       if (!current) return
 
       if (isDevOffline) {
-        setOfflineBoards((prev) => prev.map((b) => (b.id === boardId ? { ...b, description: normalized } : b)))
+        dispatch(
+          setBoards(boards.map((b) => (b.id === boardId ? { ...b, description: normalized } : b)))
+        )
         return
       }
 
@@ -102,29 +105,29 @@ export const useBoardsRedux = () => {
         })
       )
     },
-    [dispatch, getBoardById]
+    [boards, dispatch, getBoardById]
   )
 
   const deleteBoard = useCallback(
     (boardId: string) => {
       if (isDevOffline) {
-        setOfflineBoards((prev) => prev.filter((b) => b.id !== boardId))
+        dispatch(setBoards(boards.filter((b) => b.id !== boardId)))
         return
       }
       void dispatch(deleteBoardThunk({ boardId }))
     },
-    [dispatch]
+    [boards, dispatch]
   )
 
   const deleteAllBoards = useCallback(() => {
     if (isDevOffline) {
-      setOfflineBoards([])
+      dispatch(setBoards([]))
       return
     }
     void dispatch(deleteAllBoardsThunk())
   }, [dispatch])
 
-  const safeBoards = isDevOffline ? offlineBoards : boards
+  const safeBoards = boards
   const safeLoading = isDevOffline ? false : isLoadingBoards
   const safeError = isDevOffline ? null : boardsError
 
