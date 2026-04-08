@@ -1,5 +1,12 @@
 import type { LocalBoard } from '@/shared/mocks/taskflowData'
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import {
+  fetchMyBoardsThunk,
+  createBoardThunk,
+  updateBoardTitleThunk,
+  updateBoardDescriptionThunk,
+  deleteBoardThunk,
+} from '@/app/store/thunks/boardsThunks'
 
 type BoardsState = {
   items: LocalBoard[]
@@ -17,22 +24,59 @@ const boardsSlice = createSlice({
   name: 'boards',
   initialState,
   reducers: {
-    setBoardsLoading(state, action: PayloadAction<boolean>) {
-      state.isLoading = action.payload
-    },
     setBoardsError(state, action: PayloadAction<string | null>) {
       state.error = action.payload
-    },
-    setBoards(state, action: PayloadAction<LocalBoard[]>) {
-      state.items = action.payload
     },
     resetBoards(state) {
       state.items = []
       state.error = null
       state.isLoading = false
     },
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchMyBoardsThunk.pending, (state) => {
+        state.isLoading = true
+        state.error = null
+      })
+      .addCase(fetchMyBoardsThunk.fulfilled, (state, action) => {
+        state.isLoading = false
+        state.items = action.payload
+      })
+      .addCase(fetchMyBoardsThunk.rejected, (state) => {
+        state.isLoading = false
+        state.error = 'Failed to load boards'
+      })
+
+      .addCase(createBoardThunk.fulfilled, (state, action) => {
+        state.items = [action.payload, ...state.items]
+      })
+      .addCase(createBoardThunk.rejected, (state) => {
+        state.error = 'Failed to create board'
+      })
+
+      .addCase(updateBoardTitleThunk.fulfilled, (state, action) => {
+        state.items = state.items.map((b) => (b.id === action.payload.id ? action.payload : b))
+      })
+      .addCase(updateBoardTitleThunk.rejected, (state) => {
+        state.error = 'Failed to update board title'
+      })
+
+      .addCase(updateBoardDescriptionThunk.fulfilled, (state, action) => {
+        state.items = state.items.map((b) => (b.id === action.payload.id ? action.payload : b))
+      })
+      .addCase(updateBoardDescriptionThunk.rejected, (state) => {
+        state.error = 'Failed to update board description'
+      })
+
+      .addCase(deleteBoardThunk.fulfilled, (state, action) => {
+        state.items = state.items.filter((b) => b.id !== action.payload)
+      })
+      .addCase(deleteBoardThunk.rejected, (state) => {
+        state.error = 'Failed to delete board'
+      })
   }
 })
 
-export const { setBoardsLoading, setBoardsError, setBoards, resetBoards } = boardsSlice.actions
+export const { setBoardsError, resetBoards } = boardsSlice.actions
 export default boardsSlice.reducer

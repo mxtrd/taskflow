@@ -1,4 +1,4 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 import type { BoardDataDto } from './getMyBoards'
 
 export type CreateBoardRequest = {
@@ -10,7 +10,8 @@ export type CreateBoardResponse = {
   data: BoardDataDto
 }
 
-export const createBoard = (payload: CreateBoardRequest) => {
-  return httpClient.post<CreateBoardResponse>('/boards', payload)
+export const createBoard = async (payload: CreateBoardRequest) => {
+  const res = await axiosClient.post<CreateBoardResponse>('/boards', payload)
+  return res.data
 }
 

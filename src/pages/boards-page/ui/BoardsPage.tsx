@@ -1,4 +1,3 @@
-import { useBoards } from '@/shared/hooks/useBoards'
 import { useTasks } from '@/shared/hooks/useTasks'
 import { useState } from 'react'
 import type { SubmitEventHandler } from 'react'
@@ -8,9 +7,10 @@ import BaseLayout from '@/app/layouts/base-layout'
 import Button from '@/shared/ui/button'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardsPage.module.scss'
+import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 
 const BoardsPage = () => {
-  const { boards, isLoadingBoards, boardsError, addBoard, deleteAllBoards, deleteBoard } = useBoards()
+  const { boards, isLoadingBoards, boardsError, addBoard, deleteAllBoards, deleteBoard } = useBoardsRedux()
   const { clearAllTasks, removeTasksForBoard } = useTasks()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')

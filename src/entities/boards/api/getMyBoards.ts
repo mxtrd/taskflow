@@ -1,4 +1,4 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 
 export type BoardAttributesDto = {
   title: string
@@ -22,7 +22,8 @@ export type GetMyBoardsResponse = {
   data: BoardDataDto[]
 }
 
-export const getMyBoards = () => {
-  return httpClient.get<GetMyBoardsResponse>('/boards/my')
+export const getMyBoards = async () => {
+  const res = await axiosClient.get<GetMyBoardsResponse>('/boards/my')
+  return res.data
 }
 
