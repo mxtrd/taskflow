@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import { useAppDispatch, useAppSelector } from '@/shared/lib/redux-hooks'
 import {
   selectAuthMe,
@@ -45,33 +45,39 @@ export const useAuthRedux = () => {
     return () => window.removeEventListener('auth:logout', handleLogout)
   }, [dispatch])
 
-  const signIn = async (payload: SignInPayload) => {
-    if (isDevOffline) {
-      dispatch(setMe(DEV_OFFLINE_ME))
-      return
-    }
-    await dispatch(signInThunk(payload)).unwrap()
-  }
+  const signIn = useCallback(
+    async (payload: SignInPayload) => {
+      if (isDevOffline) {
+        dispatch(setMe(DEV_OFFLINE_ME))
+        return
+      }
+      await dispatch(signInThunk(payload)).unwrap()
+    },
+    [dispatch]
+  )
 
-  const logout = async () => {
+  const logout = useCallback(async () => {
     if (isDevOffline) {
       dispatch(clearAuth())
       return
     }
     await dispatch(logoutThunk()).unwrap()
-  }
+  }, [dispatch])
 
-  const enterLocalDevSession = () => {
+  const enterLocalDevSession = useCallback(() => {
     if (!isDevOffline) return
     dispatch(setMe(DEV_OFFLINE_ME))
-  }
+  }, [dispatch])
 
-  return {
-    isAuth: isDevOffline ? true : isAuth,
-    isCheckingAuth: isDevOffline ? false : isCheckingAuth,
-    me: isDevOffline ? DEV_OFFLINE_ME : me,
-    signIn,
-    logout,
-    enterLocalDevSession,
-  }
+  return useMemo(
+    () => ({
+      isAuth: isDevOffline ? true : isAuth,
+      isCheckingAuth: isDevOffline ? false : isCheckingAuth,
+      me: isDevOffline ? DEV_OFFLINE_ME : me,
+      signIn,
+      logout,
+      enterLocalDevSession,
+    }),
+    [isAuth, isCheckingAuth, me, signIn, logout, enterLocalDevSession]
+  )
 }
