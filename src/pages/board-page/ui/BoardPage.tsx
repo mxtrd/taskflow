@@ -1,5 +1,5 @@
 import type { SubmitEventHandler } from 'react'
-import { useBoards } from '@/shared/hooks/useBoards'
+import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
 import { useTasks } from '@/shared/hooks/useTasks'
@@ -11,7 +11,7 @@ import styles from './BoardPage.module.scss'
 import Button from '@/shared/ui/button'
 
 const BoardPage = () => {
-  const { getBoardById, updateBoardTitle, updateBoardDescription, boardsError } = useBoards()
+  const { getBoardById, updateBoardTitle, updateBoardDescription, boardsError } = useBoardsRedux()
   const { getTasksByBoardId, loadTasksByBoardId, isLoadingTasks, tasksError, addTask, deleteAllTasksForBoard, deleteTask, toggleTaskComplete } = useTasks()
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)

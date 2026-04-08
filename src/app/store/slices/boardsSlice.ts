@@ -6,6 +6,7 @@ import {
   updateBoardTitleThunk,
   updateBoardDescriptionThunk,
   deleteBoardThunk,
+  deleteAllBoardsThunk,
 } from '@/app/store/thunks/boardsThunks'
 
 type BoardsState = {
@@ -17,13 +18,16 @@ type BoardsState = {
 const initialState: BoardsState = {
   items: [],
   isLoading: false,
-  error: null
+  error: null,
 }
 
 const boardsSlice = createSlice({
   name: 'boards',
   initialState,
   reducers: {
+    setBoards(state, action: PayloadAction<LocalBoard[]>) {
+      state.items = action.payload
+    },
     setBoardsError(state, action: PayloadAction<string | null>) {
       state.error = action.payload
     },
@@ -75,8 +79,15 @@ const boardsSlice = createSlice({
       .addCase(deleteBoardThunk.rejected, (state) => {
         state.error = 'Failed to delete board'
       })
-  }
+
+      .addCase(deleteAllBoardsThunk.fulfilled, (state) => {
+        state.items = []
+      })
+      .addCase(deleteAllBoardsThunk.rejected, (state) => {
+        state.error = 'Failed to delete one or more boards'
+      })
+  },
 })
 
-export const { setBoardsError, resetBoards } = boardsSlice.actions
+export const { setBoards, setBoardsError, resetBoards } = boardsSlice.actions
 export default boardsSlice.reducer
