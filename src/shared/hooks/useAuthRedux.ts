@@ -1,0 +1,77 @@
+import { useEffect } from 'react'
+import { useAppDispatch, useAppSelector } from '@/shared/lib/redux-hooks'
+import {
+  selectAuthMe,
+  selectIsAuth,
+  selectIsCheckingAuth,
+} from '@/app/store/selectors/authSelectors'
+import {
+  bootstrapAuthThunk,
+  logoutThunk,
+  signInThunk,
+  type SignInPayload,
+} from '@/app/store/thunks/authThunks'
+import { clearAuth, setMe } from '@/app/store/slices/authSlice'
+import { isDevOffline } from '@/shared/config/is-dev-offline'
+
+const DEV_OFFLINE_ME = {
+  userId: 'dev-offline',
+  login: 'dev@offline.local',
+}
+
+export const useAuthRedux = () => {
+  const dispatch = useAppDispatch()
+  const isAuth = useAppSelector(selectIsAuth)
+  const isCheckingAuth = useAppSelector(selectIsCheckingAuth)
+  const me = useAppSelector(selectAuthMe)
+
+  useEffect(() => {
+    if (isDevOffline) {
+      dispatch(setMe(DEV_OFFLINE_ME))
+      return
+    }
+
+    if (isCheckingAuth) {
+      void dispatch(bootstrapAuthThunk())
+    }
+  }, [dispatch, isCheckingAuth])
+
+  useEffect(() => {
+    const handleLogout = () => {
+      dispatch(clearAuth())
+    }
+
+    window.addEventListener('auth:logout', handleLogout)
+    return () => window.removeEventListener('auth:logout', handleLogout)
+  }, [dispatch])
+
+  const signIn = async (payload: SignInPayload) => {
+    if (isDevOffline) {
+      dispatch(setMe(DEV_OFFLINE_ME))
+      return
+    }
+    await dispatch(signInThunk(payload)).unwrap()
+  }
+
+  const logout = async () => {
+    if (isDevOffline) {
+      dispatch(clearAuth())
+      return
+    }
+    await dispatch(logoutThunk()).unwrap()
+  }
+
+  const enterLocalDevSession = () => {
+    if (!isDevOffline) return
+    dispatch(setMe(DEV_OFFLINE_ME))
+  }
+
+  return {
+    isAuth: isDevOffline ? true : isAuth,
+    isCheckingAuth: isDevOffline ? false : isCheckingAuth,
+    me: isDevOffline ? DEV_OFFLINE_ME : me,
+    signIn,
+    logout,
+    enterLocalDevSession,
+  }
+}

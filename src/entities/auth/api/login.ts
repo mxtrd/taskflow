@@ -1,4 +1,4 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 
 export type LoginRequest = {
   code: string
@@ -12,7 +12,7 @@ export type LoginResponse = {
 }
 
 export const login = (payload: LoginRequest) => {
-  return httpClient.post<LoginResponse>('/auth/login', payload)
+  return axiosClient.post<LoginResponse>('/auth/login', payload).then((res) => res.data)
 }
 
 export const getAccessTokenFromLoginResponse = (res: LoginResponse): string => {

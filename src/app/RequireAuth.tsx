@@ -1,10 +1,10 @@
 import { Navigate, Outlet, useLocation } from 'react-router-dom'
-import { useAuth } from '@/shared/hooks/useAuth'
+import { useAuthRedux } from '@/shared/hooks/useAuthRedux'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 
 const RequireAuth = () => {
-  const { isAuth, isCheckingAuth } = useAuth()
+  const { isAuth, isCheckingAuth } = useAuthRedux()
   const location = useLocation()
 
   if (isCheckingAuth) {

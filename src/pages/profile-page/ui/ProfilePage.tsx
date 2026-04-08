@@ -1,10 +1,10 @@
-import { useAuth } from "@/shared/hooks/useAuth"
+import { useAuthRedux } from "@/shared/hooks/useAuthRedux"
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './ProfilePage.module.scss'
 
 const ProfilePage = () => {
-  const { me, logout } = useAuth()
+  const { me, logout } = useAuthRedux()
 
   const handleLogout = async () => {
     await logout()
