@@ -1,4 +1,4 @@
-import { useTasks } from '@/shared/hooks/useTasks'
+import { useTasksRedux } from '@/shared/hooks/useTasksRedux'
 import { useState } from 'react'
 import type { SubmitEventHandler } from 'react'
 import BoardItem from './board-item/BoardItem'
@@ -11,7 +11,7 @@ import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 
 const BoardsPage = () => {
   const { boards, isLoadingBoards, boardsError, addBoard, deleteAllBoards, deleteBoard } = useBoardsRedux()
-  const { clearAllTasks, removeTasksForBoard } = useTasks()
+  const { clearAllTasks, removeTasksForBoard } = useTasksRedux()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')
   const [searchBoardsQuery, setSearchBoardsQuery] = useState('')
