@@ -6,7 +6,7 @@ import { getTaskById } from '@/entities/tasks/api/getTaskById'
 import { createTask } from '@/entities/tasks/api/createTask'
 import { updateTask } from '@/entities/tasks/api/updateTask'
 import { deleteTask } from '@/entities/tasks/api/deleteTask'
-import type { TaskUpdate } from '@/shared/contexts/tasks-context'
+import type { TaskUpdate } from '@/app/store/types/tasks'
 
 const normalizeTaskStatus = (status: number): TaskStatus =>
   status === 0 || status === 1 || status === 2 || status === 3 ? status : 0

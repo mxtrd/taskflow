@@ -15,7 +15,7 @@ import {
 } from '@/app/store/thunks/tasksThunks'
 import { isDevOffline } from '@/shared/config/is-dev-offline'
 import { mockTasksByBoardId, type LocalTask, type TaskStatus, type TasksByBoardId } from '@/shared/mocks/taskflowData'
-import type { TaskUpdate } from '@/shared/contexts/tasks-context'
+import type { TaskUpdate } from '@/app/store/types/tasks'
 
 export const useTasksRedux = () => {
   const dispatch = useAppDispatch()
