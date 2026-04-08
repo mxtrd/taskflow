@@ -1,6 +1,6 @@
 // import clsx from 'clsx'
 import { Link, useLocation } from 'react-router-dom'
-import { useAuth } from '@/shared/hooks/useAuth'
+import { useAuthRedux } from '@/shared/hooks/useAuthRedux'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './Header.module.scss'
 
@@ -8,7 +8,7 @@ const BRAND = 'TaskFlow'
 
 const Header = () => {
   const { pathname } = useLocation()
-  const { isAuth, me } = useAuth()
+  const { isAuth, me } = useAuthRedux()
 
   const taskMatch = pathname.match(/^\/boards\/([^/]+)\/tasks\/([^/]+)\/?$/)
 

@@ -1,10 +1,8 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 
 export type MeResponse = {
   userId: string,
   login: string
 }
 
-export const getMe = () => {
-  return httpClient.get<MeResponse>('/auth/me')
-}
+export const getMe = () => axiosClient.get<MeResponse>('/auth/me').then((res) => res.data)

@@ -1,9 +1,9 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 
 export type LogoutRequest = {
   refreshToken: string
 }
 
 export const logout = async (payload: LogoutRequest): Promise<void> => {
-  await httpClient.post<unknown>('/auth/logout', payload)
+  await axiosClient.post('/auth/logout', payload)
 }
