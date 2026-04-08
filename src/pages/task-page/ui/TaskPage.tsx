@@ -2,8 +2,8 @@ import type { SubmitEventHandler } from 'react'
 import type { TaskStatus } from '@/shared/mocks/taskflowData'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
-import { useBoards } from '@/shared/hooks/useBoards'
-import { useTasks } from '@/shared/hooks/useTasks'
+import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
+import { useTasksRedux } from '@/shared/hooks/useTasksRedux'
 import BaseLayout from '@/app/layouts/base-layout'
 import Button from '@/shared/ui/button'
 import { TASK_STATUS_LABELS } from '@/shared/lib/task-status'
@@ -12,8 +12,8 @@ import styles from './TaskPage.module.scss'
 
 const TaskPage = () => {
   const { boardId, taskId } = useParams<{ boardId: string; taskId: string }>()
-  const { getBoardById, boardsError } = useBoards()
-  const { getTaskById, loadTaskById, isLoadingTasks, tasksError, updateTask } = useTasks()
+  const { getBoardById, boardsError } = useBoardsRedux()
+  const { getTaskById, loadTaskById, isLoadingTasks, tasksError, updateTask } = useTasksRedux()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const selectedTask = boardId && taskId ? getTaskById(boardId, taskId) : undefined
 

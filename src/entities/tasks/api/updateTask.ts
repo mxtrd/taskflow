@@ -1,4 +1,4 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 import type { TaskDataDto } from './getTasksByBoardId'
 
 export type UpdateTaskRequest = {
@@ -15,6 +15,8 @@ export type UpdateTaskResponse = {
 }
 
 export const updateTask = (boardId: string, taskId: string, payload: UpdateTaskRequest) => {
-  return httpClient.put<UpdateTaskResponse>(`/boards/${boardId}/tasks/${taskId}`, payload)
+  return axiosClient
+    .put<UpdateTaskResponse>(`/boards/${boardId}/tasks/${taskId}`, payload)
+    .then((res) => res.data)
 }
 

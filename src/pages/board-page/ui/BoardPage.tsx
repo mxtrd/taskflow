@@ -2,7 +2,7 @@ import type { SubmitEventHandler } from 'react'
 import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
-import { useTasks } from '@/shared/hooks/useTasks'
+import { useTasksRedux } from '@/shared/hooks/useTasksRedux'
 import TaskItem from './task-item/TaskItem'
 import SearchField from '@/shared/ui/search-field'
 import BaseLayout from '@/app/layouts/base-layout'
@@ -12,7 +12,7 @@ import Button from '@/shared/ui/button'
 
 const BoardPage = () => {
   const { getBoardById, updateBoardTitle, updateBoardDescription, boardsError } = useBoardsRedux()
-  const { getTasksByBoardId, loadTasksByBoardId, isLoadingTasks, tasksError, addTask, deleteAllTasksForBoard, deleteTask, toggleTaskComplete } = useTasks()
+  const { getTasksByBoardId, loadTasksByBoardId, isLoadingTasks, tasksError, addTask, deleteAllTasksForBoard, deleteTask, toggleTaskComplete } = useTasksRedux()
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')

@@ -1,6 +1,6 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 
 export const deleteTask = (boardId: string, taskId: string): Promise<void> => {
-  return httpClient.delete<void>(`/boards/${boardId}/tasks/${taskId}`)
+  return axiosClient.delete<void>(`/boards/${boardId}/tasks/${taskId}`).then(() => undefined)
 }
 
