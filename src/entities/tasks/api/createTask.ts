@@ -1,4 +1,4 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 import type { TaskDataDto } from './getTasksByBoardId'
 
 export type CreateTaskRequest = {
@@ -10,6 +10,8 @@ export type CreateTaskResponse = {
 }
 
 export const createTask = (boardId: string, payload: CreateTaskRequest) => {
-  return httpClient.post<CreateTaskResponse>(`/boards/${boardId}/tasks`, payload)
+  return axiosClient
+    .post<CreateTaskResponse>(`/boards/${boardId}/tasks`, payload)
+    .then((res) => res.data)
 }
 

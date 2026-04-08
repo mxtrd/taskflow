@@ -1,4 +1,4 @@
-import { httpClient } from '@/shared/api/httpClient'
+import { axiosClient } from '@/shared/api/axiosClient'
 
 export type TaskAttributesDto = {
   id: string
@@ -45,8 +45,10 @@ export const getTasksByBoardId = (
   const pageNumber = params.pageNumber ?? 1
   const pageSize = params.pageSize ?? 20
 
-  return httpClient.get<GetTasksByBoardIdResponse>(
-    `/boards/${boardId}/tasks?pageNumber=${pageNumber}&pageSize=${pageSize}`
-  )
+  return axiosClient
+    .get<GetTasksByBoardIdResponse>(
+      `/boards/${boardId}/tasks?pageNumber=${pageNumber}&pageSize=${pageSize}`
+    )
+    .then((res) => res.data)
 }
 
