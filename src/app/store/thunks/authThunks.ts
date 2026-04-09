@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import { getMe, type MeResponse } from '@/entities/auth/api/getMe'
 import { logout as logoutApi } from '@/entities/auth/api/logout'
 import { authStorage } from '@/shared/lib/auth-storage'
+import { getApiErrorMessage } from '@/shared/lib/api-error'
 
 export type SignInPayload = {
   accessToken: string
@@ -22,9 +23,9 @@ export const bootstrapAuthThunk = createAsyncThunk<
 
   try {
     return await getMe()
-  } catch {
+  } catch (error) {
     authStorage.clearAll()
-    return rejectWithValue('Failed to bootstrap auth session')
+    return rejectWithValue(getApiErrorMessage(error, 'Failed to bootstrap auth session'))
   }
 })
 
@@ -38,9 +39,9 @@ export const signInThunk = createAsyncThunk<
 
   try {
     return await getMe()
-  } catch {
+  } catch (error) {
     authStorage.clearAll()
-    return rejectWithValue('Failed to initialize session after OAuth login')
+    return rejectWithValue(getApiErrorMessage(error, 'Failed to initialize session after OAuth login'))
   }
 })
 

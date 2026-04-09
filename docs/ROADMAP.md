@@ -30,18 +30,18 @@
 - Migrate boards/tasks flow from localStorage to backend API
 - Keep `useBoards` / `useTasks` contracts stable for pages
 
-## Stage 4 - State management (planned)
+## Stage 4 - State management (done, Option B selected)
 
 Choose one of two implementation tracks:
 
-### Option A - RTK + RTK Query
+### Option A - RTK + RTK Query (not selected)
 
 - Add Redux Toolkit store as single source of truth
 - Add RTK Query API slices for auth, boards, and tasks
 - Migrate async data flow from Context to RTK Query hooks
 - Keep endpoint typing and cache invalidation inside RTK Query
 
-### Option B - RTK + Axios
+### Option B - RTK + Axios (selected and implemented)
 
 - Add Redux Toolkit store with slices/selectors for auth, boards, tasks
 - Add centralized Axios client (`baseURL`, `api-key`, interceptors, refresh retry)
@@ -59,27 +59,28 @@ Decision note:
 - Add Zod schemas for login, board, task forms
 - Standardize form error UX
 
-## Stage 6 - Data layer hardening (depends on Stage 4 choice)
+## Stage 6 - Data layer hardening (done, Option B)
 
 - If Option A selected: harden RTK Query configuration (error mapping, retries, cache invalidation rules)
-- If Option B selected: finalize Axios interceptors and standardize API error mapping
-- Keep refresh-token flow centralized and consistent for all protected requests
+- If Option B selected: finalize Axios interceptors and standardize API error mapping (done)
+- Keep refresh-token flow centralized and consistent for all protected requests (done)
 
 Already done in current stage:
 
 - Refresh-token retry flow on `401`
+- Unified API error normalization for thunks/slices
 - Protected route bootstrapping via `GET /auth/me`
 - Boards owner CRUD integration
 - Tasks integration: public read + owner write
 
-## Stage 7 - Product completeness (MVP)
+## Stage 7 - Product completeness (MVP, in progress)
 
 - Finalize endpoints in active use:
   - Auth: login/refresh/logout/me
   - Boards Owner: my + create/update/delete
   - Tasks: public list/details + owner create/update/delete
 - Polish loading/error/empty states
-- Add pending/disabled states for mutation actions
+- Add pending/disabled states for mutation actions (done)
 - Add reusable UI components in `shared/ui`
 
 ## Stage 8 - Advanced portfolio features (optional)

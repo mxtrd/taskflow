@@ -10,8 +10,16 @@ import styles from './BoardsPage.module.scss'
 import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 
 const BoardsPage = () => {
-  const { boards, isLoadingBoards, boardsError, addBoard, deleteAllBoards, deleteBoard } = useBoardsRedux()
-  const { clearAllTasks, removeTasksForBoard } = useTasksRedux()
+  const {
+    boards,
+    isLoadingBoards,
+    isMutatingBoards,
+    boardsError,
+    addBoard,
+    deleteAllBoards,
+    deleteBoard,
+  } = useBoardsRedux()
+  const { clearAllTasks, removeTasksForBoard, isMutatingTasks } = useTasksRedux()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
   const [newBoardTitle, setNewBoardTitle] = useState('')
   const [searchBoardsQuery, setSearchBoardsQuery] = useState('')
@@ -61,6 +69,7 @@ const BoardsPage = () => {
   const hasBoards = boards.length > 0
   const hasActiveBoardsSearch = searchBoardsNormalized.length > 0
   const noBoardsMatches = hasBoards && hasActiveBoardsSearch && filteredBoards.length === 0
+  const isSubmitting = isMutatingBoards || isMutatingTasks
 
 
   return (
@@ -73,6 +82,7 @@ const BoardsPage = () => {
               <Button
                 className={styles.createBoard}
                 onClick={startCreateBoard}
+                disabled={isSubmitting}
               >
                 Create New Board
               </Button>
@@ -80,7 +90,7 @@ const BoardsPage = () => {
                 variant='secondary'
                 className={styles.deleteBoard}
                 onClick={deleteAllBoardsHandler}
-                disabled={boards.length === 0}
+                disabled={boards.length === 0 || isSubmitting}
               >
                 Delete All Boards
               </Button>
@@ -115,6 +125,7 @@ const BoardsPage = () => {
                         <Button
                           // className={styles.deleteBoard}
                           type="submit"
+                          disabled={isSubmitting}
                         >
                           Save
                         </Button>
@@ -122,6 +133,7 @@ const BoardsPage = () => {
                           variant='secondary'
                           // className={styles.deleteBoard}
                           onClick={cancelCreateBoard}
+                          disabled={isSubmitting}
                         >
                           Cancel
                         </Button>
@@ -134,6 +146,7 @@ const BoardsPage = () => {
                         key={board.id}
                         board={board}
                         to={`/boards/${board.id}`}
+                        disableDelete={isSubmitting}
                         onDeleteBoardButtonClick={deleteBoardHandler}
                       />
                     ))}

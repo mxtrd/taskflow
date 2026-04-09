@@ -8,6 +8,8 @@ type AuthState = {
   me: AuthUser
   isAuth: boolean
   isCheckingAuth: boolean
+  isSigningIn: boolean
+  isLoggingOut: boolean
   error: string | null
 }
 
@@ -15,6 +17,8 @@ const initialState: AuthState = {
   me: null,
   isAuth: false,
   isCheckingAuth: true,
+  isSigningIn: false,
+  isLoggingOut: false,
   error: null
 }
 
@@ -34,6 +38,8 @@ const authSlice = createSlice({
       state.isAuth = false
       state.error = null
       state.isCheckingAuth = false
+      state.isSigningIn = false
+      state.isLoggingOut = false
     },
   },
   extraReducers: (builder) => {
@@ -54,22 +60,33 @@ const authSlice = createSlice({
         state.error = action.payload ?? 'Failed to check auth'
       })
       .addCase(signInThunk.pending, (state) => {
+        state.isSigningIn = true
         state.error = null
       })
       .addCase(signInThunk.fulfilled, (state, action) => {
+        state.isSigningIn = false
         state.me = action.payload
         state.isAuth = true
       })
       .addCase(signInThunk.rejected, (state, action) => {
+        state.isSigningIn = false
         state.me = null
         state.isAuth = false
         state.error = action.payload ?? 'Sign-in failed'
       })
+      .addCase(logoutThunk.pending, (state) => {
+        state.isLoggingOut = true
+        state.error = null
+      })
       .addCase(logoutThunk.fulfilled, (state) => {
+        state.isLoggingOut = false
         state.me = null
         state.isAuth = false
         state.isCheckingAuth = false
         state.error = null
+      })
+      .addCase(logoutThunk.rejected, (state) => {
+        state.isLoggingOut = false
       })
   },
 })

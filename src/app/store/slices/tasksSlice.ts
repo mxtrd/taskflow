@@ -14,6 +14,7 @@ type TasksByBoardId = Record<string, LocalTask[]>
 type TasksState = {
   byBoardId: TasksByBoardId
   isLoading: boolean
+  isMutating: boolean
   error: string | null
   isOfflineSeeded: boolean
 }
@@ -21,6 +22,7 @@ type TasksState = {
 const initialState: TasksState = {
   byBoardId: {},
   isLoading: false,
+  isMutating: false,
   error: null,
   isOfflineSeeded: false,
 }
@@ -42,6 +44,7 @@ const tasksSlice = createSlice({
       state.byBoardId = {}
       state.error = null
       state.isLoading = false
+      state.isMutating = false
     }
   },
   extraReducers: (builder) => {
@@ -54,9 +57,9 @@ const tasksSlice = createSlice({
         state.isLoading = false
         state.byBoardId[action.meta.arg.boardId] = action.payload
       })
-      .addCase(fetchTasksByBoardThunk.rejected, (state) => {
+      .addCase(fetchTasksByBoardThunk.rejected, (state, action) => {
         state.isLoading = false
-        state.error = 'Failed to load tasks'
+        state.error = action.payload ?? 'Failed to load tasks'
       })
 
       .addCase(fetchTaskByIdThunk.pending, (state) => {
@@ -76,20 +79,31 @@ const tasksSlice = createSlice({
         next[index] = action.payload
         state.byBoardId[boardId] = next
       })
-      .addCase(fetchTaskByIdThunk.rejected, (state) => {
+      .addCase(fetchTaskByIdThunk.rejected, (state, action) => {
         state.isLoading = false
-        state.error = 'Failed to load task details'
+        state.error = action.payload ?? 'Failed to load task details'
       })
 
+      .addCase(createTaskThunk.pending, (state) => {
+        state.isMutating = true
+        state.error = null
+      })
       .addCase(createTaskThunk.fulfilled, (state, action) => {
+        state.isMutating = false
         const { boardId } = action.meta.arg
         state.byBoardId[boardId] = [action.payload, ...(state.byBoardId[boardId] ?? [])]
       })
-      .addCase(createTaskThunk.rejected, (state) => {
-        state.error = 'Failed to create task'
+      .addCase(createTaskThunk.rejected, (state, action) => {
+        state.isMutating = false
+        state.error = action.payload ?? 'Failed to create task'
       })
 
+      .addCase(updateTaskThunk.pending, (state) => {
+        state.isMutating = true
+        state.error = null
+      })
       .addCase(updateTaskThunk.fulfilled, (state, action) => {
+        state.isMutating = false
         const { boardId } = action.meta.arg
         const list = state.byBoardId[boardId] ?? []
         const index = list.findIndex((task) => task.id === action.payload.id)
@@ -101,22 +115,35 @@ const tasksSlice = createSlice({
         next[index] = action.payload
         state.byBoardId[boardId] = next
       })
-      .addCase(updateTaskThunk.rejected, (state) => {
-        state.error = 'Failed to update task'
+      .addCase(updateTaskThunk.rejected, (state, action) => {
+        state.isMutating = false
+        state.error = action.payload ?? 'Failed to update task'
       })
 
+      .addCase(deleteTaskThunk.pending, (state) => {
+        state.isMutating = true
+        state.error = null
+      })
       .addCase(deleteTaskThunk.fulfilled, (state, action) => {
+        state.isMutating = false
         const { boardId, taskId } = action.payload
         state.byBoardId[boardId] = (state.byBoardId[boardId] ?? []).filter((task) => task.id !== taskId)
       })
-      .addCase(deleteTaskThunk.rejected, (state) => {
-        state.error = 'Failed to delete task'
+      .addCase(deleteTaskThunk.rejected, (state, action) => {
+        state.isMutating = false
+        state.error = action.payload ?? 'Failed to delete task'
       })
 
+      .addCase(deleteAllTasksForBoardThunk.pending, (state) => {
+        state.isMutating = true
+        state.error = null
+      })
       .addCase(deleteAllTasksForBoardThunk.fulfilled, (state, action) => {
+        state.isMutating = false
         state.byBoardId[action.payload.boardId] = []
       })
       .addCase(deleteAllTasksForBoardThunk.rejected, (state) => {
+        state.isMutating = false
         state.error = 'Failed to delete one or more tasks'
       })
   },

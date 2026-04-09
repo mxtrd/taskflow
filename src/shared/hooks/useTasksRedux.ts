@@ -3,6 +3,7 @@ import { useAppDispatch, useAppSelector } from '@/shared/lib/redux-hooks'
 import {
   selectTasksError,
   selectTasksLoading,
+  selectTasksMutating,
 } from '@/app/store/selectors/tasksSelectors'
 import type { RootState } from '@/app/store/store'
 import {
@@ -25,6 +26,7 @@ import type { TaskUpdate } from '@/app/store/types/tasks'
 export const useTasksRedux = () => {
   const dispatch = useAppDispatch()
   const isLoadingTasks = useAppSelector(selectTasksLoading)
+  const isMutatingTasks = useAppSelector(selectTasksMutating)
   const tasksError = useAppSelector(selectTasksError)
   const tasksByBoardId = useAppSelector((state: RootState) => state.tasks.byBoardId)
   const isOfflineSeeded = useAppSelector((state: RootState) => state.tasks.isOfflineSeeded)
@@ -169,6 +171,7 @@ export const useTasksRedux = () => {
   return useMemo(
     () => ({
       isLoadingTasks,
+      isMutatingTasks,
       tasksError,
       getTasksByBoardId,
       getTaskById,
@@ -184,6 +187,7 @@ export const useTasksRedux = () => {
     }),
     [
       isLoadingTasks,
+      isMutatingTasks,
       tasksError,
       getTasksByBoardId,
       getTaskById,

@@ -1,10 +1,11 @@
 import { useAuthRedux } from "@/shared/hooks/useAuthRedux"
+import Button from '@/shared/ui/button'
 import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './ProfilePage.module.scss'
 
 const ProfilePage = () => {
-  const { me, logout } = useAuthRedux()
+  const { me, logout, isLoggingOut } = useAuthRedux()
 
   const handleLogout = async () => {
     await logout()
@@ -17,9 +18,9 @@ const ProfilePage = () => {
           <div className={baseStyles.content}>
             <h1 className={styles.title}>Profile Page</h1>
             <p>Logged in as: {me?.login ?? 'unknown'}</p>
-            <button type='button' onClick={handleLogout}>
-              Logout
-            </button>
+            <Button type='button' onClick={handleLogout} disabled={isLoggingOut}>
+              {isLoggingOut ? 'Logging out...' : 'Logout'}
+            </Button>
           </div>
         </div>
       </section>

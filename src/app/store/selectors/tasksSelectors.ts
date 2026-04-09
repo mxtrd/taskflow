@@ -1,6 +1,7 @@
 import type { RootState } from '@/app/store/store'
 
 export const selectTasksLoading = (state: RootState) => state.tasks.isLoading
+export const selectTasksMutating = (state: RootState) => state.tasks.isMutating
 export const selectTasksError = (state: RootState) => state.tasks.error
 export const selectTasksByBoardId = (boardId: string) => (state: RootState) =>
   state.tasks.byBoardId[boardId] ?? []

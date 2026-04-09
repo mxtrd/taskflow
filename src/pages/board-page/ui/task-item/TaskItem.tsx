@@ -7,11 +7,18 @@ import styles from './TaskItem.module.scss'
 type Props = {
   boardId: string
   task: LocalTask
+  disabled?: boolean
   onTaskCompleteChange: (boardId: string, taskId: string, isDone: boolean) => void,
   onDeleteTaskButtonCLick: (taskId: string) => void
 }
 
-const TaskItem = ({ boardId, task, onTaskCompleteChange, onDeleteTaskButtonCLick }: Props) => {
+const TaskItem = ({
+  boardId,
+  task,
+  disabled = false,
+  onTaskCompleteChange,
+  onDeleteTaskButtonCLick,
+}: Props) => {
   const isCompleted = task.status === 1
   const taskPath = `/boards/${boardId}/tasks/${task.id}`
 
@@ -29,6 +36,7 @@ const TaskItem = ({ boardId, task, onTaskCompleteChange, onDeleteTaskButtonCLick
           type='checkbox'
           id={task.id}
           checked={isCompleted}
+          disabled={disabled}
           onChange={(event) => onTaskCompleteChange(boardId, task.id, event.target.checked)}
         />
         <label htmlFor={task.id}>{task.title}</label>
@@ -39,7 +47,7 @@ const TaskItem = ({ boardId, task, onTaskCompleteChange, onDeleteTaskButtonCLick
       </span>
 
       <div className={styles.right}>
-        <button className={styles.contextButton}>...</button>
+        <button className={styles.contextButton} disabled={disabled}>...</button>
         <ul className={styles.dropdown}>
           <li className={styles.dropdownItem}>
             <Link className={styles.dropdownButton} to={taskPath}>
@@ -49,6 +57,7 @@ const TaskItem = ({ boardId, task, onTaskCompleteChange, onDeleteTaskButtonCLick
           <li className={styles.dropdownItem}>
             <button
               className={styles.dropdownButton}
+              disabled={disabled}
               onClick={() => onDeleteTaskButtonCLick(task.id)}
             >
               Delete
