@@ -13,7 +13,7 @@ import styles from './TaskPage.module.scss'
 const TaskPage = () => {
   const { boardId, taskId } = useParams<{ boardId: string; taskId: string }>()
   const { getBoardById, boardsError } = useBoardsRedux()
-  const { getTaskById, loadTaskById, isLoadingTasks, tasksError, updateTask } = useTasksRedux()
+  const { getTaskById, loadTaskById, isLoadingTasks, isMutatingTasks, tasksError, updateTask } = useTasksRedux()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const selectedTask = boardId && taskId ? getTaskById(boardId, taskId) : undefined
 
@@ -140,6 +140,7 @@ const TaskPage = () => {
                 <Button
                   className={styles.button}
                   type='submit'
+                  disabled={isMutatingTasks}
                 >
                   Save
                 </Button>

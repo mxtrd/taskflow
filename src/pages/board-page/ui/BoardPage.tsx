@@ -11,8 +11,24 @@ import styles from './BoardPage.module.scss'
 import Button from '@/shared/ui/button'
 
 const BoardPage = () => {
-  const { getBoardById, updateBoardTitle, updateBoardDescription, boardsError } = useBoardsRedux()
-  const { getTasksByBoardId, loadTasksByBoardId, isLoadingTasks, tasksError, addTask, deleteAllTasksForBoard, deleteTask, toggleTaskComplete } = useTasksRedux()
+  const {
+    getBoardById,
+    updateBoardTitle,
+    updateBoardDescription,
+    boardsError,
+    isMutatingBoards,
+  } = useBoardsRedux()
+  const {
+    getTasksByBoardId,
+    loadTasksByBoardId,
+    isLoadingTasks,
+    isMutatingTasks,
+    tasksError,
+    addTask,
+    deleteAllTasksForBoard,
+    deleteTask,
+    toggleTaskComplete,
+  } = useTasksRedux()
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
   const [draftTitle, setDraftTitle] = useState('')
@@ -133,6 +149,7 @@ const BoardPage = () => {
   const hasTasks = tasks.length > 0
   const hasActivetasksSearch = searchTasksNormalized.length > 0
   const noTasksMatches = hasTasks && hasActivetasksSearch && filteredTasks.length === 0
+  const isSubmitting = isMutatingBoards || isMutatingTasks
 
   if (!selectedBoard) {
     return (
@@ -161,15 +178,15 @@ const BoardPage = () => {
                   placeholder='Edit title'
                   required
                 />
-                <button type='submit'>Save</button>
-                <button type='button' onClick={cancelEditTitle}>
+                <button type='submit' disabled={isSubmitting}>Save</button>
+                <button type='button' onClick={cancelEditTitle} disabled={isSubmitting}>
                   Cancel
                 </button>
               </form>
             ) : (
               <>
                 <h1 className={baseStyles.title}>{selectedBoard.title}</h1>
-                <button type='button' onClick={startEditTitle}>
+                <button type='button' onClick={startEditTitle} disabled={isSubmitting}>
                   Edit
                 </button>
               </>
@@ -183,8 +200,8 @@ const BoardPage = () => {
                   placeholder='Add board description'
                   rows={4}
                 />
-                <button type='submit'>Save</button>
-                <button type='button' onClick={cancelAddDescription}>
+                <button type='submit' disabled={isSubmitting}>Save</button>
+                <button type='button' onClick={cancelAddDescription} disabled={isSubmitting}>
                   Cancel
                 </button>
               </form>
@@ -193,12 +210,12 @@ const BoardPage = () => {
                 <p className={baseStyles.descr}>
                   {selectedBoard.description}
                 </p>
-                <button type='button' onClick={startEditDescription}>
+                <button type='button' onClick={startEditDescription} disabled={isSubmitting}>
                   Edit description
                 </button>
               </>
             ) : (
-              <button type='button' onClick={startEditDescription}>
+              <button type='button' onClick={startEditDescription} disabled={isSubmitting}>
                 Add description
               </button>
             )}
@@ -206,6 +223,7 @@ const BoardPage = () => {
               <Button
                 className={styles.button}
                 onClick={startCreateTask}
+                disabled={isSubmitting}
               >
                 New Task
               </Button>
@@ -213,6 +231,7 @@ const BoardPage = () => {
                 variant='secondary'
                 className={styles.button}
                 onClick={deleteAllTasks}
+                disabled={isSubmitting || tasks.length === 0}
               >
                 Delete All Tasks
               </Button>
@@ -238,8 +257,8 @@ const BoardPage = () => {
                   placeholder='Task title...'
                   required
                 />
-                <button type='submit'>Save</button>
-                <button type='button' onClick={cancelCreateTask}>
+                <button type='submit' disabled={isSubmitting}>Save</button>
+                <button type='button' onClick={cancelCreateTask} disabled={isSubmitting}>
                   Cancel
                 </button>
               </form>
@@ -255,6 +274,7 @@ const BoardPage = () => {
                         key={task.id}
                         boardId={selectedBoard.id}
                         task={task}
+                        disabled={isSubmitting}
                         onTaskCompleteChange={toggleTaskComplete}
                         onDeleteTaskButtonCLick={deleteTaskHandler}
                       />

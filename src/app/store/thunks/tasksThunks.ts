@@ -8,60 +8,88 @@ import { updateTask } from '@/entities/tasks/api/updateTask'
 import { deleteTask } from '@/entities/tasks/api/deleteTask'
 import { mapTaskDtoToLocalTask } from '@/entities/tasks/model/mappers'
 import type { TaskUpdate } from '@/app/store/types/tasks'
+import { getApiErrorMessage } from '@/shared/lib/api-error'
 
 const mapTaskDto = (boardId: string, dto: TaskDataDto): LocalTask =>
   mapTaskDtoToLocalTask(boardId, dto)
 
-export const fetchTasksByBoardThunk = createAsyncThunk<LocalTask[], { boardId: string }>(
+export const fetchTasksByBoardThunk = createAsyncThunk<
+  LocalTask[],
+  { boardId: string },
+  { rejectValue: string }
+>(
   'tasks/fetchByBoard',
-  async ({ boardId }) => {
-    const response = await getTasksByBoardId(boardId)
-    return response.data.map((task) => mapTaskDto(boardId, task))
+  async ({ boardId }, { rejectWithValue }) => {
+    try {
+      const response = await getTasksByBoardId(boardId)
+      return response.data.map((task) => mapTaskDto(boardId, task))
+    } catch (error) {
+      return rejectWithValue(getApiErrorMessage(error, 'Failed to load tasks'))
+    }
   }
 )
 
 export const fetchTaskByIdThunk = createAsyncThunk<
   LocalTask,
-  { boardId: string; taskId: string }
->('tasks/fetchById', async ({ boardId, taskId }) => {
-  const response = await getTaskById(boardId, taskId)
-  return mapTaskDto(boardId, response.data)
+  { boardId: string; taskId: string },
+  { rejectValue: string }
+>('tasks/fetchById', async ({ boardId, taskId }, { rejectWithValue }) => {
+  try {
+    const response = await getTaskById(boardId, taskId)
+    return mapTaskDto(boardId, response.data)
+  } catch (error) {
+    return rejectWithValue(getApiErrorMessage(error, 'Failed to load task details'))
+  }
 })
 
 export const createTaskThunk = createAsyncThunk<
   LocalTask,
-  { boardId: string; title: string }
->('tasks/create', async ({ boardId, title }) => {
-  const response = await createTask(boardId, { title })
-  return mapTaskDto(boardId, response.data)
+  { boardId: string; title: string },
+  { rejectValue: string }
+>('tasks/create', async ({ boardId, title }, { rejectWithValue }) => {
+  try {
+    const response = await createTask(boardId, { title })
+    return mapTaskDto(boardId, response.data)
+  } catch (error) {
+    return rejectWithValue(getApiErrorMessage(error, 'Failed to create task'))
+  }
 })
 
 export const updateTaskThunk = createAsyncThunk<
   LocalTask,
   { boardId: string; taskId: string; updated: TaskUpdate },
-  { state: RootState }
->('tasks/update', async ({ boardId, taskId, updated }, { getState }) => {
+  { state: RootState; rejectValue: string }
+>('tasks/update', async ({ boardId, taskId, updated }, { getState, rejectWithValue }) => {
   const current = (getState().tasks.byBoardId[boardId] ?? []).find((task) => task.id === taskId)
   if (!current) {
-    throw new Error('Task not found in store')
+    return rejectWithValue('Task not found in store')
   }
 
-  const response = await updateTask(boardId, taskId, {
-    title: updated.title ?? current.title,
-    description: updated.description ?? current.description,
-    status: updated.status ?? current.status,
-    priority: 0,
-  })
+  try {
+    const response = await updateTask(boardId, taskId, {
+      title: updated.title ?? current.title,
+      description: updated.description ?? current.description,
+      status: updated.status ?? current.status,
+      priority: 0,
+    })
 
-  return mapTaskDto(boardId, response.data)
+    return mapTaskDto(boardId, response.data)
+  } catch (error) {
+    return rejectWithValue(getApiErrorMessage(error, 'Failed to update task'))
+  }
 })
 
 export const deleteTaskThunk = createAsyncThunk<
   { boardId: string; taskId: string },
-  { boardId: string; taskId: string }
->('tasks/delete', async ({ boardId, taskId }) => {
-  await deleteTask(boardId, taskId)
-  return { boardId, taskId }
+  { boardId: string; taskId: string },
+  { rejectValue: string }
+>('tasks/delete', async ({ boardId, taskId }, { rejectWithValue }) => {
+  try {
+    await deleteTask(boardId, taskId)
+    return { boardId, taskId }
+  } catch (error) {
+    return rejectWithValue(getApiErrorMessage(error, 'Failed to delete task'))
+  }
 })
 
 export const deleteAllTasksForBoardThunk = createAsyncThunk<

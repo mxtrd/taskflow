@@ -5,6 +5,7 @@ import {
   selectBoards,
   selectBoardsError,
   selectBoardsLoading,
+  selectBoardsMutating,
 } from '@/app/store/selectors/boardsSelectors'
 import {
   fetchMyBoardsThunk,
@@ -22,6 +23,7 @@ export const useBoardsRedux = () => {
   const dispatch = useAppDispatch()
   const boards = useAppSelector(selectBoards)
   const isLoadingBoards = useAppSelector(selectBoardsLoading)
+  const isMutatingBoards = useAppSelector(selectBoardsMutating)
   const boardsError = useAppSelector(selectBoardsError)
   const isOfflineSeeded = useAppSelector((state: RootState) => state.boards.isOfflineSeeded)
 
@@ -130,12 +132,14 @@ export const useBoardsRedux = () => {
 
   const safeBoards = boards
   const safeLoading = isDevOffline ? false : isLoadingBoards
+  const safeMutating = isDevOffline ? false : isMutatingBoards
   const safeError = isDevOffline ? null : boardsError
 
   return useMemo(
     () => ({
       boards: safeBoards,
       isLoadingBoards: safeLoading,
+      isMutatingBoards: safeMutating,
       boardsError: safeError,
       addBoard,
       getBoardById,
@@ -147,6 +151,7 @@ export const useBoardsRedux = () => {
     [
       safeBoards,
       safeLoading,
+      safeMutating,
       safeError,
       addBoard,
       getBoardById,
