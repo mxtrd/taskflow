@@ -1,4 +1,3 @@
-import type { SubmitEventHandler } from 'react'
 import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 import { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom'
@@ -9,6 +8,19 @@ import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardPage.module.scss'
 import Button from '@/shared/ui/button'
+import { useForm } from 'react-hook-form'
+
+type EditBoardTitleFormValues = {
+  title: string
+}
+
+type EditBoardDescriptionFormValues = {
+  description: string
+}
+
+type CreateTaskFormValues = {
+  title: string
+}
 
 const BoardPage = () => {
   const {
@@ -31,17 +43,44 @@ const BoardPage = () => {
   } = useTasksRedux()
 
   const [isEditingTitle, setIsEditingTitle] = useState(false)
-  const [draftTitle, setDraftTitle] = useState('')
   const [isAddingDescription, setIsAddingDescription] = useState(false)
-  const [draftDescription, setDraftDescription] = useState('')
   const [isCreatingTask, setIsCreatingTask] = useState(false)
-  const [newTaskTitle, setNewTaskTitle] = useState('')
   const [searchTasksQuery, setSearchTasksQuery] = useState('')
 
   const { boardId } = useParams<{ boardId: string }>()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const tasks = boardId ? getTasksByBoardId(boardId) : []
   const hasDescription = Boolean(selectedBoard?.description?.trim())
+
+  const {
+    register: registerTitle,
+    handleSubmit: handleTitleSubmit,
+    reset: resetTitleForm,
+    formState: { errors: titleErrors, isSubmitting: isTitleFormSubmitting },
+  } = useForm<EditBoardTitleFormValues>({
+    defaultValues: { title: '' },
+    mode: 'onSubmit',
+  })
+
+  const {
+    register: registerDescription,
+    handleSubmit: handleDescriptionSubmit,
+    reset: resetDescriptionForm,
+    formState: { errors: descriptionErrors, isSubmitting: isDescriptionFormSubmitting },
+  } = useForm<EditBoardDescriptionFormValues>({
+    defaultValues: { description: '' },
+    mode: 'onSubmit',
+  })
+
+  const {
+    register: registerTask,
+    handleSubmit: handleCreateTaskSubmit,
+    reset: resetTaskForm,
+    formState: { errors: taskErrors, isSubmitting: isTaskFormSubmitting },
+  } = useForm<CreateTaskFormValues>({
+    defaultValues: { title: '' },
+    mode: 'onSubmit',
+  })
 
   useEffect(() => {
     if (!boardId) return
@@ -73,71 +112,64 @@ const BoardPage = () => {
 
   const startEditTitle = () => {
     if (!selectedBoard) return
-    setDraftTitle(selectedBoard.title)
+    resetTitleForm({ title: selectedBoard.title })
     setIsEditingTitle(true)
   }
 
   const cancelEditTitle = () => {
-    setDraftTitle('')
+    resetTitleForm({ title: '' })
     setIsEditingTitle(false)
   }
 
-  const handleTitleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault()
+  const onTitleSubmit = ({ title }: EditBoardTitleFormValues) => {
     if (!boardId) return
 
-    const formData = new FormData(event.currentTarget)
-    const normalizedTitle = String(formData.get('title') ?? '').trim()
+    const normalizedTitle = title.trim()
     if (!normalizedTitle) return
 
     updateBoardTitle(boardId, normalizedTitle)
-    setDraftTitle('')
+    resetTitleForm({ title: '' })
     setIsEditingTitle(false)
   }
 
   const startEditDescription = () => {
     if (!selectedBoard) return
-    setDraftDescription(selectedBoard.description ?? '')
+    resetDescriptionForm({ description: selectedBoard.description ?? '' })
     setIsAddingDescription(true)
   }
 
   const cancelAddDescription = () => {
-    setDraftDescription('')
+    resetDescriptionForm({ description: '' })
     setIsAddingDescription(false)
   }
 
-  const handleDescriptionSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault()
+  const onDescriptionSubmit = ({ description }: EditBoardDescriptionFormValues) => {
     if (!boardId) return
 
-    const formData = new FormData(event.currentTarget)
-    const normalizedDescription = String(formData.get('description') ?? '').trim()
-
-    updateBoardDescription(boardId, normalizedDescription)
-    setDraftDescription('')
+    updateBoardDescription(boardId, description.trim())
+    resetDescriptionForm({ description: '' })
     setIsAddingDescription(false)
   }
 
   const startCreateTask = () => {
     if (isCreatingTask) return
+    resetTaskForm({ title: '' })
     setIsCreatingTask(true)
   }
 
   const cancelCreateTask = () => {
-    setNewTaskTitle('')
+    resetTaskForm({ title: '' })
     setIsCreatingTask(false)
   }
 
-  const handleCreateTaskSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault()
+  const onCreateTaskSubmit = ({ title }: CreateTaskFormValues) => {
     if (!boardId) return
 
-    const formData = new FormData(event.currentTarget)
-    const title = String(formData.get('title') ?? '').trim()
-    if (!title) return
+    const normalizedTitle = title.trim()
+    if (!normalizedTitle) return
 
-    addTask(boardId, title)
-    setNewTaskTitle('')
+    addTask(boardId, normalizedTitle)
+    resetTaskForm({ title: '' })
     setIsCreatingTask(false)
   }
 
@@ -149,7 +181,12 @@ const BoardPage = () => {
   const hasTasks = tasks.length > 0
   const hasActivetasksSearch = searchTasksNormalized.length > 0
   const noTasksMatches = hasTasks && hasActivetasksSearch && filteredTasks.length === 0
-  const isSubmitting = isMutatingBoards || isMutatingTasks
+  const isSubmitting =
+    isMutatingBoards ||
+    isMutatingTasks ||
+    isTitleFormSubmitting ||
+    isDescriptionFormSubmitting ||
+    isTaskFormSubmitting
 
   if (!selectedBoard) {
     return (
@@ -169,15 +206,18 @@ const BoardPage = () => {
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             {isEditingTitle ? (
-              <form onSubmit={handleTitleSubmit}>
+              <form onSubmit={handleTitleSubmit(onTitleSubmit)}>
                 <input
                   type='text'
-                  name='title'
-                  value={draftTitle}
-                  onChange={(e) => setDraftTitle(e.target.value)}
                   placeholder='Edit title'
-                  required
+                  {...registerTitle('title', {
+                    required: 'Board title is required',
+                    minLength: { value: 2, message: 'Minimum 2 characters' },
+                    maxLength: { value: 120, message: 'Maximum 120 characters' },
+                    validate: (value: string) => value.trim().length > 0 || 'Board title cannot be empty',
+                  })}
                 />
+                {titleErrors.title && <p className={baseStyles.descr}>{titleErrors.title.message}</p>}
                 <button type='submit' disabled={isSubmitting}>Save</button>
                 <button type='button' onClick={cancelEditTitle} disabled={isSubmitting}>
                   Cancel
@@ -192,14 +232,17 @@ const BoardPage = () => {
               </>
             )}
             {isAddingDescription ? (
-              <form onSubmit={handleDescriptionSubmit}>
+              <form onSubmit={handleDescriptionSubmit(onDescriptionSubmit)}>
                 <textarea
-                  name='description'
-                  value={draftDescription}
-                  onChange={(e) => setDraftDescription(e.target.value)}
                   placeholder='Add board description'
                   rows={4}
+                  {...registerDescription('description', {
+                    maxLength: { value: 1000, message: 'Maximum 1000 characters' },
+                  })}
                 />
+                {descriptionErrors.description && (
+                  <p className={baseStyles.descr}>{descriptionErrors.description.message}</p>
+                )}
                 <button type='submit' disabled={isSubmitting}>Save</button>
                 <button type='button' onClick={cancelAddDescription} disabled={isSubmitting}>
                   Cancel
@@ -248,15 +291,18 @@ const BoardPage = () => {
             {isLoadingTasks && <p className={baseStyles.descr}>Loading tasks...</p>}
             {tasksError && <p className={baseStyles.descr}>{tasksError}</p>}
             {isCreatingTask && (
-              <form onSubmit={handleCreateTaskSubmit}>
+              <form onSubmit={handleCreateTaskSubmit(onCreateTaskSubmit)}>
                 <input
                   type='text'
-                  name='title'
-                  value={newTaskTitle}
-                  onChange={(e) => setNewTaskTitle(e.target.value)}
                   placeholder='Task title...'
-                  required
+                  {...registerTask('title', {
+                    required: 'Task title is required',
+                    minLength: { value: 2, message: 'Minimum 2 characters' },
+                    maxLength: { value: 160, message: 'Maximum 160 characters' },
+                    validate: (value: string) => value.trim().length > 0 || 'Task title cannot be empty',
+                  })}
                 />
+                {taskErrors.title && <p className={baseStyles.descr}>{taskErrors.title.message}</p>}
                 <button type='submit' disabled={isSubmitting}>Save</button>
                 <button type='button' onClick={cancelCreateTask} disabled={isSubmitting}>
                   Cancel
