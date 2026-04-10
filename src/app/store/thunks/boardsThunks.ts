@@ -9,7 +9,7 @@ import { mapBoardDtoToLocalBoard } from '@/entities/boards/model/mappers'
 import { getApiErrorMessage } from '@/shared/lib/api-error'
 
 export const fetchMyBoardsThunk = createAsyncThunk<LocalBoard[], void, { rejectValue: string }>(
-  'boards/fetchMyBoards',
+'boards/fetchMyBoards',
   async (_, { rejectWithValue }) => {
     try {
       const res = await getMyBoards()

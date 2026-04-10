@@ -33,6 +33,7 @@ export const useBoardsRedux = () => {
   }, [dispatch])
 
   useEffect(() => {
+    // OFFLINE-ONLY: seed local mock boards for layout/dev mode.
     if (!isDevOffline) return
     if (isOfflineSeeded) return
     dispatch(setBoards(structuredClone(mockBoards)))
@@ -50,6 +51,7 @@ export const useBoardsRedux = () => {
       if (!normalized) return
 
       if (isDevOffline) {
+        // OFFLINE-ONLY: local board mutation (no API request).
         const id = `board-local-${crypto.randomUUID()}`
         dispatch(setBoards([{ id, title: normalized, description: '' }, ...boards]))
         return
@@ -68,6 +70,7 @@ export const useBoardsRedux = () => {
       if (!current) return
 
       if (isDevOffline) {
+        // OFFLINE-ONLY: local board mutation (no API request).
         dispatch(
           setBoards(boards.map((b) => (b.id === boardId ? { ...b, title: normalized } : b)))
         )
@@ -93,6 +96,7 @@ export const useBoardsRedux = () => {
       if (!current) return
 
       if (isDevOffline) {
+        // OFFLINE-ONLY: local board mutation (no API request).
         dispatch(
           setBoards(boards.map((b) => (b.id === boardId ? { ...b, description: normalized } : b)))
         )
@@ -114,6 +118,7 @@ export const useBoardsRedux = () => {
   const deleteBoard = useCallback(
     (boardId: string) => {
       if (isDevOffline) {
+        // OFFLINE-ONLY: local board mutation (no API request).
         dispatch(setBoards(boards.filter((b) => b.id !== boardId)))
         return
       }
@@ -124,20 +129,20 @@ export const useBoardsRedux = () => {
 
   const deleteAllBoards = useCallback(() => {
     if (isDevOffline) {
+      // OFFLINE-ONLY: local board mutation (no API request).
       dispatch(setBoards([]))
       return
     }
     void dispatch(deleteAllBoardsThunk())
   }, [dispatch])
 
-  const safeBoards = boards
   const safeLoading = isDevOffline ? false : isLoadingBoards
   const safeMutating = isDevOffline ? false : isMutatingBoards
   const safeError = isDevOffline ? null : boardsError
 
   return useMemo(
     () => ({
-      boards: safeBoards,
+      boards,
       isLoadingBoards: safeLoading,
       isMutatingBoards: safeMutating,
       boardsError: safeError,
@@ -149,7 +154,7 @@ export const useBoardsRedux = () => {
       deleteBoard,
     }),
     [
-      safeBoards,
+      boards,
       safeLoading,
       safeMutating,
       safeError,

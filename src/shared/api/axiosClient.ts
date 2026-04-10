@@ -18,6 +18,11 @@ type RetriableConfig = InternalAxiosRequestConfig & {
   skipAuthorizationHeader?: boolean
 }
 
+type RefreshOutput = {
+  refreshToken: string
+  accessToken: string
+}
+
 const axiosClient = axios.create({
   baseURL: API_BASE_URL,
   headers: {
@@ -41,8 +46,8 @@ const refreshTokens = async (): Promise<boolean> => {
   if (!refreshToken) return false
 
   try {
-    const response = await refreshClient.post<{ accessToken: string, refreshToken: string }>(
-      '/auth/refresh',
+    const response = await refreshClient.post<RefreshOutput>(
+      '/auth/refresh', 
       { refreshToken }
     )
 
