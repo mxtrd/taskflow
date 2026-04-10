@@ -1,6 +1,5 @@
 import { useTasksRedux } from '@/shared/hooks/useTasksRedux'
 import { useState } from 'react'
-import type { SubmitEventHandler } from 'react'
 import BoardItem from './board-item/BoardItem'
 import SearchField from '@/shared/ui/search-field'
 import BaseLayout from '@/app/layouts/base-layout'
@@ -8,6 +7,11 @@ import Button from '@/shared/ui/button'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardsPage.module.scss'
 import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
+import { useForm } from 'react-hook-form'
+
+type CreateBoardFormValues = {
+  title: string
+}
 
 const BoardsPage = () => {
   const {
@@ -21,8 +25,17 @@ const BoardsPage = () => {
   } = useBoardsRedux()
   const { clearAllTasks, removeTasksForBoard, isMutatingTasks } = useTasksRedux()
   const [isCreatingBoard, setIsCreatingBoard] = useState(false)
-  const [newBoardTitle, setNewBoardTitle] = useState('')
   const [searchBoardsQuery, setSearchBoardsQuery] = useState('')
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting: isFormSubmitting }
+  } = useForm<CreateBoardFormValues>({
+    defaultValues: { title: '' },
+    mode: 'onSubmit',
+  })
 
   const startCreateBoard = () => {
     if (isCreatingBoard) return
@@ -32,18 +45,15 @@ const BoardsPage = () => {
 
   const cancelCreateBoard = () => {
     setIsCreatingBoard(false)
-    setNewBoardTitle('')
+    reset()
   }
 
-  const handleCreateBoardSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault()
 
-    const formData = new FormData(event.currentTarget)
-    const title = String(formData.get('title') ?? '').trim()
-    if (!title) return
-
-    addBoard(title)
-    setNewBoardTitle('')
+  const onCreateBoardSubmit = ({ title }: CreateBoardFormValues) => {
+    const normalizedTitle = title.trim()
+    if (!normalizedTitle) return
+    addBoard(normalizedTitle)
+    reset()
     setIsCreatingBoard(false)
     setSearchBoardsQuery('')
   }
@@ -69,7 +79,7 @@ const BoardsPage = () => {
   const hasBoards = boards.length > 0
   const hasActiveBoardsSearch = searchBoardsNormalized.length > 0
   const noBoardsMatches = hasBoards && hasActiveBoardsSearch && filteredBoards.length === 0
-  const isSubmitting = isMutatingBoards || isMutatingTasks
+  const isSubmitting = isMutatingBoards || isMutatingTasks || isFormSubmitting
 
 
   return (
@@ -112,26 +122,25 @@ const BoardsPage = () => {
                 <ul className={`${styles.boards} ${baseStyles.listReset}`}>
                   {isCreatingBoard && (
                     <li className={styles.board}>
-                      <form onSubmit={handleCreateBoardSubmit}>
+                      <form onSubmit={handleSubmit(onCreateBoardSubmit)}>
                         <input
                           type='text'
-                          name='title'
-                          value={newBoardTitle}
-                          onChange={(e) => setNewBoardTitle(e.target.value)}
                           placeholder='Board title...'
-                          required
+                          {...register('title', {
+                            required: 'Board title is required',
+                            minLength: { value: 2, message: 'Minimum 2 characters' },
+                            maxLength: { value: 120, message: 'Maximum 120 characters' },
+                            validate: (value: string) => value.trim().length > 0 || 'Board title cannot be empty',
+                          })}
                         />
-                        {/* <button type='submit'>Save</button> */}
-                        <Button
-                          // className={styles.deleteBoard}
-                          type="submit"
-                          disabled={isSubmitting}
-                        >
+                        {errors.title && <p>{errors.title.message}</p>}
+
+                        <Button type='submit' disabled={isSubmitting}>
                           Save
                         </Button>
                         <Button
+                          type='button'
                           variant='secondary'
-                          // className={styles.deleteBoard}
                           onClick={cancelCreateBoard}
                           disabled={isSubmitting}
                         >

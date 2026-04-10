@@ -28,6 +28,7 @@ const initialState: BoardsState = {
 const boardsSlice = createSlice({
   name: 'boards',
   initialState,
+  //reducers для локальных досок, extraReducers для thunks
   reducers: {
     setBoards(state, action: PayloadAction<LocalBoard[]>) {
       state.items = action.payload
