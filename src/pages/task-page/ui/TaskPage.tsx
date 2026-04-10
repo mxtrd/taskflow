@@ -1,4 +1,3 @@
-import type { SubmitEventHandler } from 'react'
 import type { TaskStatus } from '@/shared/mocks/taskflowData'
 import { useEffect } from 'react'
 import { useParams } from 'react-router-dom'
@@ -7,8 +6,22 @@ import { useTasksRedux } from '@/shared/hooks/useTasksRedux'
 import BaseLayout from '@/app/layouts/base-layout'
 import Button from '@/shared/ui/button'
 import { TASK_STATUS_LABELS } from '@/shared/lib/task-status'
+import { createRequiredTrimmedTextRules } from '@/shared/lib/form-rules'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './TaskPage.module.scss'
+import { useForm } from 'react-hook-form'
+
+type EditTaskFormValues = {
+  title: string
+  description: string
+  status: string
+}
+
+const taskTitleRules = createRequiredTrimmedTextRules({
+  fieldLabel: 'Task title',
+  min: 2,
+  max: 160,
+})
 
 const TaskPage = () => {
   const { boardId, taskId } = useParams<{ boardId: string; taskId: string }>()
@@ -16,6 +29,20 @@ const TaskPage = () => {
   const { getTaskById, loadTaskById, isLoadingTasks, isMutatingTasks, tasksError, updateTask } = useTasksRedux()
   const selectedBoard = boardId ? getBoardById(boardId) : undefined
   const selectedTask = boardId && taskId ? getTaskById(boardId, taskId) : undefined
+
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting: isFormSubmitting },
+  } = useForm<EditTaskFormValues>({
+    defaultValues: {
+      title: '',
+      description: '',
+      status: '0',
+    },
+    mode: 'onSubmit',
+  })
 
   useEffect(() => {
     if (!boardId || !taskId) return
@@ -25,24 +52,39 @@ const TaskPage = () => {
     })
   }, [boardId, taskId, loadTaskById])
 
-  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault()
-
+  const onSubmit = ({ title, description, status }: EditTaskFormValues) => {
     if (!boardId || !taskId || !selectedTask) return
 
-    const formData = new FormData(event.currentTarget)
-    const title = String(formData.get('title') ?? '').trim()
-    const description = String(formData.get('description') ?? '')
-    const statusRaw = Number(formData.get('status'))
+    const normalizedTitle = title.trim()
+    if (!normalizedTitle) return
 
-    if (!title) return
+    const statusRaw = Number(status)
 
-    const status: TaskStatus =
+    const normalizedStatus: TaskStatus =
       statusRaw === 0 || statusRaw === 1 || statusRaw === 2 || statusRaw === 3
         ? statusRaw
         : selectedTask.status
 
-    updateTask(boardId, taskId, { title, description, status })
+    updateTask(boardId, taskId, { title: normalizedTitle, description, status: normalizedStatus })
+  }
+
+  useEffect(() => {
+    if (!selectedTask) return
+
+    reset({
+      title: selectedTask.title,
+      description: selectedTask.description,
+      status: String(selectedTask.status),
+    })
+  }, [selectedTask, reset])
+
+  const isSubmitting = isMutatingTasks || isFormSubmitting
+
+  const statusRules = {
+    validate: (value: string) => {
+      const parsed = Number(value)
+      return [0, 1, 2, 3].includes(parsed) || 'Invalid task status'
+    },
   }
 
   const STATUS_ORDER: TaskStatus[] = [0, 1, 2, 3]
@@ -82,7 +124,7 @@ const TaskPage = () => {
             {isLoadingTasks && <p className={baseStyles.descr}>Loading task details...</p>}
             {boardsError && <p className={baseStyles.descr}>{boardsError}</p>}
             {tasksError && <p className={baseStyles.descr}>{tasksError}</p>}
-            <form className={styles.form} onSubmit={handleSubmit}>
+            <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
               <div className={styles.column}>
                 <label className={styles.label} htmlFor='title'>
                   Title
@@ -91,10 +133,9 @@ const TaskPage = () => {
                   className={styles.input}
                   type='text'
                   id='title'
-                  name='title'
-                  defaultValue={selectedTask.title}
-                  required
+                  {...register('title', taskTitleRules)}
                 />
+                {errors.title && <p className={baseStyles.descr}>{errors.title.message}</p>}
               </div>
               <div className={styles.column}>
                 <label className={styles.label} htmlFor='description'>
@@ -103,10 +144,12 @@ const TaskPage = () => {
                 <textarea
                   className={styles.description}
                   id='description'
-                  name='description'
                   rows={5}
-                  defaultValue={selectedTask.description}
+                  {...register('description', {
+                    maxLength: { value: 4000, message: 'Maximum 4000 characters' },
+                  })}
                 ></textarea>
+                {errors.description && <p className={baseStyles.descr}>{errors.description.message}</p>}
               </div>
               <div className={styles.column}>
                 <label className={styles.label} htmlFor='status'>
@@ -114,9 +157,8 @@ const TaskPage = () => {
                 </label>
                 <select
                   className={styles.select}
-                  name='status'
                   id='status'
-                  defaultValue={String(selectedTask.status)}
+                  {...register('status', statusRules)}
                 >
                   {
                     STATUS_ORDER.map((status) => (
@@ -126,6 +168,7 @@ const TaskPage = () => {
                     ))
                   }
                 </select>
+                {errors.status && <p className={baseStyles.descr}>{errors.status.message}</p>}
               </div>
               <div className={styles.column}>
                 <label className={styles.label}>Board</label>
@@ -140,7 +183,7 @@ const TaskPage = () => {
                 <Button
                   className={styles.button}
                   type='submit'
-                  disabled={isMutatingTasks}
+                  disabled={isSubmitting}
                 >
                   Save
                 </Button>

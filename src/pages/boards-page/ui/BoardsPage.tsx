@@ -8,10 +8,17 @@ import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardsPage.module.scss'
 import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 import { useForm } from 'react-hook-form'
+import { createRequiredTrimmedTextRules } from '@/shared/lib/form-rules'
 
 type CreateBoardFormValues = {
   title: string
 }
+
+const createBoardTitleRules = createRequiredTrimmedTextRules({
+  fieldLabel: 'Board title',
+  min: 2,
+  max: 120,
+})
 
 const BoardsPage = () => {
   const {
@@ -126,12 +133,7 @@ const BoardsPage = () => {
                         <input
                           type='text'
                           placeholder='Board title...'
-                          {...register('title', {
-                            required: 'Board title is required',
-                            minLength: { value: 2, message: 'Minimum 2 characters' },
-                            maxLength: { value: 120, message: 'Maximum 120 characters' },
-                            validate: (value: string) => value.trim().length > 0 || 'Board title cannot be empty',
-                          })}
+                          {...register('title', createBoardTitleRules)}
                         />
                         {errors.title && <p>{errors.title.message}</p>}
 

@@ -9,6 +9,7 @@ import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardPage.module.scss'
 import Button from '@/shared/ui/button'
 import { useForm } from 'react-hook-form'
+import { createRequiredTrimmedTextRules } from '@/shared/lib/form-rules'
 
 type EditBoardTitleFormValues = {
   title: string
@@ -21,6 +22,18 @@ type EditBoardDescriptionFormValues = {
 type CreateTaskFormValues = {
   title: string
 }
+
+const boardTitleRules = createRequiredTrimmedTextRules({
+  fieldLabel: 'Board title',
+  min: 2,
+  max: 120,
+})
+
+const taskTitleRules = createRequiredTrimmedTextRules({
+  fieldLabel: 'Task title',
+  min: 2,
+  max: 160,
+})
 
 const BoardPage = () => {
   const {
@@ -210,12 +223,7 @@ const BoardPage = () => {
                 <input
                   type='text'
                   placeholder='Edit title'
-                  {...registerTitle('title', {
-                    required: 'Board title is required',
-                    minLength: { value: 2, message: 'Minimum 2 characters' },
-                    maxLength: { value: 120, message: 'Maximum 120 characters' },
-                    validate: (value: string) => value.trim().length > 0 || 'Board title cannot be empty',
-                  })}
+                  {...registerTitle('title', boardTitleRules)}
                 />
                 {titleErrors.title && <p className={baseStyles.descr}>{titleErrors.title.message}</p>}
                 <button type='submit' disabled={isSubmitting}>Save</button>
@@ -295,12 +303,7 @@ const BoardPage = () => {
                 <input
                   type='text'
                   placeholder='Task title...'
-                  {...registerTask('title', {
-                    required: 'Task title is required',
-                    minLength: { value: 2, message: 'Minimum 2 characters' },
-                    maxLength: { value: 160, message: 'Maximum 160 characters' },
-                    validate: (value: string) => value.trim().length > 0 || 'Task title cannot be empty',
-                  })}
+                  {...registerTask('title', taskTitleRules)}
                 />
                 {taskErrors.title && <p className={baseStyles.descr}>{taskErrors.title.message}</p>}
                 <button type='submit' disabled={isSubmitting}>Save</button>
