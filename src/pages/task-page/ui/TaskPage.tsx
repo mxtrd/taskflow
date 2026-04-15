@@ -7,6 +7,7 @@ import BaseLayout from '@/app/layouts/base-layout'
 import Button from '@/shared/ui/button'
 import { TASK_STATUS_LABELS } from '@/shared/lib/task-status'
 import { createRequiredTrimmedTextRules } from '@/shared/lib/form-rules'
+import { toast } from 'react-toastify'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './TaskPage.module.scss'
 import { useForm } from 'react-hook-form'
@@ -52,7 +53,7 @@ const TaskPage = () => {
     })
   }, [boardId, taskId, loadTaskById])
 
-  const onSubmit = ({ title, description, status }: EditTaskFormValues) => {
+  const onSubmit = async ({ title, description, status }: EditTaskFormValues) => {
     if (!boardId || !taskId || !selectedTask) return
 
     const normalizedTitle = title.trim()
@@ -65,7 +66,16 @@ const TaskPage = () => {
         ? statusRaw
         : selectedTask.status
 
-    updateTask(boardId, taskId, { title: normalizedTitle, description, status: normalizedStatus })
+    try {
+      await updateTask(boardId, taskId, {
+        title: normalizedTitle,
+        description,
+        status: normalizedStatus
+      })
+      toast.success('Task saved successfully')
+    } catch {
+      toast.error('Failed to save task')
+    }
   }
 
   useEffect(() => {

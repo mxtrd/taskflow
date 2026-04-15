@@ -1,3 +1,5 @@
+@use '../../../../app/styles/mixins/disable-mob-hover' as *;
+
 .board {
   position: relative;
   border-radius: 20px;
@@ -11,8 +13,31 @@
 }
 
 .button {
-  font-size: 12px;
   position: absolute;
   top: 5px;
   right: 5px;
+  padding: 0;
+  color: var(--text-secondary);
+
+  &:hover:not(:disabled) {
+    color: var(--text-primary);
+  }
+}
+
+.link {
+  text-decoration: none;
+}
+
+.title {
+  margin: 0;
+  color: var(--text-primary);
+  transition: color 0.3s;
+
+  @include hover {
+    color: var(--accent);
+  }
+
+  &:active {
+    color: var(--accent-active);
+  }
 }

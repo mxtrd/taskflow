@@ -95,7 +95,7 @@ export const useTasksRedux = () => {
   )
 
   const updateTask = useCallback(
-    (boardId: string, taskId: string, updated: TaskUpdate) => {
+    async (boardId: string, taskId: string, updated: TaskUpdate) => {
       if (isDevOffline) {
         const list = tasksByBoardId[boardId] ?? []
         dispatch(
@@ -116,7 +116,7 @@ export const useTasksRedux = () => {
         return
       }
 
-      void dispatch(updateTaskThunk({ boardId, taskId, updated }))
+      await dispatch(updateTaskThunk({ boardId, taskId, updated })).unwrap()
     },
     [dispatch, tasksByBoardId]
   )
@@ -163,7 +163,7 @@ export const useTasksRedux = () => {
   const toggleTaskComplete = useCallback(
     (boardId: string, taskId: string, isDone: boolean) => {
       const status: TaskStatus = isDone ? 1 : 0
-      updateTask(boardId, taskId, { status })
+      void updateTask(boardId, taskId, { status })
     },
     [updateTask]
   )

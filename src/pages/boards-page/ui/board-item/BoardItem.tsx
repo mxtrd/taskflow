@@ -15,11 +15,19 @@ const BoardItem = ({ board, to, disableDelete = false, onDeleteBoardButtonClick 
     <li className={styles.board}>
       <Button
         variant='secondary'
+        isIconOnly
         className={styles.button}
         onClick={() => onDeleteBoardButtonClick(board.id)}
         disabled={disableDelete}
       >
-        Delete
+        <svg width='16' height='16' viewBox='0 0 16 16' aria-hidden='true'>
+          <path
+            d='M12 4L4 12M4 4L12 12'
+            strokeWidth='1.6'
+            strokeLinecap='round'
+            strokeLinejoin='round'
+          />
+        </svg>
       </Button>
       <div className={styles.body}>
         <Link className={styles.link} to={to}>

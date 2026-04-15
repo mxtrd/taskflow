@@ -64,10 +64,10 @@ const EditForm = (props: EditFormProps) => {
       {error && <p className={baseStyles.fieldError}>{error}</p>}
 
       <div className={clsx(styles.actions, actionsClassName)}>
-        <Button type='submit' disabled={disabled}>
+        <Button className={styles.editButton} type='submit' disabled={disabled}>
           {saveLabel}
         </Button>
-        <Button type='button' variant='secondary' onClick={onCancel} disabled={disabled}>
+        <Button className={styles.editButton} type='button' variant='secondary' onClick={onCancel} disabled={disabled}>
           {cancelLabel}
         </Button>
       </div>

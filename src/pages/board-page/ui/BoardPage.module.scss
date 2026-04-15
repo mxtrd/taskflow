@@ -4,13 +4,41 @@
   margin-bottom: 20px;
 }
 
+.titleSection,
+.descriptionSection {
+  position: relative;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.descriptionSection {
+  .editIconButton {
+    position: relative;
+    bottom: 10px;
+  }
+}
+
+.titleSection {
+  .editIconButton {
+    position: relative;
+    bottom: 15px;
+  }
+}
+
 .buttons {
   display: flex;
   gap: 10px;
 }
 
-.button {
-  margin-bottom: 20px;
+.addButton {
+  justify-self: start;
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+.editIconButton {
+  color: var(--text-secondary);
 }
 
 .tasks {
