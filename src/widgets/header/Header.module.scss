@@ -1,3 +1,5 @@
+@use '../../app/styles/mixins/disable-mob-hover' as *;
+
 .header {
   padding-block: 12px;
   background-color: var(--bg-surface);
@@ -12,17 +14,31 @@
 
 .logo,
 .profile,
-.backLink {
+.backLink,
+.loginLink {
   text-decoration: none;
   font-family: var(--second-family);
   font-size: 32px;
   line-height: 1.2;
   color: var(--text-primary);
+  transition: color 0.3s;
+
+  @include hover {
+    color: var(--accent-hover);
+  }
 }
 
 .profile,
-.backLink {
+.backLink,
+.loginLink {
   font-size: 16px;
+}
+
+.logo:active,
+.profile:active,
+.backLink:active,
+.loginLink:active {
+  color: var(--accent-active);
 }
 // .bar {
 //   min-height: 52px;

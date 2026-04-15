@@ -1,0 +1,56 @@
+.right {
+  position: relative;
+}
+
+.contextButton {
+  min-width: 32px;
+  min-height: 32px;
+}
+
+.contextDots {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.contextDot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background-color: var(--text-primary);
+}
+
+.list {
+  position: absolute;
+  left: 50%;
+  top: calc(100% + 5px);
+  display: flex;
+  flex-direction: column;
+  border-radius: 16px;
+  padding: 10px;
+  width: 100px;
+  border: 1px solid var(--bg-elevated-active);
+  box-shadow: 4px 4px 20px 0 rgba(18, 18, 18, 0.25);
+  background: #1e1e1e;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s, visibility 0.3s;
+  gap: 8px;
+  translate: -50% 0;
+}
+
+.listOpen {
+  opacity: 1;
+  visibility: visible;
+}
+
+.dropdownItem {
+  margin: 0;
+}
+
+.dropdownAction {
+  width: 100%;
+  padding: 6px 12px;
+  font-size: 12px;
+}

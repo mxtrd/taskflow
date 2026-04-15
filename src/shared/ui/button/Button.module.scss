@@ -17,7 +17,9 @@
 
   svg {
     display: block;
-    fill: currentcolor;
+    stroke: var(--light-text-secondary);
+    align-self: auto;
+    transition: stroke 0.3s;
   }
 
   &--primary {
@@ -30,10 +32,22 @@
     background: transparent;
   }
 
+  &--icon-only {
+    border: none;
+    padding: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 30%;
+  }
+
   @include hover {
     border-color: var(--accent-hover);
     color: #f0f0f0;
     background: var(--accent-hover);
+
+    svg {
+      stroke: currentColor;
+    }
   }
 
   &:active:not(:disabled) {

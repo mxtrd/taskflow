@@ -1,7 +1,7 @@
-import { Link } from 'react-router-dom'
 import type { LocalTask } from '@/shared/mocks/taskflowData'
 import type { TaskStatus } from '@/shared/mocks/taskflowData'
 import { getTaskStatusLabel } from '@/shared/lib/task-status'
+import TaskActionsMenu from './task-actions-menu'
 import styles from './TaskItem.module.scss'
 
 type Props = {
@@ -46,25 +46,12 @@ const TaskItem = ({
         {getTaskStatusLabel(task.status)}
       </span>
 
-      <div className={styles.right}>
-        <button className={styles.contextButton} disabled={disabled}>...</button>
-        <ul className={styles.dropdown}>
-          <li className={styles.dropdownItem}>
-            <Link className={styles.dropdownButton} to={taskPath}>
-              Edit
-            </Link>
-          </li>
-          <li className={styles.dropdownItem}>
-            <button
-              className={styles.dropdownButton}
-              disabled={disabled}
-              onClick={() => onDeleteTaskButtonCLick(task.id)}
-            >
-              Delete
-            </button>
-          </li>
-        </ul>
-      </div>
+      <TaskActionsMenu
+        taskPath={taskPath}
+        taskId={task.id}
+        disabled={disabled}
+        onDeleteTaskButtonClick={onDeleteTaskButtonCLick}
+      />
     </li>
   )
 }

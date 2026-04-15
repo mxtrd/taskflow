@@ -18,7 +18,7 @@ const Header = () => {
       <header className={styles.header}>
         <div className={baseStyles.container}>
           <div className={styles.inner}>
-            <Link className={styles.backLink} to={`/boards/${boardId}`}>  
+            <Link className={styles.backLink} to={`/boards/${boardId}`}>
               ← Back
             </Link>
           </div>
@@ -37,6 +37,11 @@ const Header = () => {
             <span className={styles.logo}>
               {BRAND}
             </span>
+            {!isGuestRoute && (
+              <Link className={styles.loginLink} to='/login'>
+                Login
+              </Link>
+            )}
           </div>
         </div>
       </header>

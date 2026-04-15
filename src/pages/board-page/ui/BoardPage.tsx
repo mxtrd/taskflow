@@ -36,6 +36,15 @@ const taskTitleRules = createRequiredTrimmedTextRules({
   max: 160,
 })
 
+const PencilIcon = () => (
+  <svg width='16' height='16' viewBox='0 0 50 50' fill='none' aria-hidden='true'>
+    <path
+      fill='currentColor'
+      d='M43.0508 1.97461C41.8008 1.97461 40.5496 2.45039 39.5996 3.40039L38.8008 4.19922L45.6992 11.0996L46.5 10.3008C48.4 8.40078 48.4 5.30039 46.5 3.40039C45.55 2.45039 44.3008 1.97461 43.0508 1.97461ZM37.4824 6.08984C37.2301 6.09396 36.9893 6.19482 36.7949 6.39258L4.29492 38.791C4.17555 38.9102 4.08503 39.0552 4.0332 39.2148L2.0332 46.7422A1.0001 1.0001 0 0 0 3.25781 47.9668L10.7578 45.9668A1.0001 1.0001 0 0 0 11.2089 45.7051L43.6074 13.2051A1.0001 1.0001 0 1 0 42.1914 11.7949L9.99219 44.0938L5.90625 40.0078L38.2051 7.80859A1.0001 1.0001 0 0 0 37.4824 6.08984Z'
+    />
+  </svg>
+)
+
 const BoardPage = () => {
   const {
     getBoardById,
@@ -219,55 +228,71 @@ const BoardPage = () => {
       <section className={baseStyles.section}>
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
-            {isEditingTitle ? (
-              <EditForm
-                onSubmit={handleTitleSubmit(onTitleSubmit)}
-                onCancel={cancelEditTitle}
-                disabled={isSubmitting}
-                registration={registerTitle('title', boardTitleRules)}
-                error={titleErrors.title?.message}
-                inputProps={{
-                  type: 'text',
-                  placeholder: 'Edit title',
-                }}
-              />
-            ) : (
-              <>
-                <h1 className={baseStyles.title}>{selectedBoard.title}</h1>
-                <button type='button' onClick={startEditTitle} disabled={isSubmitting}>
-                  Edit
-                </button>
-              </>
-            )}
-            {isAddingDescription ? (
-              <EditForm
-                mode='textarea'
-                onSubmit={handleDescriptionSubmit(onDescriptionSubmit)}
-                onCancel={cancelAddDescription}
-                disabled={isSubmitting}
-                registration={registerDescription('description', {
-                  maxLength: { value: 1000, message: 'Maximum 1000 characters' },
-                })}
-                error={descriptionErrors.description?.message}
-                textareaProps={{
-                  placeholder: 'Add board description',
-                  rows: 4,
-                }}
-              />
-            ) : hasDescription ? (
-              <>
-                <p className={baseStyles.descr}>
-                  {selectedBoard.description}
-                </p>
-                <button type='button' onClick={startEditDescription} disabled={isSubmitting}>
-                  Edit description
-                </button>
-              </>
-            ) : (
-              <button type='button' onClick={startEditDescription} disabled={isSubmitting}>
-                Add description
-              </button>
-            )}
+            <div className={baseStyles.header}>
+              {isEditingTitle ? (
+                <EditForm
+                  onSubmit={handleTitleSubmit(onTitleSubmit)}
+                  onCancel={cancelEditTitle}
+                  disabled={isSubmitting}
+                  registration={registerTitle('title', boardTitleRules)}
+                  error={titleErrors.title?.message}
+                  inputProps={{
+                    type: 'text',
+                    placeholder: 'Edit title',
+                  }}
+                />
+              ) : (
+                <div className={styles.titleSection}>
+                  <h1 className={baseStyles.title}>{selectedBoard.title}</h1>
+                  <Button
+                    type='button'
+                    variant='secondary'
+                    isIconOnly
+                    className={styles.editIconButton}
+                    onClick={startEditTitle}
+                    disabled={isSubmitting}
+                  >
+                    <PencilIcon />
+                  </Button>
+                </div>
+              )}
+              {isAddingDescription ? (
+                <EditForm
+                  mode='textarea'
+                  onSubmit={handleDescriptionSubmit(onDescriptionSubmit)}
+                  onCancel={cancelAddDescription}
+                  disabled={isSubmitting}
+                  registration={registerDescription('description', {
+                    maxLength: { value: 1000, message: 'Maximum 1000 characters' },
+                  })}
+                  error={descriptionErrors.description?.message}
+                  textareaProps={{
+                    placeholder: 'Add board description',
+                    rows: 4,
+                  }}
+                />
+              ) : hasDescription ? (
+                <div className={styles.descriptionSection}>
+                  <p className={baseStyles.descr}>
+                    {selectedBoard.description}
+                  </p>
+                  <Button
+                    type='button'
+                    variant='secondary'
+                    isIconOnly
+                    className={styles.editIconButton}
+                    onClick={startEditDescription}
+                    disabled={isSubmitting}
+                  >
+                    <PencilIcon />
+                  </Button>
+                </div>
+              ) : (
+                <Button className={styles.addButton} type='button' variant='primary' onClick={startEditDescription} disabled={isSubmitting}>
+                  Add description
+                </Button>
+              )}
+            </div>
             <div className={styles.buttons}>
               <Button
                 className={styles.button}
