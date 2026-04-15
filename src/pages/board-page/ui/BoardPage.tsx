@@ -8,6 +8,7 @@ import BaseLayout from '@/app/layouts/base-layout'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './BoardPage.module.scss'
 import Button from '@/shared/ui/button'
+import EditForm from '@/shared/ui/edit-form'
 import { useForm } from 'react-hook-form'
 import { createRequiredTrimmedTextRules } from '@/shared/lib/form-rules'
 
@@ -219,18 +220,17 @@ const BoardPage = () => {
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             {isEditingTitle ? (
-              <form onSubmit={handleTitleSubmit(onTitleSubmit)}>
-                <input
-                  type='text'
-                  placeholder='Edit title'
-                  {...registerTitle('title', boardTitleRules)}
-                />
-                {titleErrors.title && <p className={baseStyles.descr}>{titleErrors.title.message}</p>}
-                <button type='submit' disabled={isSubmitting}>Save</button>
-                <button type='button' onClick={cancelEditTitle} disabled={isSubmitting}>
-                  Cancel
-                </button>
-              </form>
+              <EditForm
+                onSubmit={handleTitleSubmit(onTitleSubmit)}
+                onCancel={cancelEditTitle}
+                disabled={isSubmitting}
+                registration={registerTitle('title', boardTitleRules)}
+                error={titleErrors.title?.message}
+                inputProps={{
+                  type: 'text',
+                  placeholder: 'Edit title',
+                }}
+              />
             ) : (
               <>
                 <h1 className={baseStyles.title}>{selectedBoard.title}</h1>
@@ -240,22 +240,20 @@ const BoardPage = () => {
               </>
             )}
             {isAddingDescription ? (
-              <form onSubmit={handleDescriptionSubmit(onDescriptionSubmit)}>
-                <textarea
-                  placeholder='Add board description'
-                  rows={4}
-                  {...registerDescription('description', {
-                    maxLength: { value: 1000, message: 'Maximum 1000 characters' },
-                  })}
-                />
-                {descriptionErrors.description && (
-                  <p className={baseStyles.descr}>{descriptionErrors.description.message}</p>
-                )}
-                <button type='submit' disabled={isSubmitting}>Save</button>
-                <button type='button' onClick={cancelAddDescription} disabled={isSubmitting}>
-                  Cancel
-                </button>
-              </form>
+              <EditForm
+                mode='textarea'
+                onSubmit={handleDescriptionSubmit(onDescriptionSubmit)}
+                onCancel={cancelAddDescription}
+                disabled={isSubmitting}
+                registration={registerDescription('description', {
+                  maxLength: { value: 1000, message: 'Maximum 1000 characters' },
+                })}
+                error={descriptionErrors.description?.message}
+                textareaProps={{
+                  placeholder: 'Add board description',
+                  rows: 4,
+                }}
+              />
             ) : hasDescription ? (
               <>
                 <p className={baseStyles.descr}>
@@ -289,34 +287,36 @@ const BoardPage = () => {
             </div>
             <form>
               <SearchField
+                type='search'
                 value={searchTasksQuery}
                 name='tasksSearch'
                 onChange={(event) => setSearchTasksQuery(event.target.value)}
-                placeholder="find task"
+                placeholder="Find task"
               />
             </form>
             {boardsError && <p className={baseStyles.descr}>{boardsError}</p>}
             {isLoadingTasks && <p className={baseStyles.descr}>Loading tasks...</p>}
             {tasksError && <p className={baseStyles.descr}>{tasksError}</p>}
-            {isCreatingTask && (
-              <form onSubmit={handleCreateTaskSubmit(onCreateTaskSubmit)}>
-                <input
-                  type='text'
-                  placeholder='Task title...'
-                  {...registerTask('title', taskTitleRules)}
-                />
-                {taskErrors.title && <p className={baseStyles.descr}>{taskErrors.title.message}</p>}
-                <button type='submit' disabled={isSubmitting}>Save</button>
-                <button type='button' onClick={cancelCreateTask} disabled={isSubmitting}>
-                  Cancel
-                </button>
-              </form>
-            )}
-            {!hasTasks ? (
+            {!hasTasks && !isCreatingTask ? (
               <p className={baseStyles.descr}>No tasks yet</p>
             ) : (
               <>
                 <ul className={`${baseStyles.listReset} ${styles.tasks}`}>
+                  {isCreatingTask && (
+                    <li className={styles.taskDraft}>
+                      <EditForm
+                        onSubmit={handleCreateTaskSubmit(onCreateTaskSubmit)}
+                        onCancel={cancelCreateTask}
+                        disabled={isSubmitting}
+                        registration={registerTask('title', taskTitleRules)}
+                        error={taskErrors.title?.message}
+                        inputProps={{
+                          type: 'text',
+                          placeholder: 'Task title...',
+                        }}
+                      />
+                    </li>
+                  )}
                   {!noTasksMatches &&
                     filteredTasks.map((task) => (
                       <TaskItem
@@ -329,7 +329,7 @@ const BoardPage = () => {
                       />
                     ))}
                 </ul>
-                {noTasksMatches && <p className={baseStyles.descr}>Tasks not found</p>}
+                {noTasksMatches && hasTasks && <p className={baseStyles.descr}>Tasks not found</p>}
               </>
             )}
           </div>

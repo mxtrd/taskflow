@@ -130,7 +130,7 @@ const TaskPage = () => {
                   Title
                 </label>
                 <input
-                  className={styles.input}
+                  className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${styles.input}`}
                   type='text'
                   id='title'
                   {...register('title', taskTitleRules)}
@@ -142,7 +142,7 @@ const TaskPage = () => {
                   Description
                 </label>
                 <textarea
-                  className={styles.description}
+                  className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${baseStyles.fieldControlTextarea} ${styles.description}`}
                   id='description'
                   rows={5}
                   {...register('description', {
@@ -156,7 +156,7 @@ const TaskPage = () => {
                   Status
                 </label>
                 <select
-                  className={styles.select}
+                  className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${baseStyles.fieldControlSelect} ${styles.select}`}
                   id='status'
                   {...register('status', statusRules)}
                 >
@@ -173,7 +173,7 @@ const TaskPage = () => {
               <div className={styles.column}>
                 <label className={styles.label}>Board</label>
                 <input
-                  className={styles.input}
+                  className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${styles.input}`}
                   type='text'
                   value={selectedBoard.title}
                   readOnly
