@@ -6,6 +6,9 @@ import { fileURLToPath, URL } from 'node:url'
 export default defineConfig({
   base: "/taskflow/",
   plugins: [react()],
+  css: {
+    devSourcemap: true,
+  },
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url))

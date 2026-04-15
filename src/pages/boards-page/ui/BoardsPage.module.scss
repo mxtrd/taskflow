@@ -1,18 +1,17 @@
 .boards {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  // display: flex;
-  // flex-wrap: wrap;
   align-items: center;
   gap: 20px;
 }
 
 .board {
   position: relative;
+  border-radius: 20px;
+  padding: 10px;
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 250px;
   height: 150px;
   background-color: var(--bg-surface);
 }

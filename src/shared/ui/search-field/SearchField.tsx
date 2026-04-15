@@ -1,16 +1,19 @@
 import type { ChangeEventHandler } from 'react'
+import baseStyles from '@/app/styles/base.module.scss'
 import styles from './SearchField.module.scss'
 
 type Props = {
-  value: string
+  type: string
+  value?: string
   name: string
-  onChange: ChangeEventHandler<HTMLInputElement>
+  onChange?: ChangeEventHandler<HTMLInputElement>
   placeholder: string
   autoComplete?: string
 }
 
 const SearchField = (props: Props) => {
   const {
+    type,
     value,
     name,
     onChange,
@@ -19,15 +22,17 @@ const SearchField = (props: Props) => {
   } = props
 
   return (
-    <input
-      className={styles.root}
-      name={name}
-      type='search'
-      value={value}
-      onChange={onChange}
-      placeholder={placeholder}
-      autoComplete={autoComplete}
-    />
+    <label>
+      <input
+        className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${styles.input}`}
+        name={name}
+        type={type}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        autoComplete={autoComplete}
+      />
+    </label>
   )
 }
 

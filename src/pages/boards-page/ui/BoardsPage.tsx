@@ -9,6 +9,7 @@ import styles from './BoardsPage.module.scss'
 import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 import { useForm } from 'react-hook-form'
 import { createRequiredTrimmedTextRules } from '@/shared/lib/form-rules'
+import EditForm from '@/shared/ui/edit-form'
 
 type CreateBoardFormValues = {
   title: string
@@ -114,10 +115,11 @@ const BoardsPage = () => {
             </div>
             <form>
               <SearchField
+                type='search'
                 value={searchBoardsQuery}
                 name='boardsSearch'
                 onChange={(event) => setSearchBoardsQuery(event.target.value)}
-                placeholder="find board"
+                placeholder="Find board"
               />
             </form>
             {isLoadingBoards && <p>Loading boards...</p>}
@@ -129,26 +131,17 @@ const BoardsPage = () => {
                 <ul className={`${styles.boards} ${baseStyles.listReset}`}>
                   {isCreatingBoard && (
                     <li className={styles.board}>
-                      <form onSubmit={handleSubmit(onCreateBoardSubmit)}>
-                        <input
-                          type='text'
-                          placeholder='Board title...'
-                          {...register('title', createBoardTitleRules)}
-                        />
-                        {errors.title && <p>{errors.title.message}</p>}
-
-                        <Button type='submit' disabled={isSubmitting}>
-                          Save
-                        </Button>
-                        <Button
-                          type='button'
-                          variant='secondary'
-                          onClick={cancelCreateBoard}
-                          disabled={isSubmitting}
-                        >
-                          Cancel
-                        </Button>
-                      </form>
+                      <EditForm
+                        onSubmit={handleSubmit(onCreateBoardSubmit)}
+                        onCancel={cancelCreateBoard}
+                        disabled={isSubmitting}
+                        registration={register('title', createBoardTitleRules)}
+                        error={errors.title?.message}
+                        inputProps={{
+                          type: 'text',
+                          placeholder: 'Board title...',
+                        }}
+                      />
                     </li>
                   )}
                   {!noBoardsMatches &&
