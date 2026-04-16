@@ -1,0 +1,29 @@
+@use "../../../app/styles/mixins/_breakpoint.scss" as *;
+
+.notFoundContent {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 50px;
+  border-radius: 20px;
+  background-color: var(--bg-surface);
+
+  @include mobile {
+    padding: 25px;
+  }
+}
+
+.title,
+.text {
+  margin: 0;
+}
+
+.button {
+  align-self: center;
+
+  @include mobile {
+    align-self: stretch;
+  }
+}
