@@ -25,6 +25,8 @@
   position: absolute;
   left: 50%;
   top: calc(100% + 5px);
+  // Ensure dropdown overlays neighboring tasks.
+  z-index: 1000;
   display: flex;
   flex-direction: column;
   border-radius: 16px;

@@ -1,3 +1,5 @@
+@use '../../../app/styles/mixins/_breakpoint.scss' as *;
+
 .input {
   width: 300px;
   padding-left: 40px;
@@ -5,4 +7,8 @@
   background-repeat: no-repeat;
   background-position: 12px center;
   background-size: 16px 16px;
+
+  @include mobile {
+    width: 100%;
+  }
 }
