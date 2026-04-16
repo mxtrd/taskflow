@@ -96,19 +96,6 @@ const BoardsPage = () => {
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             <h1 className={baseStyles.title}>My Boards</h1>
-            <form
-              onSubmit={(event) => {
-                event.preventDefault()
-              }}
-            >
-              <SearchField
-                type='search'
-                value={searchBoardsQuery}
-                name='boardsSearch'
-                onChange={(event) => setSearchBoardsQuery(event.target.value)}
-                placeholder="Find board"
-              />
-            </form>
             <div className={styles.buttons}>
               <Button
                 className={styles.createBoard}
@@ -126,6 +113,19 @@ const BoardsPage = () => {
                 Delete All Boards
               </Button>
             </div>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+              }}
+            >
+              <SearchField
+                type='search'
+                value={searchBoardsQuery}
+                name='boardsSearch'
+                onChange={(event) => setSearchBoardsQuery(event.target.value)}
+                placeholder="Find board"
+              />
+            </form>
             {isLoadingBoards && <p>Loading boards...</p>}
             {boardsError && <p>{boardsError}</p>}
             {boards.length === 0 && !isCreatingBoard ? (
@@ -134,8 +134,9 @@ const BoardsPage = () => {
               <>
                 <ul className={`${styles.boards} ${baseStyles.listReset}`}>
                   {isCreatingBoard && (
-                    <li className={styles.board}>
+                    <li className={styles.boardDraft}>
                       <EditForm
+                        formClassName={styles.boardForm}
                         onSubmit={handleSubmit(onCreateBoardSubmit)}
                         onCancel={cancelCreateBoard}
                         disabled={isSubmitting}

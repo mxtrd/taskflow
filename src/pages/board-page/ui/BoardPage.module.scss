@@ -1,4 +1,4 @@
-
+@use '../../../app/styles/mixins/_breakpoint.scss' as *;
 
 .title {
   margin-bottom: 20px;
@@ -28,7 +28,11 @@
 
 .buttons {
   display: flex;
-  gap: 10px;
+  gap: 15px 10px;
+
+  @include mobile {
+    flex-direction: column;
+  }
 }
 
 .addButton {
@@ -44,8 +48,23 @@
 .tasks {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  // flex-direction: column;
   gap: 20px;
+
+  @include desktop {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  @include tablet {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  @include small-tablet {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  @include mobile {
+    grid-template-columns: 1fr;
+  }
 }
 
 .taskDraft {
@@ -54,6 +73,18 @@
   padding: 10px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   background-color: var(--bg-surface);
+}
+
+.taskForm {
+  flex-direction: column;
+  align-items: center;
+}
+
+.editTitle,
+.editDescr {
+  @include mobile {
+    flex-direction: column;
+  }
 }

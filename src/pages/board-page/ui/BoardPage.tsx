@@ -231,6 +231,7 @@ const BoardPage = () => {
             <div className={baseStyles.header}>
               {isEditingTitle ? (
                 <EditForm
+                  formClassName={styles.editTitle}
                   onSubmit={handleTitleSubmit(onTitleSubmit)}
                   onCancel={cancelEditTitle}
                   disabled={isSubmitting}
@@ -258,6 +259,7 @@ const BoardPage = () => {
               )}
               {isAddingDescription ? (
                 <EditForm
+                  formClassName={styles.editDescr}
                   mode='textarea'
                   onSubmit={handleDescriptionSubmit(onDescriptionSubmit)}
                   onCancel={cancelAddDescription}
@@ -334,6 +336,7 @@ const BoardPage = () => {
                   {isCreatingTask && (
                     <li className={styles.taskDraft}>
                       <EditForm
+                        formClassName={styles.taskForm}
                         onSubmit={handleCreateTaskSubmit(onCreateTaskSubmit)}
                         onCancel={cancelCreateTask}
                         disabled={isSubmitting}
