@@ -1,4 +1,20 @@
+@use "../../../app/styles/mixins/_breakpoint.scss" as *;
+
 .title,
 .text {
   margin: 0;
+}
+
+.profileContent {
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+}
+
+.profileButton {
+  align-self: center;
+
+  @include mobile {
+    align-self: stretch;
+  }
 }

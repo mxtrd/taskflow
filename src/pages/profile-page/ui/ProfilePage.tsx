@@ -13,12 +13,12 @@ const ProfilePage = () => {
 
   return (
     <BaseLayout title='Taskflow' description='Taskflow - profile page'>
-      <section className={styles.boards}>
+      <section className={baseStyles.section}>
         <div className={baseStyles.container}>
-          <div className={baseStyles.content}>
+          <div className={`${baseStyles.content} ${styles.profileContent}`}>
             <h1 className={styles.title}>Profile Page</h1>
             <p className={styles.text}>Logged in as: {me?.login ?? 'unknown'}</p>
-            <Button type='button' onClick={handleLogout} disabled={isLoggingOut}>
+            <Button className={styles.profileButton} type='button' onClick={handleLogout} disabled={isLoggingOut}>
               {isLoggingOut ? 'Logging out...' : 'Logout'}
             </Button>
           </div>
