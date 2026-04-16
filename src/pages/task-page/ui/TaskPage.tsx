@@ -5,12 +5,13 @@ import { useBoardsRedux } from '@/shared/hooks/useBoardsRedux'
 import { useTasksRedux } from '@/shared/hooks/useTasksRedux'
 import BaseLayout from '@/app/layouts/base-layout'
 import Button from '@/shared/ui/button'
+import CustomSelect from '@/shared/ui/custom-select'
 import { TASK_STATUS_LABELS } from '@/shared/lib/task-status'
 import { createRequiredTrimmedTextRules } from '@/shared/lib/form-rules'
 import { toast } from 'react-toastify'
 import baseStyles from '@/app/styles/base.module.scss'
 import styles from './TaskPage.module.scss'
-import { useForm } from 'react-hook-form'
+import { Controller, useForm } from 'react-hook-form'
 
 type EditTaskFormValues = {
   title: string
@@ -32,6 +33,7 @@ const TaskPage = () => {
   const selectedTask = boardId && taskId ? getTaskById(boardId, taskId) : undefined
 
   const {
+    control,
     register,
     handleSubmit,
     reset,
@@ -98,6 +100,10 @@ const TaskPage = () => {
   }
 
   const STATUS_ORDER: TaskStatus[] = [0, 1, 2, 3]
+  const statusOptions = STATUS_ORDER.map((status) => ({
+    value: String(status),
+    label: TASK_STATUS_LABELS[status],
+  }))
 
   if (!selectedBoard) {
     return (
@@ -165,19 +171,23 @@ const TaskPage = () => {
                 <label className={styles.label} htmlFor='status'>
                   Status
                 </label>
-                <select
-                  className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${baseStyles.fieldControlSelect} ${styles.select}`}
-                  id='status'
-                  {...register('status', statusRules)}
-                >
-                  {
-                    STATUS_ORDER.map((status) => (
-                      <option key={status} value={String(status)}>
-                        {TASK_STATUS_LABELS[status]}
-                      </option>
-                    ))
-                  }
-                </select>
+                <Controller
+                  name='status'
+                  control={control}
+                  rules={statusRules}
+                  render={({ field }) => (
+                    <CustomSelect
+                      id='status'
+                      name={field.name}
+                      label='Task status'
+                      options={statusOptions}
+                      value={field.value}
+                      onChange={field.onChange}
+                      onBlur={field.onBlur}
+                      rootClassName={styles.select}
+                    />
+                  )}
+                />
                 {errors.status && <p className={baseStyles.descr}>{errors.status.message}</p>}
               </div>
               <div className={styles.column}>
