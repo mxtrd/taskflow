@@ -1,6 +1,7 @@
 import type { LocalTask } from '@/shared/mocks/taskflowData'
 import type { TaskStatus } from '@/shared/mocks/taskflowData'
 import { getTaskStatusLabel } from '@/shared/lib/task-status'
+import CustomCheckbox from '@/shared/ui/custom-checkbox'
 import TaskActionsMenu from './task-actions-menu'
 import styles from './TaskItem.module.scss'
 
@@ -32,14 +33,13 @@ const TaskItem = ({
   return (
     <li className={styles.task}>
       <div className={styles.left}>
-        <input
-          type='checkbox'
-          id={task.id}
+        <CustomCheckbox
+          name={task.id}
           checked={isCompleted}
           disabled={disabled}
+          label={task.title}
           onChange={(event) => onTaskCompleteChange(boardId, task.id, event.target.checked)}
         />
-        <label htmlFor={task.id}>{task.title}</label>
       </div>
 
       <span className={`${styles.badge} ${statusTone[task.status]}`}>
