@@ -17,7 +17,7 @@ const ProfilePage = () => {
         <div className={baseStyles.container}>
           <div className={baseStyles.content}>
             <h1 className={styles.title}>Profile Page</h1>
-            <p>Logged in as: {me?.login ?? 'unknown'}</p>
+            <p className={styles.text}>Logged in as: {me?.login ?? 'unknown'}</p>
             <Button type='button' onClick={handleLogout} disabled={isLoggingOut}>
               {isLoggingOut ? 'Logging out...' : 'Logout'}
             </Button>

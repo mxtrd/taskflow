@@ -310,7 +310,11 @@ const BoardPage = () => {
                 Delete All Tasks
               </Button>
             </div>
-            <form>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+              }}
+            >
               <SearchField
                 type='search'
                 value={searchTasksQuery}

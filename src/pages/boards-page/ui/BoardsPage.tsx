@@ -113,7 +113,11 @@ const BoardsPage = () => {
                 Delete All Boards
               </Button>
             </div>
-            <form>
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+              }}
+            >
               <SearchField
                 type='search'
                 value={searchBoardsQuery}

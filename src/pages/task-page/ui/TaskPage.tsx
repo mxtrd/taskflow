@@ -142,53 +142,60 @@ const TaskPage = () => {
             {tasksError && <p className={baseStyles.descr}>{tasksError}</p>}
             <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
               <div className={styles.column}>
-                <label className={styles.label} htmlFor='title'>
+                <label className={styles.fieldLabel} htmlFor='title'>
                   Title
-                </label>
-                <input
-                  className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${styles.input}`}
-                  type='text'
-                  id='title'
-                  {...register('title', taskTitleRules)}
-                />
-                {errors.title && <p className={baseStyles.descr}>{errors.title.message}</p>}
-              </div>
-              <div className={styles.column}>
-                <label className={styles.label} htmlFor='description'>
-                  Description
-                </label>
-                <textarea
-                  className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${baseStyles.fieldControlTextarea} ${styles.description}`}
-                  id='description'
-                  rows={5}
-                  {...register('description', {
-                    maxLength: { value: 4000, message: 'Maximum 4000 characters' },
-                  })}
-                ></textarea>
-                {errors.description && <p className={baseStyles.descr}>{errors.description.message}</p>}
-              </div>
-              <div className={styles.column}>
-                <label className={styles.label} htmlFor='status'>
-                  Status
-                </label>
-                <Controller
-                  name='status'
-                  control={control}
-                  rules={statusRules}
-                  render={({ field }) => (
-                    <CustomSelect
-                      id='status'
-                      name={field.name}
-                      label='Task status'
-                      options={statusOptions}
-                      value={field.value}
-                      onChange={field.onChange}
-                      onBlur={field.onBlur}
-                      rootClassName={styles.select}
-                    />
+                  <input
+                    className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${styles.input} ${errors.title ? baseStyles.fieldControlError : ''}`}
+                    type='text'
+                    id='title'
+                    {...register('title', taskTitleRules)}
+                  />
+                  {errors.title && (
+                    <p className={`${baseStyles.fieldError} ${styles.fieldErrorAbsolute}`}>{errors.title.message}</p>
                   )}
-                />
-                {errors.status && <p className={baseStyles.descr}>{errors.status.message}</p>}
+                </label>
+              </div>
+              <div className={styles.column}>
+                <label className={styles.fieldLabel} htmlFor='description'>
+                  Description
+                  <textarea
+                    className={`${baseStyles.inputReset} ${baseStyles.fieldControl} ${baseStyles.fieldControlTextarea} ${styles.description} ${errors.description ? baseStyles.fieldControlError : ''}`}
+                    id='description'
+                    rows={5}
+                    {...register('description', {
+                      maxLength: { value: 4000, message: 'Maximum 4000 characters' },
+                    })}
+                  ></textarea>
+                  {errors.description && (
+                    <p className={`${baseStyles.fieldError} ${styles.fieldErrorAbsolute}`}>{errors.description.message}</p>
+                  )}
+                </label>
+              </div>
+              <div className={styles.column}>
+                <label className={styles.fieldLabel}>
+                  Status
+                  <Controller
+                    name='status'
+                    control={control}
+                    rules={statusRules}
+                    render={({ field }) => (
+                      <CustomSelect
+                        id='status'
+                        name={field.name}
+                        label='Task status'
+                        options={statusOptions}
+                        value={field.value}
+                        onChange={field.onChange}
+                        onBlur={field.onBlur}
+                        rootClassName={styles.select}
+                        hasError={Boolean(errors.status)}
+                      />
+                    )}
+                  />
+                  {errors.status && (
+                    <p className={`${baseStyles.fieldError} ${styles.fieldErrorAbsolute}`}>{errors.status.message}</p>
+                  )}
+                </label>
               </div>
               <div className={styles.column}>
                 <label className={styles.label}>Board</label>

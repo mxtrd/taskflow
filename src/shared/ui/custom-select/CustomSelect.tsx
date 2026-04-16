@@ -17,6 +17,7 @@ type CustomSelectProps = {
   onChange: (value: string) => void
   onBlur?: () => void
   disabled?: boolean
+  hasError?: boolean
   rootClassName?: string
 }
 
@@ -30,6 +31,7 @@ const CustomSelect = ({
   onChange,
   onBlur,
   disabled = false,
+  hasError = false,
   rootClassName,
 }: CustomSelectProps) => {
   const reactId = useId()
@@ -161,12 +163,13 @@ const CustomSelect = ({
       <div className={clsx(styles.select, isOpen && styles.selectOpen)}>
         <button
           type='button'
-          className={clsx(styles.trigger, disabled && styles.triggerDisabled)}
+          className={clsx(styles.trigger, disabled && styles.triggerDisabled, hasError && styles.triggerError)}
           aria-haspopup='listbox'
           aria-expanded={isOpen}
           aria-controls={listId}
           aria-labelledby={labelId}
           aria-activedescendant={isOpen && activeIndex >= 0 ? `${selectId}-option-${activeIndex}` : undefined}
+          aria-invalid={hasError || undefined}
           onClick={() => (isOpen ? close() : open())}
           onKeyDown={handleTriggerKeyDown}
           disabled={disabled}
