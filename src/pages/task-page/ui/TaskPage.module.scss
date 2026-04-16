@@ -1,3 +1,5 @@
+@use "../../../app/styles/mixins/_breakpoint.scss" as *;
+
 .taskContent {
   margin: 0 auto;
   max-width: 600px;
@@ -15,6 +17,10 @@
 
   &:last-child {
     justify-self: end;
+
+    @include mobile {
+      justify-self: stretch;
+    }
   }
 }
 
@@ -42,5 +48,5 @@
 }
 
 .button {
-  width: 75px;
+    width: 100%;
 }
