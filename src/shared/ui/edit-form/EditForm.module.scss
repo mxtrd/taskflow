@@ -8,6 +8,21 @@
   // width: 400px;
 }
 
+.fieldLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.fieldErrorAbsolute {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 100%;
+  margin-bottom: 6px;
+}
+
 .textarea {
   width: 500px;
   height: 55px;

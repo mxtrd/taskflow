@@ -3,6 +3,7 @@ import BaseLayout from "@/app/layouts/base-layout"
 import baseStyles from "@/app/styles/base.module.scss"
 import { useAuthRedux } from "@/shared/hooks/useAuthRedux"
 import { isDevOffline } from "@/shared/config/is-dev-offline"
+import Button from "@/shared/ui/button"
 import styles from "./LoginPage.module.scss"
 
 const LoginPage = () => {
@@ -25,7 +26,7 @@ const LoginPage = () => {
     <BaseLayout title="Taskflow | Login" description="Taskflow - login page">
       <section className={styles.login}>
         <div className={baseStyles.container}>
-          <div className={styles.content}>
+          <div className={`${baseStyles.content} ${styles.content}`}>
             <h1 className={styles.title}>Task Manager</h1>
             {isDevOffline && (
               <div className={styles.devOfflineNotice} role="status">
@@ -41,9 +42,9 @@ const LoginPage = () => {
                 )}
               </div>
             )}
-            <button type='button' onClick={handleOAuthStart}>
+            <Button className={styles.button} type='button' onClick={handleOAuthStart}>
               Login via OAuth
-            </button>
+            </Button>
           </div>
         </div>
       </section>

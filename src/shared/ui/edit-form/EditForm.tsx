@@ -40,28 +40,37 @@ const EditForm = (props: EditFormProps) => {
 
   return (
     <form className={clsx(styles.form, formClassName)} onSubmit={onSubmit}>
-      {mode === 'textarea' ? (
-        <textarea
-          className={clsx(
-            baseStyles.inputReset,
-            baseStyles.fieldControl,
-            baseStyles.fieldControlTextarea,
-            styles.field,
-            styles.textarea,
-            fieldClassName
-          )}
-          {...registration}
-          {...textareaProps}
-        />
-      ) : (
-        <input
-          className={clsx(baseStyles.inputReset, baseStyles.fieldControl, styles.field, fieldClassName)}
-          {...registration}
-          {...inputProps}
-        />
-      )}
+      <label className={clsx(styles.fieldLabel)}>
+        {mode === 'textarea' ? (
+          <textarea
+            className={clsx(
+              baseStyles.inputReset,
+              baseStyles.fieldControl,
+              error && baseStyles.fieldControlError,
+              baseStyles.fieldControlTextarea,
+              styles.field,
+              styles.textarea,
+              fieldClassName
+            )}
+            {...registration}
+            {...textareaProps}
+          />
+        ) : (
+          <input
+            className={clsx(
+              baseStyles.inputReset,
+              baseStyles.fieldControl,
+              error && baseStyles.fieldControlError,
+              styles.field,
+              fieldClassName
+            )}
+            {...registration}
+            {...inputProps}
+          />
+        )}
 
-      {error && <p className={baseStyles.fieldError}>{error}</p>}
+        {error && <p className={clsx(baseStyles.fieldError, styles.fieldErrorAbsolute)}>{error}</p>}
+      </label>
 
       <div className={clsx(styles.actions, actionsClassName)}>
         <Button className={styles.editButton} type='submit' disabled={disabled}>

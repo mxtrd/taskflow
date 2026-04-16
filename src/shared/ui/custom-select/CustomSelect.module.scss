@@ -64,6 +64,10 @@
   opacity: 0.5;
 }
 
+.triggerError {
+  border-color: var(--red-color);
+}
+
 .value {
   overflow: hidden;
   text-overflow: ellipsis;

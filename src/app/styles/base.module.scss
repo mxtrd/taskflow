@@ -89,6 +89,10 @@
   line-height: 1.3;
 }
 
+.fieldControlError {
+  border-color: var(--red-color);
+}
+
 .fieldControlTextarea {
   padding-block: 6px;
   resize: none;
