@@ -11,6 +11,9 @@
   --container-offset: 30px;
   --container-width: calc(var(--content-width) + (var(--container-offset) * 2));
 
+  // Updated at runtime from `BaseLayout` based on actual header height.
+  --header-height: 0px;
+
   --accent: #d70024;
 	--accent-hover: #b6001f;
 	--accent-active: #99001a;

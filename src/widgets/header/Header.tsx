@@ -15,7 +15,7 @@ const Header = () => {
   if (taskMatch) {
     const [, boardId] = taskMatch
     return (
-      <header className={styles.header}>
+      <header className={styles.header} data-app-header>
         <div className={baseStyles.container}>
           <div className={styles.inner}>
             <Link className={styles.backLink} to={`/boards/${boardId}`}>
@@ -31,7 +31,7 @@ const Header = () => {
 
   if (isGuestRoute || !isAuth) {
     return (
-      <header className={styles.header}>
+      <header className={styles.header} data-app-header>
         <div className={baseStyles.container}>
           <div className={styles.inner}>
             <span className={styles.logo}>
@@ -49,7 +49,7 @@ const Header = () => {
   }
 
   return (
-    <header className={styles.header}>
+    <header className={styles.header} data-app-header>
       <div className={baseStyles.container}>
         <div className={styles.inner}>
           <Link className={styles.logo} to="/boards">
