@@ -32,9 +32,12 @@ export const useAuthRedux = () => {
 
   useEffect(() => {
     if (isDemoMode) {
-      if (authStorage.hasDemoSession()) {
-        dispatch(setMe(DEV_OFFLINE_ME))
-      } else {
+      const hasDemoSession = authStorage.hasDemoSession()
+      if (hasDemoSession) {
+        if (!isAuth || !me) {
+          dispatch(setMe(DEV_OFFLINE_ME))
+        }
+      } else if (isAuth || me || isCheckingAuth) {
         dispatch(clearAuth())
       }
       return
@@ -43,7 +46,7 @@ export const useAuthRedux = () => {
     if (isCheckingAuth) {
       void dispatch(bootstrapAuthThunk())
     }
-  }, [dispatch, isCheckingAuth])
+  }, [dispatch, isAuth, isCheckingAuth, me])
 
   useEffect(() => {
     const handleLogout = () => {
@@ -84,7 +87,7 @@ export const useAuthRedux = () => {
   return useMemo(
     () => ({
       isAuth,
-      isCheckingAuth: isDemoMode ? false : isCheckingAuth,
+      isCheckingAuth,
       isSigningIn: isDemoMode ? false : isSigningIn,
       isLoggingOut: isDemoMode ? false : isLoggingOut,
       me,

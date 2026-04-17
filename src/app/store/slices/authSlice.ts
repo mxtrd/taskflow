@@ -29,6 +29,7 @@ const authSlice = createSlice({
     setMe(state, action: PayloadAction<AuthUser>) {
       state.me = action.payload
       state.isAuth = Boolean(action.payload)
+      state.isCheckingAuth = false
     },
     setAuthError(state, action: PayloadAction<string | null>) {
       state.error = action.payload
