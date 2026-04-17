@@ -15,7 +15,7 @@ import {
   updateBoardDescriptionThunk,
   deleteAllBoardsThunk,
 } from '@/app/store/thunks/boardsThunks'
-import { isDevOffline } from '@/shared/config/is-dev-offline'
+import { isDemoMode } from '@/shared/config/is-dev-offline'
 import { mockBoards } from '@/shared/mocks/taskflowData'
 import { markBoardsOfflineSeeded, setBoards } from '@/app/store/slices/boardsSlice'
 
@@ -28,13 +28,13 @@ export const useBoardsRedux = () => {
   const isOfflineSeeded = useAppSelector((state: RootState) => state.boards.isOfflineSeeded)
 
   useEffect(() => {
-    if (isDevOffline) return
+    if (isDemoMode) return
     void dispatch(fetchMyBoardsThunk())
   }, [dispatch])
 
   useEffect(() => {
     // OFFLINE-ONLY: seed local mock boards for layout/dev mode.
-    if (!isDevOffline) return
+    if (!isDemoMode) return
     if (isOfflineSeeded) return
     dispatch(setBoards(structuredClone(mockBoards)))
     dispatch(markBoardsOfflineSeeded())
@@ -50,7 +50,7 @@ export const useBoardsRedux = () => {
       const normalized = title.trim()
       if (!normalized) return
 
-      if (isDevOffline) {
+      if (isDemoMode) {
         // OFFLINE-ONLY: local board mutation (no API request).
         const id = `board-local-${crypto.randomUUID()}`
         dispatch(setBoards([{ id, title: normalized, description: '' }, ...boards]))
@@ -69,7 +69,7 @@ export const useBoardsRedux = () => {
       const current = getBoardById(boardId)
       if (!current) return
 
-      if (isDevOffline) {
+      if (isDemoMode) {
         // OFFLINE-ONLY: local board mutation (no API request).
         dispatch(
           setBoards(boards.map((b) => (b.id === boardId ? { ...b, title: normalized } : b)))
@@ -95,7 +95,7 @@ export const useBoardsRedux = () => {
       const current = getBoardById(boardId)
       if (!current) return
 
-      if (isDevOffline) {
+      if (isDemoMode) {
         // OFFLINE-ONLY: local board mutation (no API request).
         dispatch(
           setBoards(boards.map((b) => (b.id === boardId ? { ...b, description: normalized } : b)))
@@ -117,7 +117,7 @@ export const useBoardsRedux = () => {
 
   const deleteBoard = useCallback(
     (boardId: string) => {
-      if (isDevOffline) {
+      if (isDemoMode) {
         // OFFLINE-ONLY: local board mutation (no API request).
         dispatch(setBoards(boards.filter((b) => b.id !== boardId)))
         return
@@ -128,7 +128,7 @@ export const useBoardsRedux = () => {
   )
 
   const deleteAllBoards = useCallback(() => {
-    if (isDevOffline) {
+    if (isDemoMode) {
       // OFFLINE-ONLY: local board mutation (no API request).
       dispatch(setBoards([]))
       return
@@ -136,9 +136,9 @@ export const useBoardsRedux = () => {
     void dispatch(deleteAllBoardsThunk())
   }, [dispatch])
 
-  const safeLoading = isDevOffline ? false : isLoadingBoards
-  const safeMutating = isDevOffline ? false : isMutatingBoards
-  const safeError = isDevOffline ? null : boardsError
+  const safeLoading = isDemoMode ? false : isLoadingBoards
+  const safeMutating = isDemoMode ? false : isMutatingBoards
+  const safeError = isDemoMode ? null : boardsError
 
   return useMemo(
     () => ({
