@@ -14,7 +14,7 @@ import {
   type SignInPayload,
 } from '@/app/store/thunks/authThunks'
 import { clearAuth, setMe } from '@/app/store/slices/authSlice'
-import { isDevOffline } from '@/shared/config/is-dev-offline'
+import { isDemoMode } from '@/shared/config/is-dev-offline'
 
 const DEV_OFFLINE_ME = {
   userId: 'dev-offline',
@@ -30,7 +30,7 @@ export const useAuthRedux = () => {
   const me = useAppSelector(selectAuthMe)
 
   useEffect(() => {
-    if (isDevOffline) {
+    if (isDemoMode) {
       dispatch(setMe(DEV_OFFLINE_ME))
       return
     }
@@ -51,7 +51,7 @@ export const useAuthRedux = () => {
 
   const signIn = useCallback(
     async (payload: SignInPayload) => {
-      if (isDevOffline) {
+      if (isDemoMode) {
         dispatch(setMe(DEV_OFFLINE_ME))
         return
       }
@@ -61,7 +61,7 @@ export const useAuthRedux = () => {
   )
 
   const logout = useCallback(async () => {
-    if (isDevOffline) {
+    if (isDemoMode) {
       dispatch(clearAuth())
       return
     }
@@ -69,17 +69,17 @@ export const useAuthRedux = () => {
   }, [dispatch])
 
   const enterLocalDevSession = useCallback(() => {
-    if (!isDevOffline) return
+    if (!isDemoMode) return
     dispatch(setMe(DEV_OFFLINE_ME))
   }, [dispatch])
 
   return useMemo(
     () => ({
-      isAuth: isDevOffline ? true : isAuth,
-      isCheckingAuth: isDevOffline ? false : isCheckingAuth,
-      isSigningIn: isDevOffline ? false : isSigningIn,
-      isLoggingOut: isDevOffline ? false : isLoggingOut,
-      me: isDevOffline ? DEV_OFFLINE_ME : me,
+      isAuth: isDemoMode ? true : isAuth,
+      isCheckingAuth: isDemoMode ? false : isCheckingAuth,
+      isSigningIn: isDemoMode ? false : isSigningIn,
+      isLoggingOut: isDemoMode ? false : isLoggingOut,
+      me: isDemoMode ? DEV_OFFLINE_ME : me,
       signIn,
       logout,
       enterLocalDevSession,

@@ -128,6 +128,7 @@ Required env vars:
 
 Optional:
 
+- `VITE_DEMO_MODE=false` (set `true` for portfolio demo with local mock auth/boards/tasks)
 - `VITE_FF_TASK_DETAILS_V2=false`
 
 ## Roadmap

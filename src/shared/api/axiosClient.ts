@@ -1,14 +1,15 @@
 import axios, { AxiosError, type InternalAxiosRequestConfig } from "axios"
 import { authStorage } from "../lib/auth-storage"
+import { isDemoMode } from "../config/is-dev-offline"
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL
-const API_KEY = import.meta.env.VITE_API_KEY
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? ''
+const API_KEY = import.meta.env.VITE_API_KEY ?? ''
 
-if (!API_BASE_URL) {
+if (!isDemoMode && !API_BASE_URL) {
   throw new Error('Missing VITE_API_BASE_URL in .env')
 }
 
-if (!API_KEY) {
+if (!isDemoMode && !API_KEY) {
   throw new Error('Missing VITE_API_KEY in .env')
 }
 
