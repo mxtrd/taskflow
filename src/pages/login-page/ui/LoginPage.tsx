@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import BaseLayout from "@/app/layouts/base-layout"
 import baseStyles from "@/app/styles/base.module.scss"
@@ -11,6 +12,12 @@ const LoginPage = () => {
   const { isAuth, enterLocalDevSession } = useAuthRedux()
   const apiBaseUrl = import.meta.env.VITE_API_BASE_URL
   const canUseOAuth = !isDemoMode && Boolean(apiBaseUrl)
+
+  useEffect(() => {
+    if (isAuth) {
+      navigate('/boards', { replace: true })
+    }
+  }, [isAuth, navigate])
 
   const handleOAuthStart = async () => {
     const callbackUrl = `${window.location.origin}${import.meta.env.BASE_URL}oauth2/callback`
